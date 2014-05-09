@@ -3,6 +3,9 @@ language: go
 go:
 - 1.2.2
 - tip
+env:
+  global:
+  - PATH=$HOME/gopath/bin:$PATH
 before_install:
 - go get github.com/tools/godep
 - godep restore
