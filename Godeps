@@ -1,0 +1,14 @@
+{
+	"ImportPath": "github.com/meatballhat/artifacts",
+	"GoVersion": "go1.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/mitchellh/goamz/aws",
+			"Rev": "5fc50a991d8670fe3b3525655255fdb4ba81e5e5"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/goamz/s3",
+			"Rev": "5fc50a991d8670fe3b3525655255fdb4ba81e5e5"
+		}
+	]
+}
