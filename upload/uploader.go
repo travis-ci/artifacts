@@ -86,7 +86,7 @@ func (u *uploader) files() chan *artifact {
 			}
 
 			filepath.Walk(path.Fullpath(), func(f string, info os.FileInfo, err error) error {
-				if info.IsDir() {
+				if info != nil && info.IsDir() {
 					return nil
 				}
 
