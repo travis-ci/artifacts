@@ -8,9 +8,9 @@ import (
 func TestNewUploader(t *testing.T) {
 	os.Setenv("ARTIFACTS_AWS_S3_BUCKET", "foo")
 	os.Setenv("ARTIFACTS_AWS_TARGET_PATH", "/baz")
-	os.Setenv("ARTIFACTS_PATHS", "bin/*;derp")
+	os.Setenv("ARTIFACTS_PATHS", "bin/;derp")
 
-	u := newUploader()
+	u := newUploader(NewOptions())
 	if u == nil {
 		t.Fail()
 	}
@@ -23,7 +23,7 @@ func TestNewUploader(t *testing.T) {
 		t.Fail()
 	}
 
-	if len(u.Paths) != 2 {
+	if len(u.Paths.All()) != 2 {
 		t.Fail()
 	}
 }

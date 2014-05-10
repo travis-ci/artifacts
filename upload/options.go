@@ -2,6 +2,7 @@ package upload
 
 import (
 	"os"
+	"path/filepath"
 )
 
 // Options is used in the call to Upload
@@ -22,11 +23,18 @@ func NewOptions() *Options {
 		cwd = os.Getenv("TRAVIS_BUILD_DIR")
 	}
 
+	targetPath := os.Getenv("ARTIFACTS_AWS_TARGET_PATH")
+	if len(targetPath) == 0 {
+		targetPath = filepath.Join("artifacts",
+			os.Getenv("TRAVIS_BUILD_NUMBER"),
+			os.Getenv("TRAVIS_JOB_NUMBER"))
+	}
+
 	return &Options{
 		Private:      true,
 		CacheControl: "private",
 		BucketName:   os.Getenv("ARTIFACTS_AWS_S3_BUCKET"),
-		TargetPath:   os.Getenv("ARTIFACTS_AWS_TARGET_PATH"),
+		TargetPath:   targetPath,
 		WorkingDir:   cwd,
 		Paths:        os.Getenv("ARTIFACTS_PATHS"),
 	}
