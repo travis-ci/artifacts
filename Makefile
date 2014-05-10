@@ -44,6 +44,7 @@ deps:
 	$(GODEP) restore
 
 clean:
+	rm -vf $${GOPATH%%:*}/bin/artifacts
 	rm -vf coverage.html *coverage.out
 	$(GO) clean $(TARGETS) || true
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
