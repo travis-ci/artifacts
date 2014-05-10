@@ -15,5 +15,5 @@ before_install:
 - godep restore
 after_success:
 - cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
-- sha256sum artifacts > SHA256SUMS
-- ${GOPATH%%:*}/bin/artifacts upload artifacts SHA256SUMS
+- sha256sum $(git ls-files -o) > SHA256SUMS
+- ${GOPATH%%:*}/bin/artifacts upload $(git ls-files -o)
