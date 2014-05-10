@@ -7,6 +7,9 @@ env:
   global:
   - PATH=$HOME/gopath/bin:$PATH
   - ARTIFACTS_PATHS=artifacts
+  - secure: KSHZNPUPweNF6xoDk0uWlfU5wiJHUOvCXtsBUoIHlsC0SRdozgIMjWrDbDEkMKOj84bwOX1SgO2qdabuuz8WTRbS38QpjEd31mbs6wJO0GCsIM3hYalaEWYuH5eVF8VrJbq+AxpyNrnWRbzBGLHZYLGpGvIMfPeD1jYOVzjDNkw=
+  - secure: oHjRfKrzOuLDxWv/wffOMrH6WnSjHD4ph5siSGK4Fekdj3bv2/gSji6bxfc03zN+I2DW/dlEJvKKLFMIt5UxAkgS0c9+2WArPOyR1OaLAAJxEqWVL8yUWa62MJORP2E6w55ehP1u2Eponncq6tDdA0+aTsLmq0+YG2RGtToAQWk=
+  - secure: l1iQjiI7b+F3esxKXD77FSa/Ljq2KAuSzVobF+R561FvVNYLVpN8y0gpfavD4SltOwwip7inNO8SzGi3TCAXprCP1/UqAnA4ZFJ19fFCFk3U8GJuAi9Pa+IC7YWN3iK4ZbWjVjVfSpzb1eX3O/c8bzl/EChgBNQCvsW5PQaqxP0=
 before_install:
 - go get github.com/tools/godep
 - godep restore
