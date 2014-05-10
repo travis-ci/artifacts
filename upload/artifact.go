@@ -22,3 +22,12 @@ func (a *artifact) Reader() (io.Reader, error) {
 
 	return f, nil
 }
+
+func (a *artifact) Size() int64 {
+	fi, err := os.Stat(a.Source)
+	if err != nil {
+		return int64(0)
+	}
+
+	return fi.Size()
+}

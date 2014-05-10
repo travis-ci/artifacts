@@ -12,9 +12,10 @@ import (
 )
 
 type uploader struct {
-	BucketName string
-	Paths      *path.PathSet
-	TargetPath string
+	BucketName   string
+	Paths        *path.PathSet
+	TargetPath   string
+	CacheControl string
 }
 
 // Upload does the deed!
@@ -34,6 +35,8 @@ func newUploader(opts *Options) *uploader {
 	} else if opts.CacheControl == "" {
 		opts.CacheControl = "public, max-age=315360000"
 	}
+
+	u.CacheControl = opts.CacheControl
 
 	for _, s := range strings.Split(opts.Paths, ";") {
 		trimmed := strings.TrimSpace(s)
@@ -63,7 +66,7 @@ func (u *uploader) Upload() error {
 	}
 
 	for artifact := range u.files() {
-		u.uploadFile(artifact)
+		u.uploadFile(bucket, artifact)
 	}
 
 	return nil
@@ -108,6 +111,34 @@ func (u *uploader) files() chan *artifact {
 	return artifacts
 }
 
-func (u *uploader) uploadFile(a *artifact) {
-	fmt.Printf("Not really uploading %q -> %q\n", a.Source, a.Destination)
+func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
+	retries := 0
+
+	for {
+		err := u.rawUpload(b, a)
+		if err != nil {
+			if retries < 2 {
+				retries += 1
+				continue
+			} else {
+				return err
+			}
+		}
+		return nil
+	}
+}
+
+func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
+	destination := strings.TrimLeft(filepath.Join(u.TargetPath, a.Destination), "/")
+
+	reader, err := a.Reader()
+	if err != nil {
+		return err
+	}
+
+	return b.PutReaderHeader(destination, reader, a.Size(),
+		map[string][]string{
+			"Content-Type":  []string{a.ContentType()},
+			"Cache-Control": []string{u.CacheControl},
+		}, s3.Private)
 }
