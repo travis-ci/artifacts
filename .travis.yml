@@ -14,6 +14,7 @@ before_install:
 - go get github.com/tools/godep
 - godep restore
 install:
-- go build -x
+- ./build
 script:
-- go test -v ./... && ./artifacts upload
+- ./test
+- ./artifacts upload

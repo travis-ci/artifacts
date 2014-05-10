@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+GO_LDFLAGS="
+  -X main.VersionString $(git describe --always --dirty --tags)
+  -X main.RevisionString $(git rev-parse --sq HEAD)
+"
+
+go get -x -ldflags "$GO_LDFLAGS"
+go build -x -ldflags "$GO_LDFLAGS"
+godep restore

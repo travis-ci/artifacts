@@ -8,6 +8,15 @@ import (
 	"github.com/meatballhat/artifacts/upload"
 )
 
+var (
+	// VersionString contains the compiled-in version number
+	VersionString = ""
+	// RevisionString contains the compiled-in git rev
+	RevisionString = ""
+
+	versionFlag = flag.Bool("v", false, "Show version and exit")
+)
+
 func main() {
 	flag.Usage = usage
 	if len(os.Args) < 2 {
@@ -16,6 +25,11 @@ func main() {
 	}
 
 	flag.Parse()
+	if *versionFlag {
+		fmt.Printf("artifacts version=%v rev=%v\n", VersionString, RevisionString)
+		os.Exit(0)
+	}
+
 	cmd := flag.Arg(0)
 
 	switch cmd {
@@ -32,5 +46,7 @@ func usage() {
 
 Commands:
   upload - upload some artifacts!
+
 `)
+	flag.PrintDefaults()
 }
