@@ -20,7 +20,7 @@ func main() {
 
 	switch cmd {
 	case "upload":
-		upload.Upload()
+		upload.Upload(upload.NewOptions())
 	default:
 		die("what kind of command is", cmd, "...?")
 	}
