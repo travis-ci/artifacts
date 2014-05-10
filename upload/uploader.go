@@ -115,6 +115,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 	retries := 0
 
 	for {
+		fmt.Printf("uploading %q -> %q\n", a.Source, a.Destination)
 		err := u.rawUpload(b, a)
 		if err != nil {
 			if retries < 2 {
