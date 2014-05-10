@@ -17,3 +17,9 @@ after_success:
 - cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
 - sha256sum $(git ls-files -o) > SHA256SUMS
 - ${GOPATH%%:*}/bin/artifacts upload $(git ls-files -o)
+artifacts:
+  bucket: meatballhat
+  checksums:
+  - sha256
+  paths:
+  - '!$(git ls-files -o)'
