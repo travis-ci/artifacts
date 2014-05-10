@@ -29,10 +29,20 @@ func newUploader(opts *Options) *uploader {
 		Paths:      path.NewPathSet(),
 	}
 
+	if opts.Private {
+		opts.CacheControl = "private"
+	} else if opts.CacheControl == "" {
+		opts.CacheControl = "public, max-age=315360000"
+	}
+
 	for _, s := range strings.Split(opts.Paths, ";") {
 		trimmed := strings.TrimSpace(s)
 		if len(trimmed) > 0 {
-			u.Paths.Add(path.NewPath(opts.WorkingDir, trimmed, ""))
+			parts := strings.SplitN(trimmed, ":", 2)
+			if len(parts) < 2 {
+				parts = append(parts, "")
+			}
+			u.Paths.Add(path.NewPath(opts.WorkingDir, parts[0], parts[1]))
 		}
 	}
 

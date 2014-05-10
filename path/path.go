@@ -1,6 +1,7 @@
 package path
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -32,5 +33,10 @@ func (p *Path) Fullpath() string {
 
 // IsDir tells if the path is a directory!
 func (p *Path) IsDir() bool {
-	return false
+	fi, err := os.Stat(p.From)
+	if err != nil {
+		return false
+	}
+
+	return fi.IsDir()
 }
