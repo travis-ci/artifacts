@@ -34,7 +34,14 @@ func main() {
 
 	switch cmd {
 	case "upload":
-		upload.Upload(upload.NewOptions())
+		opts := upload.NewOptions()
+		for i, arg := range flag.Args() {
+			if i == 0 {
+				continue
+			}
+			opts.Paths += fmt.Sprintf("%v;", arg)
+		}
+		upload.Upload(opts)
 	default:
 		fmt.Println("what kind of command is", cmd, "...?")
 		os.Exit(1)

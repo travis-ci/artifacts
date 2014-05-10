@@ -22,5 +22,10 @@ _testmain.go
 *.exe
 *.test
 
+*coverage.out
+*coverage.html
+
 /artifacts
 /artifacts.test
+
+/.env
