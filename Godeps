@@ -4,11 +4,11 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
-			"Rev": "5fc50a991d8670fe3b3525655255fdb4ba81e5e5"
+			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/s3",
-			"Rev": "5fc50a991d8670fe3b3525655255fdb4ba81e5e5"
+			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
 		}
 	]
 }

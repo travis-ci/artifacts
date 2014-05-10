@@ -12,7 +12,7 @@ func main() {
 	flag.Usage = usage
 	if len(os.Args) < 2 {
 		flag.PrintDefaults()
-		die()
+		os.Exit(1)
 	}
 
 	flag.Parse()
@@ -22,7 +22,8 @@ func main() {
 	case "upload":
 		upload.Upload(upload.NewOptions())
 	default:
-		die("what kind of command is", cmd, "...?")
+		fmt.Println("what kind of command is", cmd, "...?")
+		os.Exit(1)
 	}
 }
 
@@ -32,11 +33,4 @@ func usage() {
 Commands:
   upload - upload some artifacts!
 `)
-}
-
-func die(whatever ...interface{}) {
-	if len(whatever) > 0 {
-		fmt.Println(whatever...)
-	}
-	os.Exit(1)
 }

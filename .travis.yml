@@ -6,6 +6,14 @@ go:
 env:
   global:
   - PATH=$HOME/gopath/bin:$PATH
+  - ARTIFACTS_PATHS=artifacts
+  - secure: shPgfz/gZhzaM/ITSYo1BQUaX/tIir/w2qANkojy6aQINwBr0BQUEj5CJu3BPbhdsJQGq/uS4kNhD/4641FA8Tx1qtAc1RlARwvL5CbfE/ujUtHnJHa7GHmXCBtGm95IdJnmoZr28YEQqLTwOI8+HG+/fa9lRAcWLmpFcDZTbZ0=
+  - secure: puJ766AvAFaascxTYG3QjMSOsivplBzBQUe53UczizluaAKiWCHvKvVlyxskHxKr/kTKGEwRX3t5vnwrrf/a9Zv2R9TlDGlgwI2dF6rmh/QZfg6nPuSG4nkO7YtdQNAavEnZbQBjDonvC3TcJSo7NDk7QBKgJA5O5/e8+Pix8lQ=
+  - secure: 2kWJ9l/DoQ2gkwxBHvLXzBVLr7MoCuCXJoMIoi/xMRZtaO+zeT5B7zQPeNaQCC0mUTf4XIij8nqgP63Oq4i5Dq7fiJq+CgsWhJqqc09JyuZpIH/tJFGoO5Auk3/3b79P/KuS3IkqRuMpVZmU7nzrHEgLEy269Ys8kRcAAVsC8eY=
 before_install:
 - go get github.com/tools/godep
 - godep restore
+install:
+- go build -x
+script:
+- go test -v ./... && ./artifacts upload
