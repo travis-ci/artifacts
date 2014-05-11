@@ -3,11 +3,26 @@ package upload
 import (
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type artifact struct {
-	Source      string
-	Destination string
+	Root           string
+	RelativeSource string
+	Source         string
+	Destination    string
+	Prefix         string
+}
+
+func newArtifact(root, relativeSource, prefix, destination string) *artifact {
+	return &artifact{
+		Root:           root,
+		RelativeSource: relativeSource,
+		Source:         filepath.Join(root, relativeSource),
+		Prefix:         prefix,
+		Destination:    destination,
+	}
 }
 
 func (a *artifact) ContentType() string {
@@ -30,4 +45,8 @@ func (a *artifact) Size() int64 {
 	}
 
 	return fi.Size()
+}
+
+func (a *artifact) FullDestination() string {
+	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
 }
