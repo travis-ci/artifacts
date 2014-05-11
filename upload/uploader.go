@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/aws"
@@ -12,14 +13,15 @@ import (
 )
 
 type uploader struct {
-	BucketName   string
-	Paths        *path.PathSet
-	TargetPaths  []string
-	CacheControl string
-	Retries      int
-	Concurrency  int
-	AccessKey    string
-	SecretKey    string
+	BucketName    string
+	Paths         *path.PathSet
+	TargetPaths   []string
+	CacheControl  string
+	Retries       int
+	RetryInterval time.Duration
+	Concurrency   int
+	AccessKey     string
+	SecretKey     string
 }
 
 // Upload does the deed!
@@ -29,11 +31,12 @@ func Upload(opts *Options) {
 
 func newUploader(opts *Options) *uploader {
 	u := &uploader{
-		BucketName:  opts.BucketName,
-		TargetPaths: opts.TargetPaths,
-		Paths:       path.NewPathSet(),
-		Concurrency: opts.Concurrency,
-		Retries:     opts.Retries,
+		BucketName:    opts.BucketName,
+		TargetPaths:   opts.TargetPaths,
+		Paths:         path.NewPathSet(),
+		Concurrency:   opts.Concurrency,
+		Retries:       opts.Retries,
+		RetryInterval: 3 * time.Second,
 	}
 
 	u.CacheControl = opts.CacheControl
@@ -79,6 +82,13 @@ func (u *uploader) Upload() error {
 				done <- true
 				return
 			}
+
+			b, err := bucket.Get("/foo")
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			}
+
+			fmt.Printf("BYTES: %v\n", string(b))
 
 			for artifact := range fileChan {
 				u.uploadFile(bucket, artifact)
@@ -129,7 +139,9 @@ func (u *uploader) files() chan *artifact {
 					}
 				}
 
-				artifacts <- &artifact{Source: f, Destination: destination}
+				for _, targetPath := range u.TargetPaths {
+					artifacts <- newArtifact(root, relPath, targetPath, destination)
+				}
 				return nil
 			})
 
@@ -148,6 +160,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 		if err != nil {
 			if retries < u.Retries {
 				retries += 1
+				time.Sleep(u.RetryInterval)
 				continue
 			} else {
 				return err
@@ -158,24 +171,23 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 }
 
 func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
-	for _, targetPath := range u.TargetPaths {
-		destination := strings.TrimLeft(filepath.Join(targetPath, a.Destination), "/")
-
-		reader, err := a.Reader()
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("uploading %q -> %q\n", a.Source, destination)
-
-		err = b.PutReaderHeader(destination, reader, a.Size(),
-			map[string][]string{
-				"Content-Type":  []string{a.ContentType()},
-				"Cache-Control": []string{u.CacheControl},
-			}, s3.Private)
-		if err != nil {
-			return err
-		}
+	destination := a.FullDestination()
+	reader, err := a.Reader()
+	if err != nil {
+		return err
 	}
+
+	fmt.Printf("uploading %q -> %q\n", a.Source, destination)
+
+	err = b.PutReaderHeader(destination, reader, a.Size(),
+		map[string][]string{
+			"Content-Type":  []string{a.ContentType()},
+			"Cache-Control": []string{u.CacheControl},
+		}, s3.Private)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return err
+	}
+
 	return nil
 }
