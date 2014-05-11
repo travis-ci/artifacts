@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/aws"
@@ -12,14 +13,15 @@ import (
 )
 
 type uploader struct {
-	BucketName   string
-	Paths        *path.PathSet
-	TargetPath   string
-	CacheControl string
-	Retries      int
-	Concurrency  int
-	AccessKey    string
-	SecretKey    string
+	BucketName    string
+	Paths         *path.PathSet
+	TargetPaths   []string
+	CacheControl  string
+	Retries       int
+	RetryInterval time.Duration
+	Concurrency   int
+	AccessKey     string
+	SecretKey     string
 }
 
 // Upload does the deed!
@@ -29,11 +31,12 @@ func Upload(opts *Options) {
 
 func newUploader(opts *Options) *uploader {
 	u := &uploader{
-		BucketName:  opts.BucketName,
-		TargetPath:  opts.TargetPath,
-		Paths:       path.NewPathSet(),
-		Concurrency: opts.Concurrency,
-		Retries:     opts.Retries,
+		BucketName:    opts.BucketName,
+		TargetPaths:   opts.TargetPaths,
+		Paths:         path.NewPathSet(),
+		Concurrency:   opts.Concurrency,
+		Retries:       opts.Retries,
+		RetryInterval: 3 * time.Second,
 	}
 
 	u.CacheControl = opts.CacheControl
@@ -129,7 +132,9 @@ func (u *uploader) files() chan *artifact {
 					}
 				}
 
-				artifacts <- &artifact{Source: f, Destination: destination}
+				for _, targetPath := range u.TargetPaths {
+					artifacts <- newArtifact(root, relPath, targetPath, destination)
+				}
 				return nil
 			})
 
@@ -148,6 +153,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 		if err != nil {
 			if retries < u.Retries {
 				retries += 1
+				time.Sleep(u.RetryInterval)
 				continue
 			} else {
 				return err
@@ -158,8 +164,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 }
 
 func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
-	destination := strings.TrimLeft(filepath.Join(u.TargetPath, a.Destination), "/")
-
+	destination := a.FullDestination()
 	reader, err := a.Reader()
 	if err != nil {
 		return err
@@ -167,9 +172,15 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 
 	fmt.Printf("uploading %q -> %q\n", a.Source, destination)
 
-	return b.PutReaderHeader(destination, reader, a.Size(),
+	err = b.PutReaderHeader(destination, reader, a.Size(),
 		map[string][]string{
 			"Content-Type":  []string{a.ContentType()},
 			"Cache-Control": []string{u.CacheControl},
 		}, s3.Private)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return err
+	}
+
+	return nil
 }

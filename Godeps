@@ -3,6 +3,14 @@
 	"GoVersion": "go1.2",
 	"Deps": [
 		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Rev": "d4ada4466b1f797ca9aee2bc6bed46dcdfa731ae"
+		},
+		{
+			"ImportPath": "github.com/burke/ttyutils",
+			"Rev": "70f0d73eb47f7033f514f7f8f5138152fe1088fc"
+		},
+		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
 			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
 		},
