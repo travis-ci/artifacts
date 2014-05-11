@@ -63,3 +63,12 @@ func Int(key string, dflt int) int {
 
 	return int(intVal)
 }
+
+// ExpandSlice evaluates each string in the slice through os.ExpandEnv
+func ExpandSlice(vars []string) []string {
+	expanded := []string{}
+	for _, s := range vars {
+		expanded = append(expanded, os.ExpandEnv(s))
+	}
+	return expanded
+}

@@ -14,7 +14,7 @@ import (
 type uploader struct {
 	BucketName   string
 	Paths        *path.PathSet
-	TargetPath   string
+	TargetPaths  []string
 	CacheControl string
 	Retries      int
 	Concurrency  int
@@ -30,7 +30,7 @@ func Upload(opts *Options) {
 func newUploader(opts *Options) *uploader {
 	u := &uploader{
 		BucketName:  opts.BucketName,
-		TargetPath:  opts.TargetPath,
+		TargetPaths: opts.TargetPaths,
 		Paths:       path.NewPathSet(),
 		Concurrency: opts.Concurrency,
 		Retries:     opts.Retries,
@@ -158,18 +158,24 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 }
 
 func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
-	destination := strings.TrimLeft(filepath.Join(u.TargetPath, a.Destination), "/")
+	for _, targetPath := range u.TargetPaths {
+		destination := strings.TrimLeft(filepath.Join(targetPath, a.Destination), "/")
 
-	reader, err := a.Reader()
-	if err != nil {
-		return err
+		reader, err := a.Reader()
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("uploading %q -> %q\n", a.Source, destination)
+
+		err = b.PutReaderHeader(destination, reader, a.Size(),
+			map[string][]string{
+				"Content-Type":  []string{a.ContentType()},
+				"Cache-Control": []string{u.CacheControl},
+			}, s3.Private)
+		if err != nil {
+			return err
+		}
 	}
-
-	fmt.Printf("uploading %q -> %q\n", a.Source, destination)
-
-	return b.PutReaderHeader(destination, reader, a.Size(),
-		map[string][]string{
-			"Content-Type":  []string{a.ContentType()},
-			"Cache-Control": []string{u.CacheControl},
-		}, s3.Private)
+	return nil
 }
