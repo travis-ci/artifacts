@@ -3,6 +3,8 @@ package upload
 import (
 	"os"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func TestNewUploader(t *testing.T) {
@@ -13,7 +15,10 @@ func TestNewUploader(t *testing.T) {
 	os.Setenv("ARTIFACTS_TARGET_PATHS", "baz;artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER")
 	os.Setenv("ARTIFACTS_PATHS", "bin/;derp")
 
-	u := newUploader(NewOptions())
+	log := logrus.New()
+	log.Level = logrus.Panic
+
+	u := newUploader(NewOptions(), log)
 	if u == nil {
 		t.Errorf("options are %v", u)
 	}

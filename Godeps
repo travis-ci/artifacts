@@ -4,11 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Rev": "d4ada4466b1f797ca9aee2bc6bed46dcdfa731ae"
-		},
-		{
-			"ImportPath": "github.com/burke/ttyutils",
-			"Rev": "70f0d73eb47f7033f514f7f8f5138152fe1088fc"
+			"Rev": "13600d23259ccda5a64370722cc80c8928e565cb"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",

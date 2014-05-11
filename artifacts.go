@@ -52,13 +52,11 @@ func main() {
 			opts.Paths = append(opts.Paths, arg)
 		}
 		if strings.TrimSpace(opts.BucketName) == "" {
-			fmt.Println("no bucket name given")
-			os.Exit(2)
+			log.Fatal("no bucket name given")
 		}
-		upload.Upload(opts)
+		upload.Upload(opts, log)
 	default:
-		fmt.Println("what kind of command is", cmd, "...?")
-		os.Exit(1)
+		log.Fatal("what kind of command is", cmd, "...?")
 	}
 }
 

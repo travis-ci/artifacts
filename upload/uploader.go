@@ -1,12 +1,12 @@
 package upload
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
@@ -22,14 +22,16 @@ type uploader struct {
 	Concurrency   int
 	AccessKey     string
 	SecretKey     string
+
+	log *logrus.Logger
 }
 
 // Upload does the deed!
-func Upload(opts *Options) {
-	newUploader(opts).Upload()
+func Upload(opts *Options, log *logrus.Logger) {
+	newUploader(opts, log).Upload()
 }
 
-func newUploader(opts *Options) *uploader {
+func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	u := &uploader{
 		BucketName:    opts.BucketName,
 		TargetPaths:   opts.TargetPaths,
@@ -37,6 +39,8 @@ func newUploader(opts *Options) *uploader {
 		Concurrency:   opts.Concurrency,
 		Retries:       opts.Retries,
 		RetryInterval: 3 * time.Second,
+
+		log: log,
 	}
 
 	u.CacheControl = opts.CacheControl
@@ -69,7 +73,10 @@ func (u *uploader) Upload() error {
 		go func() {
 			auth, err := aws.GetAuth(u.AccessKey, u.SecretKey)
 			if err != nil {
-				fmt.Printf("uploader %v failed to get aws auth: %v\n", i, err)
+				u.log.WithFields(logrus.Fields{
+					"uploader": i,
+					"err":      err,
+				}).Error("uploader failed to get aws auth")
 				done <- true
 				return
 			}
@@ -78,7 +85,9 @@ func (u *uploader) Upload() error {
 			bucket := conn.Bucket(u.BucketName)
 
 			if bucket == nil {
-				fmt.Printf("uploader %v failed to get bucket\n", i)
+				u.log.WithFields(logrus.Fields{
+					"uploader": i,
+				}).Warn("uploader failed to get bucket")
 				done <- true
 				return
 			}
@@ -170,7 +179,11 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 		return err
 	}
 
-	fmt.Printf("uploading %q -> %q\n", a.Source, destination)
+	u.log.WithFields(logrus.Fields{
+		"source": a.Source,
+		"dest":   destination,
+		"bucket": b.Name,
+	}).Info("uploading")
 
 	err = b.PutReaderHeader(destination, reader, a.Size(),
 		map[string][]string{
@@ -178,7 +191,7 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 			"Cache-Control": []string{u.CacheControl},
 		}, s3.Private)
 	if err != nil {
-		fmt.Printf("ERROR: %v\n", err)
+		u.log.WithFields(logrus.Fields{"err": err}).Error("failed to upload")
 		return err
 	}
 
