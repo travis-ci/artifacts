@@ -83,13 +83,6 @@ func (u *uploader) Upload() error {
 				return
 			}
 
-			b, err := bucket.Get("/foo")
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-			}
-
-			fmt.Printf("BYTES: %v\n", string(b))
-
 			for artifact := range fileChan {
 				u.uploadFile(bucket, artifact)
 			}
