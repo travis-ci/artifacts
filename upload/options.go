@@ -15,6 +15,8 @@ type Options struct {
 	TargetPath   string
 	WorkingDir   string
 	Paths        []string
+	Concurrency  int
+	Retries      int
 	// ClonePath    string
 }
 
@@ -31,10 +33,12 @@ func NewOptions() *Options {
 	private := env.Bool("ARTIFACTS_PRIVATE", true)
 
 	return &Options{
-		Private:    private,
-		BucketName: env.Get("ARTIFACTS_AWS_S3_BUCKET", ""),
-		TargetPath: targetPath,
-		WorkingDir: cwd,
-		Paths:      env.Getslice("ARTIFACTS_PATHS", ";", []string{}),
+		Private:     private,
+		BucketName:  env.Get("ARTIFACTS_AWS_S3_BUCKET", ""),
+		TargetPath:  targetPath,
+		WorkingDir:  cwd,
+		Paths:       env.Slice("ARTIFACTS_PATHS", ";", []string{}),
+		Concurrency: env.Int("ARTIFACTS_CONCURRENCY", 3),
+		Retries:     env.Int("ARTIFACTS_RETRIES", 2),
 	}
 }

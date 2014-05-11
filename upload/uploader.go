@@ -16,6 +16,10 @@ type uploader struct {
 	Paths        *path.PathSet
 	TargetPath   string
 	CacheControl string
+	Retries      int
+	Concurrency  int
+	AccessKey    string
+	SecretKey    string
 }
 
 // Upload does the deed!
@@ -25,18 +29,22 @@ func Upload(opts *Options) {
 
 func newUploader(opts *Options) *uploader {
 	u := &uploader{
-		BucketName: opts.BucketName,
-		TargetPath: opts.TargetPath,
-		Paths:      path.NewPathSet(),
-	}
-
-	if opts.Private {
-		opts.CacheControl = "private"
-	} else if opts.CacheControl == "" {
-		opts.CacheControl = "public, max-age=315360000"
+		BucketName:  opts.BucketName,
+		TargetPath:  opts.TargetPath,
+		Paths:       path.NewPathSet(),
+		Concurrency: opts.Concurrency,
+		Retries:     opts.Retries,
 	}
 
 	u.CacheControl = opts.CacheControl
+
+	if opts.Private {
+		u.CacheControl = "private"
+	}
+
+	if u.CacheControl == "" {
+		u.CacheControl = "public, max-age=315360000"
+	}
 
 	for _, s := range opts.Paths {
 		parts := strings.SplitN(s, ":", 2)
@@ -50,20 +58,44 @@ func newUploader(opts *Options) *uploader {
 }
 
 func (u *uploader) Upload() error {
-	auth, err := aws.GetAuth("", "")
-	if err != nil {
-		return err
+	done := make(chan bool)
+	allDone := 0
+	fileChan := u.files()
+
+	for i := 0; i < u.Concurrency; i++ {
+		go func() {
+			auth, err := aws.GetAuth(u.AccessKey, u.SecretKey)
+			if err != nil {
+				fmt.Printf("uploader %v failed to get aws auth: %v\n", i, err)
+				done <- true
+				return
+			}
+
+			conn := s3.New(auth, aws.USEast)
+			bucket := conn.Bucket(u.BucketName)
+
+			if bucket == nil {
+				fmt.Printf("uploader %v failed to get bucket\n", i)
+				done <- true
+				return
+			}
+
+			for artifact := range fileChan {
+				u.uploadFile(bucket, artifact)
+			}
+
+			done <- true
+		}()
 	}
 
-	conn := s3.New(auth, aws.USEast)
-	bucket := conn.Bucket(u.BucketName)
-
-	if bucket == nil {
-		return fmt.Errorf("failed to get bucket")
-	}
-
-	for artifact := range u.files() {
-		u.uploadFile(bucket, artifact)
+	for {
+		select {
+		case <-done:
+			allDone += 1
+			if allDone >= u.Concurrency {
+				return nil
+			}
+		}
 	}
 
 	return nil
@@ -114,7 +146,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 	for {
 		err := u.rawUpload(b, a)
 		if err != nil {
-			if retries < 2 {
+			if retries < u.Retries {
 				retries += 1
 				continue
 			} else {

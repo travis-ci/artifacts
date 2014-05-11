@@ -31,8 +31,8 @@ func Bool(key string, dflt bool) bool {
 	return boolVal
 }
 
-// Getslice returns a string slice from the env given a delimiter
-func Getslice(key, delim string, dflt []string) []string {
+// Slice returns a string slice from the env given a delimiter
+func Slice(key, delim string, dflt []string) []string {
 	value := os.Getenv(key)
 	if value == "" {
 		return dflt
@@ -47,4 +47,19 @@ func Getslice(key, delim string, dflt []string) []string {
 	}
 
 	return ret
+}
+
+// Int returns an int from the env
+func Int(key string, dflt int) int {
+	value := os.Getenv(key)
+	if value == "" {
+		return dflt
+	}
+
+	intVal, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return dflt
+	}
+
+	return int(intVal)
 }

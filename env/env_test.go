@@ -30,3 +30,24 @@ func TestBool(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestSlice(t *testing.T) {
+	s := Slice("BAZ", ";", []string{})
+	if len(s) != 3 {
+		t.Fail()
+	}
+
+	if s[0] != "a" || s[1] != "b" || s[2] != "c" {
+		t.Fail()
+	}
+}
+
+func TestInt(t *testing.T) {
+	if Int("FOO", 4) != 1 {
+		t.Fail()
+	}
+
+	if Int("BAR", 3) != 3 {
+		t.Fail()
+	}
+}
