@@ -9,7 +9,7 @@ env:
   - secure: oHjRfKrzOuLDxWv/wffOMrH6WnSjHD4ph5siSGK4Fekdj3bv2/gSji6bxfc03zN+I2DW/dlEJvKKLFMIt5UxAkgS0c9+2WArPOyR1OaLAAJxEqWVL8yUWa62MJORP2E6w55ehP1u2Eponncq6tDdA0+aTsLmq0+YG2RGtToAQWk=
   - PATH=$HOME/gopath/bin:$PATH
   - ARTIFACTS_CONCURRENCY=5
-  - ARTIACTS_S3_BUCKET=meatballhat
+  - ARTIFACTS_S3_BUCKET=meatballhat
   - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
 before_install:
 - go get github.com/tools/godep
