@@ -25,7 +25,7 @@ test-race:
 coverage.html: coverage.out
 	$(GO) tool cover -html=$^ -o $@
 
-coverage.out: path-coverage.out upload-coverage.out
+coverage.out: path-coverage.out upload-coverage.out env-coverage.out
 	echo 'mode: count' > $@
 	grep -h -v 'mode: count' $^ >> $@
 	$(GO) tool cover -func=$@
@@ -35,6 +35,9 @@ path-coverage.out:
 
 upload-coverage.out:
 	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(ARTIFACTS_PACKAGE)/upload
+
+env-coverage.out:
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(ARTIFACTS_PACKAGE)/env
 
 build: deps
 	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(TARGETS)

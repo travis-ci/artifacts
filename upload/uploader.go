@@ -38,15 +38,12 @@ func newUploader(opts *Options) *uploader {
 
 	u.CacheControl = opts.CacheControl
 
-	for _, s := range strings.Split(opts.Paths, ";") {
-		trimmed := strings.TrimSpace(s)
-		if len(trimmed) > 0 {
-			parts := strings.SplitN(trimmed, ":", 2)
-			if len(parts) < 2 {
-				parts = append(parts, "")
-			}
-			u.Paths.Add(path.NewPath(opts.WorkingDir, parts[0], parts[1]))
+	for _, s := range opts.Paths {
+		parts := strings.SplitN(s, ":", 2)
+		if len(parts) < 2 {
+			parts = append(parts, "")
 		}
+		u.Paths.Add(path.NewPath(opts.WorkingDir, parts[0], parts[1]))
 	}
 
 	return u

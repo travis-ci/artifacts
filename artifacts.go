@@ -39,7 +39,7 @@ func main() {
 			if i == 0 {
 				continue
 			}
-			opts.Paths += fmt.Sprintf("%v;", arg)
+			opts.Paths = append(opts.Paths, arg)
 		}
 		upload.Upload(opts)
 	default:
