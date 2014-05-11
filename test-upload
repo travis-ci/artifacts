@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export ARTIFACTS_TARGET_PATHS="artifacts/darwin/amd64/meatballhat/artifacts/master"
+export ARTIFACTS_CONCURRENCY=3
+export ARTIFACTS_RETRIES=1
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+export PATH="${GOPATH%%:*}/bin:$PATH"
+
+exec artifacts upload
