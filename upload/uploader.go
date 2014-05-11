@@ -112,7 +112,6 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 	retries := 0
 
 	for {
-		fmt.Printf("uploading %q -> %q\n", a.Source, a.Destination)
 		err := u.rawUpload(b, a)
 		if err != nil {
 			if retries < 2 {
@@ -133,6 +132,8 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("uploading %q -> %q\n", a.Source, destination)
 
 	return b.PutReaderHeader(destination, reader, a.Size(),
 		map[string][]string{
