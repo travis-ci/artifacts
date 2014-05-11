@@ -6,6 +6,8 @@ go:
 env:
   global:
   - PATH=$HOME/gopath/bin:$PATH
+  - ARTIFACTS_CONCURRENCY=5
+  - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
   - secure: KSHZNPUPweNF6xoDk0uWlfU5wiJHUOvCXtsBUoIHlsC0SRdozgIMjWrDbDEkMKOj84bwOX1SgO2qdabuuz8WTRbS38QpjEd31mbs6wJO0GCsIM3hYalaEWYuH5eVF8VrJbq+AxpyNrnWRbzBGLHZYLGpGvIMfPeD1jYOVzjDNkw=
   - secure: oHjRfKrzOuLDxWv/wffOMrH6WnSjHD4ph5siSGK4Fekdj3bv2/gSji6bxfc03zN+I2DW/dlEJvKKLFMIt5UxAkgS0c9+2WArPOyR1OaLAAJxEqWVL8yUWa62MJORP2E6w55ehP1u2Eponncq6tDdA0+aTsLmq0+YG2RGtToAQWk=
   - secure: l1iQjiI7b+F3esxKXD77FSa/Ljq2KAuSzVobF+R561FvVNYLVpN8y0gpfavD4SltOwwip7inNO8SzGi3TCAXprCP1/UqAnA4ZFJ19fFCFk3U8GJuAi9Pa+IC7YWN3iK4ZbWjVjVfSpzb1eX3O/c8bzl/EChgBNQCvsW5PQaqxP0=
@@ -17,9 +19,22 @@ after_success:
 - cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
 - sha256sum $(git ls-files -o) > SHA256SUMS
 - ${GOPATH%%:*}/bin/artifacts upload $(git ls-files -o)
+
+
+# ---------------------------------------------------------------------------
+# XXX: This bit is pretend!  Consider it a goal.
+# Other than the s3_bucket arg, all of these values would be the defaults.
+# ---------------------------------------------------------------------------
 artifacts:
-  bucket: meatballhat
+  s3_bucket: meatballhat
+  private: true
+  target_paths:
+  - artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+  concurrency: 3
+  retries: 2
   checksums:
   - sha256
+  signatures:
+  - rsa
   paths:
-  - '!$(git ls-files -o)'
+  - $GIT_UNTRACKED
