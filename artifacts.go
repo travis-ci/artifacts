@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/meatballhat/artifacts/upload"
 )
 
@@ -14,7 +16,10 @@ var (
 	// RevisionString contains the compiled-in git rev
 	RevisionString = ""
 
-	versionFlag = flag.Bool("v", false, "Show version and exit")
+	versionFlag   = flag.Bool("v", false, "Show version and exit")
+	logFormatFlag = flag.String("f", "text", "Log output format (text or json)")
+
+	log = logrus.New()
 )
 
 func main() {
@@ -30,6 +35,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	log.Formatter = &logrus.TextFormatter{}
+	if *logFormatFlag == "json" || os.Getenv("ARTIFACTS_LOG_FORMAT") == "json" {
+		log.Formatter = &logrus.JSONFormatter{}
+	}
+
 	cmd := flag.Arg(0)
 
 	switch cmd {
@@ -40,6 +50,10 @@ func main() {
 				continue
 			}
 			opts.Paths = append(opts.Paths, arg)
+		}
+		if strings.TrimSpace(opts.BucketName) == "" {
+			fmt.Println("no bucket name given")
+			os.Exit(2)
 		}
 		upload.Upload(opts)
 	default:
