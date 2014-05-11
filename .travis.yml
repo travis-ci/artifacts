@@ -10,7 +10,7 @@ env:
   - PATH=$HOME/gopath/bin:$PATH
   - ARTIFACTS_CONCURRENCY=5
   - ARTIFACTS_S3_BUCKET=meatballhat
-  - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_OS_NAME/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
+  - ARTIFACTS_TARGET_PATHS="artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
 before_install:
 - go get github.com/tools/godep
 - go get code.google.com/p/go.tools/cmd/cover
@@ -30,7 +30,8 @@ artifacts:
   s3_bucket: meatballhat
   private: true
   target_paths:
-  - artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+  - artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+  - artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT
   concurrency: 3
   retries: 2
   checksums:
@@ -38,4 +39,4 @@ artifacts:
   signatures:
   - rsa
   paths:
-  - $GIT_UNTRACKED
+  - $(git ls-files -o)
