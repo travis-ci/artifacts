@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+DEST=${DEST:-/usr/local/bin/artifacts}
+
+curl -o "$DEST" -L https://bit.ly/artifacts-latest
+chmod +x "$DEST"
+PATH="$(dirname "$DEST"):$PATH" artifacts -v
