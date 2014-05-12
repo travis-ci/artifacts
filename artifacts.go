@@ -1,12 +1,11 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/codegangsta/cli"
 	"github.com/meatballhat/artifacts/upload"
 )
 
@@ -16,56 +15,53 @@ var (
 	// RevisionString contains the compiled-in git rev
 	RevisionString = "?"
 
-	versionFlag   = flag.Bool("v", false, "Show version and exit")
-	logFormatFlag = flag.String("f", "text", "Log output format (text or json)")
-
 	log = logrus.New()
 )
 
 func main() {
-	flag.Usage = usage
-	if len(os.Args) < 2 {
-		flag.PrintDefaults()
-		os.Exit(1)
+	app := cli.NewApp()
+	app.Name = "artifacts"
+	app.Usage = "manage your artifacts!"
+	app.Version = VersionString
+	app.Flags = []cli.Flag{
+		cli.StringFlag{"log-format, f", "text", "log output format (text or json)"},
+		cli.BoolFlag{"debug, D", "set log level to debug"},
+	}
+	app.Commands = []cli.Command{
+		{
+			Name:      "upload",
+			ShortName: "u",
+			Usage:     "upload some artifacts!",
+			Action: func(c *cli.Context) {
+				configureLog(log, c)
+
+				opts := upload.NewOptions()
+				for i, arg := range c.Args() {
+					if i == 0 {
+						continue
+					}
+					opts.Paths = append(opts.Paths, arg)
+				}
+
+				if strings.TrimSpace(opts.BucketName) == "" {
+					log.Fatal("no bucket name given")
+				}
+
+				upload.Upload(opts, log)
+			},
+		},
 	}
 
-	flag.Parse()
-	if *versionFlag {
-		fmt.Printf("artifacts version=%v rev=%v\n", VersionString, RevisionString)
-		os.Exit(0)
-	}
+	app.Run(os.Args)
+}
 
+func configureLog(log *logrus.Logger, c *cli.Context) {
 	log.Formatter = &logrus.TextFormatter{}
-	if *logFormatFlag == "json" || os.Getenv("ARTIFACTS_LOG_FORMAT") == "json" {
+	if c.String("format") == "json" || os.Getenv("ARTIFACTS_LOG_FORMAT") == "json" {
 		log.Formatter = &logrus.JSONFormatter{}
 	}
 
-	cmd := flag.Arg(0)
-
-	switch cmd {
-	case "upload":
-		opts := upload.NewOptions()
-		for i, arg := range flag.Args() {
-			if i == 0 {
-				continue
-			}
-			opts.Paths = append(opts.Paths, arg)
-		}
-		if strings.TrimSpace(opts.BucketName) == "" {
-			log.Fatal("no bucket name given")
-		}
-		upload.Upload(opts, log)
-	default:
-		log.Fatal("what kind of command is", cmd, "...?")
+	if c.Bool("debug") || os.Getenv("ARTIFACTS_DEBUG") != "" {
+		log.Level = logrus.Debug
 	}
-}
-
-func usage() {
-	fmt.Printf(`Usage: artifacts <command>
-
-Commands:
-  upload - upload some artifacts!
-
-`)
-	flag.PrintDefaults()
 }
