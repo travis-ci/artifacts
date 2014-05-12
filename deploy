@@ -8,7 +8,8 @@ sha256sum ${ARTIFACTS_PATHS//;/ } > SHA256SUMS
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
 
 if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
-   [[ $TRAVIS_BRANCH == 'master' ]] ; then
+   [[ $TRAVIS_BRANCH == 'master' ]] &&
+   [[ $TRAVIS_GO_VERSION == 'go1.2.2' ]] ; then
   export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS;artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/stable"
 fi
 
