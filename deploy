@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+sha256sum ${ARTIFACTS_PATHS//;/ } > SHA256SUMS
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+
+if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
+   [[ $TRAVIS_BRANCH == 'master' ]] ; then
+  export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS;artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/stable"
+fi
+
+${GOPATH%%:*}/bin/artifacts upload
