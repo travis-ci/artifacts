@@ -12,9 +12,9 @@ import (
 
 var (
 	// VersionString contains the compiled-in version number
-	VersionString = ""
+	VersionString = "?"
 	// RevisionString contains the compiled-in git rev
-	RevisionString = ""
+	RevisionString = "?"
 
 	versionFlag   = flag.Bool("v", false, "Show version and exit")
 	logFormatFlag = flag.String("f", "text", "Log output format (text or json)")
