@@ -5,7 +5,7 @@ USAGE:
    artifacts [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.1.0-7-g1de7f8c-dirty
+   v0.2.0
 
 COMMANDS:
    upload, u	upload some artifacts!
