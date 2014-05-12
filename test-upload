@@ -3,7 +3,7 @@
 export ARTIFACTS_TARGET_PATHS="artifacts/$(go env GOOS)/$(go env GOARCH)/meatballhat/master"
 export ARTIFACTS_CONCURRENCY=3
 export ARTIFACTS_RETRIES=1
-export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ";")"
 export PATH="${GOPATH%%:*}/bin:$PATH"
 
 exec artifacts upload
