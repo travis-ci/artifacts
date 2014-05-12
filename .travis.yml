@@ -26,6 +26,10 @@ after_success:
 # ---------------------------------------------------------------------------
 artifacts:
   s3_bucket: meatballhat
+  key:
+    secure: KSHZNPUPweNF6xoDk0uWlfU5wiJHUOvCXtsBUoIHlsC0SRdozgIMjWrDbDEkMKOj84bwOX1SgO2qdabuuz8WTRbS38QpjEd31mbs6wJO0GCsIM3hYalaEWYuH5eVF8VrJbq+AxpyNrnWRbzBGLHZYLGpGvIMfPeD1jYOVzjDNkw=
+  secret:
+    secure: oHjRfKrzOuLDxWv/wffOMrH6WnSjHD4ph5siSGK4Fekdj3bv2/gSji6bxfc03zN+I2DW/dlEJvKKLFMIt5UxAkgS0c9+2WArPOyR1OaLAAJxEqWVL8yUWa62MJORP2E6w55ehP1u2Eponncq6tDdA0+aTsLmq0+YG2RGtToAQWk=
   private: true
   target_paths:
   - artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
