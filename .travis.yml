@@ -19,6 +19,7 @@ after_success:
 - cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
 - export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
 - sha256sum ${ARTIFACTS_PATHS//;/ } > SHA256SUMS
+- export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
 - ${GOPATH%%:*}/bin/artifacts upload
 
 
