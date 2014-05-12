@@ -23,20 +23,20 @@ func TestNewUploader(t *testing.T) {
 		t.Errorf("options are %v", u)
 	}
 
-	if u.BucketName != "foo" {
-		t.Errorf("bucket name is %v", u.BucketName)
+	if u.Opts.BucketName != "foo" {
+		t.Errorf("bucket name is %v", u.Opts.BucketName)
 	}
 
-	if len(u.TargetPaths) != 2 {
-		t.Errorf("target paths length != 2: %v", len(u.TargetPaths))
+	if len(u.Opts.TargetPaths) != 2 {
+		t.Errorf("target paths length != 2: %v", len(u.Opts.TargetPaths))
 	}
 
-	if u.TargetPaths[0] != "baz" {
-		t.Errorf("target paths[0] != baz: %v", u.TargetPaths)
+	if u.Opts.TargetPaths[0] != "baz" {
+		t.Errorf("target paths[0] != baz: %v", u.Opts.TargetPaths)
 	}
 
-	if u.TargetPaths[1] != "artifacts/3/3.2" {
-		t.Errorf("target paths[1] != artifacts/3/3.2: %v", u.TargetPaths)
+	if u.Opts.TargetPaths[1] != "artifacts/3/3.2" {
+		t.Errorf("target paths[1] != artifacts/3/3.2: %v", u.Opts.TargetPaths)
 	}
 
 	if len(u.Paths.All()) != 2 {

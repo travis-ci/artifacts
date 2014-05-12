@@ -5,19 +5,22 @@ import (
 	"path/filepath"
 
 	"github.com/meatballhat/artifacts/env"
+	"github.com/mitchellh/goamz/s3"
 )
 
 // Options is used in the call to Upload
 type Options struct {
-	Private      bool
-	CacheControl string
+	AccessKey    string
 	BucketName   string
+	CacheControl string
+	Concurrency  int
+	Paths        []string
+	Perm         s3.ACL
+	Private      bool
+	Retries      int
+	SecretKey    string
 	TargetPaths  []string
 	WorkingDir   string
-	Paths        []string
-	Concurrency  int
-	Retries      int
-	// ClonePath    string
 }
 
 // NewOptions makes some *Options with defaults!
@@ -32,15 +35,17 @@ func NewOptions() *Options {
 			env.Get("TRAVIS_JOB_NUMBER", "")))
 	}
 
-	private := env.Bool("ARTIFACTS_PRIVATE", true)
-
 	return &Options{
-		Private:     private,
-		BucketName:  env.Get("ARTIFACTS_S3_BUCKET", ""),
-		TargetPaths: targetPaths,
-		WorkingDir:  cwd,
-		Paths:       env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
-		Concurrency: env.Int("ARTIFACTS_CONCURRENCY", 3),
-		Retries:     env.Int("ARTIFACTS_RETRIES", 2),
+		AccessKey:    env.Get("ARTIFACTS_AWS_ACCESS_KEY", ""),
+		BucketName:   env.Get("ARTIFACTS_S3_BUCKET", ""),
+		CacheControl: env.Get("ARTIFACTS_CACHE_CONTROL", "private"),
+		Concurrency:  env.Int("ARTIFACTS_CONCURRENCY", 3),
+		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
+		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", "private")),
+		Private:      env.Bool("ARTIFACTS_PRIVATE", true),
+		Retries:      env.Int("ARTIFACTS_RETRIES", 2),
+		SecretKey:    env.Get("ARTIFACTS_AS_SECRET_KEY", ""),
+		TargetPaths:  targetPaths,
+		WorkingDir:   cwd,
 	}
 }

@@ -13,15 +13,9 @@ import (
 )
 
 type uploader struct {
-	BucketName    string
+	Opts          *Options
 	Paths         *path.PathSet
-	TargetPaths   []string
-	CacheControl  string
-	Retries       int
 	RetryInterval time.Duration
-	Concurrency   int
-	AccessKey     string
-	SecretKey     string
 
 	log *logrus.Logger
 }
@@ -33,24 +27,19 @@ func Upload(opts *Options, log *logrus.Logger) {
 
 func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	u := &uploader{
-		BucketName:    opts.BucketName,
-		TargetPaths:   opts.TargetPaths,
+		Opts:          opts,
 		Paths:         path.NewPathSet(),
-		Concurrency:   opts.Concurrency,
-		Retries:       opts.Retries,
 		RetryInterval: 3 * time.Second,
 
 		log: log,
 	}
 
-	u.CacheControl = opts.CacheControl
-
 	if opts.Private {
-		u.CacheControl = "private"
+		opts.CacheControl = "private"
 	}
 
-	if u.CacheControl == "" {
-		u.CacheControl = "public, max-age=315360000"
+	if opts.CacheControl == "" {
+		opts.CacheControl = "public, max-age=315360000"
 	}
 
 	for _, s := range opts.Paths {
@@ -69,9 +58,9 @@ func (u *uploader) Upload() error {
 	allDone := 0
 	fileChan := u.files()
 
-	for i := 0; i < u.Concurrency; i++ {
+	for i := 0; i < u.Opts.Concurrency; i++ {
 		go func() {
-			auth, err := aws.GetAuth(u.AccessKey, u.SecretKey)
+			auth, err := aws.GetAuth(u.Opts.AccessKey, u.Opts.SecretKey)
 			if err != nil {
 				u.log.WithFields(logrus.Fields{
 					"uploader": i,
@@ -82,7 +71,7 @@ func (u *uploader) Upload() error {
 			}
 
 			conn := s3.New(auth, aws.USEast)
-			bucket := conn.Bucket(u.BucketName)
+			bucket := conn.Bucket(u.Opts.BucketName)
 
 			if bucket == nil {
 				u.log.WithFields(logrus.Fields{
@@ -104,7 +93,7 @@ func (u *uploader) Upload() error {
 		select {
 		case <-done:
 			allDone += 1
-			if allDone >= u.Concurrency {
+			if allDone >= u.Opts.Concurrency {
 				return nil
 			}
 		}
@@ -141,8 +130,8 @@ func (u *uploader) files() chan *artifact {
 					}
 				}
 
-				for _, targetPath := range u.TargetPaths {
-					artifacts <- newArtifact(root, relPath, targetPath, destination)
+				for _, targetPath := range u.Opts.TargetPaths {
+					artifacts <- newArtifact(root, relPath, targetPath, destination, u.Opts.Perm)
 				}
 				return nil
 			})
@@ -160,7 +149,7 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 	for {
 		err := u.rawUpload(b, a)
 		if err != nil {
-			if retries < u.Retries {
+			if retries < u.Opts.Retries {
 				retries += 1
 				time.Sleep(u.RetryInterval)
 				continue
@@ -179,17 +168,21 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 		return err
 	}
 
+	ctype := a.ContentType()
+
 	u.log.WithFields(logrus.Fields{
-		"source": a.Source,
-		"dest":   destination,
-		"bucket": b.Name,
-	}).Info("uploading")
+		"source":        a.Source,
+		"dest":          destination,
+		"bucket":        b.Name,
+		"content_type":  ctype,
+		"cache_control": u.Opts.CacheControl,
+	}).Info("uploading to s3")
 
 	err = b.PutReaderHeader(destination, reader, a.Size(),
 		map[string][]string{
-			"Content-Type":  []string{a.ContentType()},
-			"Cache-Control": []string{u.CacheControl},
-		}, s3.Private)
+			"Content-Type":  []string{ctype},
+			"Cache-Control": []string{u.Opts.CacheControl},
+		}, a.Perm)
 	if err != nil {
 		u.log.WithFields(logrus.Fields{"err": err}).Error("failed to upload")
 		return err
