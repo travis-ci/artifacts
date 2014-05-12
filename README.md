@@ -3,4 +3,6 @@ artifacts
 
 Travis CI Artifact thingy
 
-## `upload`
+## TODO: some docs, eh
+
+In the meantime, [see other](USAGE.txt).

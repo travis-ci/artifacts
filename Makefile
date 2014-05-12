@@ -12,13 +12,17 @@ GODEP ?= godep
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
 
-all: clean test save
+.PHONY: all
+all: clean test save USAGE.txt
 
+.PHONY: test
 test: build fmtpolice test-deps coverage.html
 
+.PHONY: test-deps
 test-deps:
 	$(GO) test -i $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(GOBUILD_ARGS) $(TARGETS)
 
+.PHONY: test-race
 test-race:
 	$(GO) test -race $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(GOBUILD_ARGS) $(TARGETS)
 
@@ -39,13 +43,19 @@ upload-coverage.out:
 env-coverage.out:
 	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(ARTIFACTS_PACKAGE)/env
 
+USAGE.txt: build
+	$${GOPATH%%:*}/bin/artifacts help > $@
+
+.PHONY: build
 build: deps
 	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(TARGETS)
 
+.PHONY: deps
 deps:
 	$(GO) get $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(TARGETS)
 	$(GODEP) restore
 
+.PHONY: clean
 clean:
 	rm -vf $${GOPATH%%:*}/bin/artifacts
 	rm -vf coverage.html *coverage.out
@@ -54,8 +64,10 @@ clean:
 		find $${GOPATH%%:*}/pkg -name '*artifacts*' | xargs rm -rfv || true; \
 	fi
 
+.PHONY: save
 save:
 	$(GODEP) save -copy=false
 
+.PHONY: fmtpolice
 fmtpolice:
 	set -e; for f in $(shell git ls-files '*.go'); do gofmt $$f | diff -u $$f - ; done

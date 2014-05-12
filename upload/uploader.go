@@ -54,16 +54,22 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 }
 
 func (u *uploader) Upload() error {
+	u.log.Debug("starting upload")
 	done := make(chan bool)
 	allDone := 0
 	fileChan := u.files()
 
 	for i := 0; i < u.Opts.Concurrency; i++ {
+		u.log.WithFields(logrus.Fields{
+			"uploader": i,
+		}).Debug("starting uploader worker")
+
 		go func() {
+			uploader := 0 + i
 			auth, err := aws.GetAuth(u.Opts.AccessKey, u.Opts.SecretKey)
 			if err != nil {
 				u.log.WithFields(logrus.Fields{
-					"uploader": i,
+					"uploader": uploader,
 					"err":      err,
 				}).Error("uploader failed to get aws auth")
 				done <- true
@@ -151,6 +157,10 @@ func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
 		if err != nil {
 			if retries < u.Opts.Retries {
 				retries += 1
+				u.log.WithFields(logrus.Fields{
+					"artifact": a.Source,
+					"retry":    retries,
+				}).Debug("retrying")
 				time.Sleep(u.RetryInterval)
 				continue
 			} else {
