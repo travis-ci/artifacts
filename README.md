@@ -53,3 +53,50 @@ function "DetectContentType".
 * `--retries`         number of upload retries per artifact [`ARTIFACT_RETRIES`]
 * `--target-paths, -t`     artifact target paths (';'-delimited) [`ARTIFACTS_TARGET_PATHS`]
 * `--working-dir`     working directory [`PWD`, `TRAVIS_BUILD_DIR`]
+
+### EXAMPLES
+
+#### Example: logs and coverage
+
+In this case, the key and secret are passed as command line flags and
+the `log/` and `coverage/` directories are passed as positional path
+arguments:
+
+``` bash
+artifacts upload \
+  -k AKIT339AFIY655O3Q9DZ \
+  -s 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  log/ coverage/
+```
+
+The same operation using environmental variables would look like this:
+
+``` bash
+export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
+export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
+export ARTIFACTS_PATHS="log/;coverage/"
+
+artifacts upload
+```
+
+#### Example: untracked files
+
+In order to upload all of the untracked files (according to git), one
+might do this:
+
+``` bash
+artifacts upload \
+  -k AKIT339AFIY655O3Q9DZ \
+  -s 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  $(git ls-files -o)
+```
+
+The same operation using environmental variables would look like this:
+
+``` bash
+export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
+export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+
+artifacts upload
+```
