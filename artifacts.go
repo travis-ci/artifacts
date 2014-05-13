@@ -25,7 +25,7 @@ var (
 const (
 	uploadDescription = `
 Upload a set of local paths to an artifact repository.  The paths may be
-provided as either positional command-line arguments or as the ARTIFACTS_PATHS
+provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
 environmental variable, which should be ;-delimited.
 
 Paths may be either files or directories.  Any path provided will be walked for
@@ -37,16 +37,16 @@ function "DetectContentType".
 
 var (
 	uploadFlags = []cli.Flag{
-		cli.StringFlag{"key, k", "", "upload credentials key [ARTIFACTS_KEY] *REQUIRED*"},
-		cli.StringFlag{"secret, s", "", "upload credentials secret [ARTIFACTS_SECRET] *REQUIRED*"},
-		cli.StringFlag{"bucket, b", "", "destination bucket [ARTIFACTS_BUCKET] *REQUIRED*"},
-		cli.StringFlag{"cache-control", "", fmt.Sprintf("artifact cache-control header value [ARTIFACTS_CACHE_CONTROL] (default %q)", upload.DefaultCacheControl)},
-		cli.StringFlag{"concurrency", "", fmt.Sprintf("upload worker concurrency [ARTIFACTS_CONCURRENCY] (default %v)", upload.DefaultConcurrency)},
-		cli.StringFlag{"max-size", "", fmt.Sprintf("max combined size of uploaded artifacts [ARTIFACTS_MAX_SIZE] (default %v)", humanize.Bytes(upload.DefaultMaxSize))},
-		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions [ARTIFACTS_PERMISSIONS] (default %q)", upload.DefaultPerm)},
-		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact [ARTIFACT_RETRIES] (default %v)", upload.DefaultRetries)},
-		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (';'-delimited) [ARTIFACTS_TARGET_PATHS] (default %#v)", upload.DefaultTargetPaths)},
-		cli.StringFlag{"working-dir", "", "working directory [PWD, TRAVIS_BUILD_DIR]"},
+		cli.StringFlag{"key, k", "", "upload credentials key ($ARTIFACTS_KEY) *REQUIRED*"},
+		cli.StringFlag{"secret, s", "", "upload credentials secret ($ARTIFACTS_SECRET) *REQUIRED*"},
+		cli.StringFlag{"bucket, b", "", "destination bucket ($ARTIFACTS_BUCKET) *REQUIRED*"},
+		cli.StringFlag{"cache-control", "", fmt.Sprintf("artifact cache-control header value ($ARTIFACTS_CACHE_CONTROL) (default %q)", upload.DefaultCacheControl)},
+		cli.StringFlag{"concurrency", "", fmt.Sprintf("upload worker concurrency ($ARTIFACTS_CONCURRENCY) (default %v)", upload.DefaultConcurrency)},
+		cli.StringFlag{"max-size", "", fmt.Sprintf("max combined size of uploaded artifacts ($ARTIFACTS_MAX_SIZE) (default %v)", humanize.Bytes(upload.DefaultMaxSize))},
+		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
+		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact ($ARTIFACT_RETRIES) (default %v)", upload.DefaultRetries)},
+		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (';'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
+		cli.StringFlag{"working-dir", "", "working directory ($TRAVIS_BUILD_DIR) (default $PWD)"},
 	}
 )
 

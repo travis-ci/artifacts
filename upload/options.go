@@ -27,6 +27,8 @@ var (
 	DefaultRetries = uint64(2)
 	// DefaultTargetPaths is the default upload prefix for each artifact
 	DefaultTargetPaths = []string{}
+	// DefaultWorkingDir is the default working directory ... wow.
+	DefaultWorkingDir, _ = os.Getwd()
 )
 
 // Options is used in the call to Upload
