@@ -4,8 +4,6 @@ NAME:
 USAGE:
    artifacts [global options] command [command options] [arguments...]
 
-VERSION:
-   v0.2.0-5-g4f89347
 
 COMMANDS:
    upload, u	upload some artifacts!

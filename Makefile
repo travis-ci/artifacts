@@ -44,7 +44,7 @@ env-coverage.out:
 	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(ARTIFACTS_PACKAGE)/env
 
 USAGE.txt: build
-	$${GOPATH%%:*}/bin/artifacts help > $@
+	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^VERSION|\s+v\d\.\d\.\d' > $@
 
 UPLOAD_USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help upload > $@
