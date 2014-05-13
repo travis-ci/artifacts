@@ -19,13 +19,26 @@ var (
 	log = logrus.New()
 )
 
+const (
+	uploadDescription = `
+Upload a set of local paths to an artifact repository.  The paths may be
+provided as either positional command-line arguments or as the ARTIFACTS_PATHS
+environmental variable, which should be ';'-delimited.
+
+Paths may be either files or directories.  Any path provided will be walked for
+all child entries.  Each entry will have its mime type detected based first on
+the file extension, then by sniffing up to the first 512 bytes via the net/http
+function "DetectContentType".
+`
+)
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "artifacts"
 	app.Usage = "manage your artifacts!"
 	app.Version = VersionString
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"log-format, f", "text", "log output format (text or json)"},
+		cli.StringFlag{"log-format, f", "", "log output format (text or json)"},
 		cli.BoolFlag{"debug, D", "set log level to debug"},
 	}
 	app.Commands = []cli.Command{
@@ -33,7 +46,7 @@ func main() {
 			Name:        "upload",
 			ShortName:   "u",
 			Usage:       "upload some artifacts!",
-			Description: "Upload a set of local paths to an artifact repository",
+			Description: uploadDescription,
 			Flags: []cli.Flag{
 				cli.StringFlag{"key, k", "", "upload credentials key [ARTIFACTS_KEY] *REQUIRED*"},
 				cli.StringFlag{"secret, s", "", "upload credentials secret [ARTIFACTS_SECRET] *REQUIRED*"},
