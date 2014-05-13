@@ -13,7 +13,7 @@ GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(R
 GOBUILD_FLAGS ?=
 
 .PHONY: all
-all: clean test save USAGE.txt
+all: clean test save USAGE.txt UPLOAD_USAGE.txt README.md
 
 .PHONY: test
 test: build fmtpolice test-deps coverage.html
@@ -45,6 +45,12 @@ env-coverage.out:
 
 USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help > $@
+
+UPLOAD_USAGE.txt: build
+	$${GOPATH%%:*}/bin/artifacts help upload > $@
+
+README.md: README.md.in $(shell git ls-files '*.go')
+	./build-readme < README.md.in > README.md
 
 .PHONY: build
 build: deps

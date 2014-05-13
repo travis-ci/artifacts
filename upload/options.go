@@ -1,8 +1,10 @@
 package upload
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/meatballhat/artifacts/env"
 	"github.com/mitchellh/goamz/s3"
@@ -36,16 +38,44 @@ func NewOptions() *Options {
 	}
 
 	return &Options{
-		AccessKey:    env.Get("ARTIFACTS_AWS_ACCESS_KEY", ""),
-		BucketName:   env.Get("ARTIFACTS_S3_BUCKET", ""),
-		CacheControl: env.Get("ARTIFACTS_CACHE_CONTROL", "private"),
+		AccessKey: env.Cascade([]string{
+			"ARTIFACTS_KEY",
+			"ARTIFACTS_AWS_ACCESS_KEY",
+			"AWS_ACCESS_KEY_ID",
+			"AWS_ACCESS_KEY",
+		}, ""),
+		SecretKey: env.Cascade([]string{
+			"ARTIFACTS_SECRET",
+			"ARTIFACTS_AWS_SECRET_KEY",
+			"AWS_SECRET_ACCESS_KEY",
+			"AWS_SECRET_KEY",
+		}, ""),
+
+		BucketName:   strings.TrimSpace(env.Get("ARTIFACTS_S3_BUCKET", "")),
+		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", "private")),
 		Concurrency:  env.Int("ARTIFACTS_CONCURRENCY", 3),
 		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", "private")),
 		Private:      env.Bool("ARTIFACTS_PRIVATE", true),
 		Retries:      env.Int("ARTIFACTS_RETRIES", 2),
-		SecretKey:    env.Get("ARTIFACTS_AS_SECRET_KEY", ""),
 		TargetPaths:  targetPaths,
 		WorkingDir:   cwd,
 	}
+}
+
+// Validate checks for validity!
+func (opts *Options) Validate() error {
+	if opts.BucketName == "" {
+		return fmt.Errorf("no bucket name given")
+	}
+
+	if opts.AccessKey == "" {
+		return fmt.Errorf("no access key given")
+	}
+
+	if opts.SecretKey == "" {
+		return fmt.Errorf("no secret key given")
+	}
+
+	return nil
 }

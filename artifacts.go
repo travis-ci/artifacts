@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
@@ -32,6 +31,10 @@ func main() {
 			Name:      "upload",
 			ShortName: "u",
 			Usage:     "upload some artifacts!",
+			Flags: []cli.Flag{
+				cli.StringFlag{"key, k", "", "upload credentials key [ARTIFACTS_KEY]"},
+				cli.StringFlag{"secret, s", "", "upload credentials secret [ARTIFACTS_SECRET]"},
+			},
 			Action: func(c *cli.Context) {
 				configureLog(log, c)
 
@@ -43,11 +46,13 @@ func main() {
 					opts.Paths = append(opts.Paths, arg)
 				}
 
-				if strings.TrimSpace(opts.BucketName) == "" {
-					log.Fatal("no bucket name given")
+				if err := opts.Validate(); err != nil {
+					log.Fatal(err)
 				}
 
-				upload.Upload(opts, log)
+				if err := upload.Upload(opts, log); err != nil {
+					log.Fatal(err)
+				}
 			},
 		},
 	}

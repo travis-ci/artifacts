@@ -16,6 +16,19 @@ func Get(key, dflt string) string {
 	return value
 }
 
+// Cascade is like Get, but with a bunch of tries
+func Cascade(keys []string, dflt string) string {
+	for _, key := range keys {
+		value := os.Getenv(key)
+		if value == "" {
+			continue
+		}
+		return value
+	}
+
+	return dflt
+}
+
 // Bool returns a bool from the env
 func Bool(key string, dflt bool) bool {
 	value := os.Getenv(key)

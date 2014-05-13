@@ -21,8 +21,8 @@ type uploader struct {
 }
 
 // Upload does the deed!
-func Upload(opts *Options, log *logrus.Logger) {
-	newUploader(opts, log).Upload()
+func Upload(opts *Options, log *logrus.Logger) error {
+	return newUploader(opts, log).Upload()
 }
 
 func newUploader(opts *Options, log *logrus.Logger) *uploader {

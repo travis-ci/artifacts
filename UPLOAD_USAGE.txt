@@ -1,0 +1,13 @@
+NAME:
+   upload - upload some artifacts!
+
+USAGE:
+   command upload [command options] [arguments...]
+
+DESCRIPTION:
+   
+
+OPTIONS:
+   --key, -k 		upload credentials key [ARTIFACTS_KEY]
+   --secret, -s 	upload credentials secret [ARTIFACTS_SECRET]
+   
