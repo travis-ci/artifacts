@@ -16,6 +16,7 @@ type Options struct {
 	BucketName   string
 	CacheControl string
 	Concurrency  int
+	MaxSize      int64
 	Paths        []string
 	Perm         s3.ACL
 	Private      bool
