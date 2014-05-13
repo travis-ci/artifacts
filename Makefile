@@ -49,7 +49,7 @@ USAGE.txt: build
 UPLOAD_USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help upload > $@
 
-README.md: README.md.in $(shell git ls-files '*.go')
+README.md: USAGE.txt UPLOAD_USAGE.txt README.md.in $(shell git ls-files '*.go')
 	./build-readme < README.md.in > README.md
 
 .PHONY: build

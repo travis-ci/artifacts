@@ -2,7 +2,11 @@
 # vim:fileencoding=utf-8
 
 exe = "#{ENV['GOPATH'].split(':').first}/bin/artifacts"
+usage = `#{exe} help 2>&1`.chomp.split("\n").reject do |line|
+  line =~ /^VERSION|\s+v\d\.\d\.\d/
+end.join("\n")
+
 $stdout.puts(
-  $stdin.read.sub(/___USAGE___/, `#{exe} help 2>&1`.chomp)
+  $stdin.read.sub(/___USAGE___/, usage)
              .sub(/___UPLOAD_USAGE___/, `#{exe} help upload 2>&1`.chomp)
 )

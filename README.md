@@ -12,8 +12,6 @@ NAME:
 USAGE:
    artifacts [global options] command [command options] [arguments...]
 
-VERSION:
-   v0.2.0-4-g34528d1-dirty
 
 COMMANDS:
    upload, u	upload some artifacts!
