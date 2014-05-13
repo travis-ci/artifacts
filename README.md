@@ -13,7 +13,7 @@ USAGE:
    artifacts [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.2.0-1-g51cad36-dirty
+   v0.2.0-2-gc90b5c9-dirty
 
 COMMANDS:
    upload, u	upload some artifacts!
@@ -45,7 +45,14 @@ DESCRIPTION:
    
 
 OPTIONS:
-   --key, -k 		upload credentials key [ARTIFACTS_KEY]
-   --secret, -s 	upload credentials secret [ARTIFACTS_SECRET]
+   --key, -k 		upload credentials key [ARTIFACTS_KEY] *REQUIRED*
+   --secret, -s 	upload credentials secret [ARTIFACTS_SECRET] *REQUIRED*
+   --bucket, -b 	destination bucket [ARTIFACTS_BUCKET] *REQUIRED*
+   --cache-control 	artifact cache-control header value [ARTIFACTS_CACHE_CONTROL]
+   --concurrency 	upload worker concurrency [ARTIFACTS_CONCURRENCY]
+   --permissions 	artifact access permissions [ARTIFACTS_PERMISSIONS]
+   --retries 		number of upload retries per artifact [ARTIFACT_RETRIES]
+   --target-paths, -t 	artifact target paths (';'-delimited) [ARTIFACTS_TARGET_PATHS]
+   --working-dir 	working directory [PWD, TRAVIS_BUILD_DIR]
    
 ```

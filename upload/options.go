@@ -50,8 +50,11 @@ func NewOptions() *Options {
 			"AWS_SECRET_ACCESS_KEY",
 			"AWS_SECRET_KEY",
 		}, ""),
+		BucketName: strings.TrimSpace(env.Cascade([]string{
+			"ARTIFACTS_BUCKET",
+			"ARTIFACTS_S3_BUCKET",
+		}, "")),
 
-		BucketName:   strings.TrimSpace(env.Get("ARTIFACTS_S3_BUCKET", "")),
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", "private")),
 		Concurrency:  env.Int("ARTIFACTS_CONCURRENCY", 3),
 		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
