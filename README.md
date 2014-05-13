@@ -54,6 +54,31 @@ function "DetectContentType".
 * `--target-paths, -t`     artifact target paths (';'-delimited) [`ARTIFACTS_TARGET_PATHS`]
 * `--working-dir`     working directory [`PWD`, `TRAVIS_BUILD_DIR`]
 
+### S3 ENVIRONMENT COMPATIBILITY
+
+In addition to the environmental variables listed above for defining the
+access key, secret, and bucket, some additional variables will also work.
+
+#### environmental variables accepted for "key"
+
+0. `ARTIFACTS_KEY`
+0. `ARTIFACTS_AWS_ACCESS_KEY`
+0. `AWS_ACCESS_KEY_ID`
+0. `AWS_ACCESS_KEY`
+
+#### environmental variables accepted for "secret"
+
+0. `ARTIFACTS_SECRET`
+0. `ARTIFACTS_AWS_SECRET_KEY`
+0. `AWS_SECRET_ACCESS_KEY`
+0. `AWS_SECRET_KEY`
+
+#### environmental variables accepted for "bucket"
+
+0. `ARTIFACTS_BUCKET`
+0. `ARTIFACTS_S3_BUCKET`
+
+
 ### EXAMPLES
 
 #### Example: logs and coverage
@@ -64,8 +89,9 @@ arguments:
 
 ``` bash
 artifacts upload \
-  -k AKIT339AFIY655O3Q9DZ \
-  -s 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  --key AKIT339AFIY655O3Q9DZ \
+  --secret 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  --bucket my-fancy-bucket \
   log/ coverage/
 ```
 
@@ -74,6 +100,7 @@ The same operation using environmental variables would look like this:
 ``` bash
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
 export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
+export ARTIFACTS_BUCKET="my-fancy-bucket"
 export ARTIFACTS_PATHS="log/;coverage/"
 
 artifacts upload
@@ -86,8 +113,9 @@ might do this:
 
 ``` bash
 artifacts upload \
-  -k AKIT339AFIY655O3Q9DZ \
-  -s 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  --key AKIT339AFIY655O3Q9DZ \
+  --secret 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  --bucket my-fancy-bucket \
   $(git ls-files -o)
 ```
 
@@ -96,6 +124,34 @@ The same operation using environmental variables would look like this:
 ``` bash
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
 export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
+export ARTIFACTS_BUCKET="my-fancy-bucket"
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+
+artifacts upload
+```
+
+#### Example: multiple target paths
+
+Specifying one or more custom target path will override the default of
+`artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER`.  Multiple target paths
+must be specified in ';'-delimited strings:
+
+``` bash
+artifacts upload \
+  --key AKIT339AFIY655O3Q9DZ \
+  --secret 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
+  --bucket my-fancy-bucket \
+  --target-paths "artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" \
+  $(git ls-files -o)
+```
+
+The same operation using environmental variables would look like this:
+
+``` bash
+export ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
+export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
+export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
+export ARTIFACTS_BUCKET="my-fancy-bucket"
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
 
 artifacts upload
