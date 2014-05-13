@@ -4,6 +4,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/dustin/go-humanize"
 )
 
 // Get returns a string from the env
@@ -62,19 +64,41 @@ func Slice(key, delim string, dflt []string) []string {
 	return ret
 }
 
-// Int returns an int from the env
-func Int(key string, dflt int) int {
+// Uint returns an uint from the env
+func Uint(key string, dflt uint64) uint64 {
 	value := os.Getenv(key)
 	if value == "" {
 		return dflt
 	}
 
-	intVal, err := strconv.ParseUint(value, 10, 64)
+	uintVal, err := strconv.ParseUint(value, 10, 64)
 	if err != nil {
 		return dflt
 	}
 
-	return int(intVal)
+	return uintVal
+}
+
+// UintSize returns a size-like uint from the env
+func UintSize(key string, dflt uint64) uint64 {
+	value := os.Getenv(key)
+	if value == "" {
+		return dflt
+	}
+
+	if strings.ContainsAny(value, "BKMGTPEZYbkmgtpezy") {
+		b, err := humanize.ParseBytes(value)
+		if err != nil {
+			return b
+		}
+	}
+
+	uintVal, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return dflt
+	}
+
+	return uintVal
 }
 
 // ExpandSlice evaluates each string in the slice through os.ExpandEnv

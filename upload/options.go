@@ -10,20 +10,45 @@ import (
 	"github.com/mitchellh/goamz/s3"
 )
 
+var (
+	// DefaultCacheControl is the default value for each artifact's Cache-Control header
+	DefaultCacheControl = "private"
+	// DefaultConcurrency is the default number of concurrent goroutines used during upload
+	DefaultConcurrency = uint64(5)
+	// DefaultMaxSize is the default maximum allowed bytes for all artifacts
+	DefaultMaxSize = uint64(1024 * 1024 * 1000)
+	// DefaultPaths is the default slice of local paths to upload (empty)
+	DefaultPaths = []string{}
+	// DefaultPerm is the default ACL applied to each artifact
+	DefaultPerm = "private"
+	// DefaultPrivate is the default value for overriding both DefaultPerm and DefaultCacheControl
+	DefaultPrivate = true
+	// DefaultRetries is the default number of times a given artifact upload will be retried
+	DefaultRetries = uint64(2)
+	// DefaultTargetPaths is the default upload prefix for each artifact
+	DefaultTargetPaths = []string{}
+)
+
 // Options is used in the call to Upload
 type Options struct {
 	AccessKey    string
 	BucketName   string
 	CacheControl string
-	Concurrency  int
-	MaxSize      int64
+	Concurrency  uint64
+	MaxSize      uint64
 	Paths        []string
 	Perm         s3.ACL
 	Private      bool
-	Retries      int
+	Retries      uint64
 	SecretKey    string
 	TargetPaths  []string
 	WorkingDir   string
+}
+
+func init() {
+	DefaultTargetPaths = append(DefaultTargetPaths, filepath.Join("artifacts",
+		env.Get("TRAVIS_BUILD_NUMBER", ""),
+		env.Get("TRAVIS_JOB_NUMBER", "")))
 }
 
 // NewOptions makes some *Options with defaults!
@@ -33,9 +58,7 @@ func NewOptions() *Options {
 
 	targetPaths := env.ExpandSlice(env.Slice("ARTIFACTS_TARGET_PATHS", ";", []string{}))
 	if len(targetPaths) == 0 {
-		targetPaths = append(targetPaths, filepath.Join("artifacts",
-			env.Get("TRAVIS_BUILD_NUMBER", ""),
-			env.Get("TRAVIS_JOB_NUMBER", "")))
+		targetPaths = DefaultTargetPaths
 	}
 
 	return &Options{
@@ -56,13 +79,13 @@ func NewOptions() *Options {
 			"ARTIFACTS_S3_BUCKET",
 		}, "")),
 
-		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", "private")),
-		Concurrency:  env.Int("ARTIFACTS_CONCURRENCY", 3),
-		MaxSize:      int64(env.Int("ARTIFACTS_MAX_SIZE", 1024*1024*100)),
-		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
-		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", "private")),
-		Private:      env.Bool("ARTIFACTS_PRIVATE", true),
-		Retries:      env.Int("ARTIFACTS_RETRIES", 2),
+		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
+		Concurrency:  env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
+		MaxSize:      env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
+		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", DefaultPaths)),
+		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
+		Private:      env.Bool("ARTIFACTS_PRIVATE", DefaultPrivate),
+		Retries:      env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
 		TargetPaths:  targetPaths,
 		WorkingDir:   cwd,
 	}

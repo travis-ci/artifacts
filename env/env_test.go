@@ -43,11 +43,11 @@ func TestSlice(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
-	if Int("FOO", 4) != 1 {
+	if Uint("FOO", uint64(4)) != uint64(1) {
 		t.Fail()
 	}
 
-	if Int("BAR", 3) != 3 {
+	if Uint("BAR", uint64(3)) != uint64(3) {
 		t.Fail()
 	}
 }
