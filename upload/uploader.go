@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/dustin/go-humanize"
 	"github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
@@ -24,7 +25,7 @@ type uploader struct {
 
 type maxSizeTracker struct {
 	sync.Mutex
-	Current int64
+	Current uint64
 }
 
 // Upload does the deed!
@@ -63,10 +64,10 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 func (u *uploader) Upload() error {
 	u.log.Debug("starting upload")
 	done := make(chan bool)
-	allDone := 0
+	allDone := uint64(0)
 	fileChan := u.files()
 
-	for i := 0; i < u.Opts.Concurrency; i++ {
+	for i := uint64(0); i < u.Opts.Concurrency; i++ {
 		u.log.WithFields(logrus.Fields{
 			"uploader": i,
 		}).Debug("starting uploader worker")
@@ -146,17 +147,22 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact,
 
 				artifact := newArtifact(root, relPath, targetPath, destination, u.Opts.Perm)
 				size := artifact.Size()
-				if size+curSize.Current > u.Opts.MaxSize {
+				curSize.Current += size
+				logFields := logrus.Fields{
+					"current_size":     humanize.Bytes(curSize.Current),
+					"max_size":         humanize.Bytes(u.Opts.MaxSize),
+					"percent_max_size": pctMax(size, u.Opts.MaxSize),
+					"artifact":         relPath,
+					"artifact_size":    humanize.Bytes(artifact.Size()),
+				}
+
+				if curSize.Current > u.Opts.MaxSize {
 					msg := "max-size would be exceeded"
-					u.log.WithFields(logrus.Fields{
-						"current_size":     curSize.Current,
-						"max_size":         u.Opts.MaxSize,
-						"percent_max_size": float64(100.0) * (float64(size) / float64(u.Opts.MaxSize)),
-						"artifact":         relPath,
-						"artifact_size":    artifact.Size(),
-					}).Error(msg)
+					u.log.WithFields(logFields).Error(msg)
 					return fmt.Errorf(msg)
 				}
+
+				u.log.WithFields(logFields).Debug("queueing artifact")
 				artifacts <- artifact
 				return nil
 			}()
@@ -168,7 +174,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact,
 }
 
 func (u *uploader) artifactFeeder(artifacts chan *artifact) error {
-	curSize := &maxSizeTracker{Current: int64(0)}
+	curSize := &maxSizeTracker{Current: uint64(0)}
 
 	for _, path := range u.Paths.All() {
 		u.artifactFeederLoop(path, artifacts, curSize)
@@ -185,7 +191,7 @@ func (u *uploader) files() chan *artifact {
 }
 
 func (u *uploader) uploadFile(b *s3.Bucket, a *artifact) error {
-	retries := 0
+	retries := uint64(0)
 
 	for {
 		err := u.rawUpload(b, a)
@@ -216,8 +222,9 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 	ctype := a.ContentType()
 
 	u.log.WithFields(logrus.Fields{
-		"artifact_size":    a.Size(),
-		"percent_max_size": float64(100.0) * (float64(a.Size()) / float64(u.Opts.MaxSize)),
+		"artifact_size":    humanize.Bytes(a.Size()),
+		"percent_max_size": pctMax(a.Size(), u.Opts.MaxSize),
+		"max_size":         humanize.Bytes(u.Opts.MaxSize),
 		"source":           a.Source,
 		"dest":             destination,
 		"bucket":           b.Name,
@@ -225,7 +232,7 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 		"cache_control":    u.Opts.CacheControl,
 	}).Info("uploading to s3")
 
-	err = b.PutReaderHeader(destination, reader, a.Size(),
+	err = b.PutReaderHeader(destination, reader, int64(a.Size()),
 		map[string][]string{
 			"Content-Type":  []string{ctype},
 			"Cache-Control": []string{u.Opts.CacheControl},
@@ -236,4 +243,8 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 	}
 
 	return nil
+}
+
+func pctMax(artifactSize, maxSize uint64) float64 {
+	return float64(100.0) * (float64(artifactSize) / float64(maxSize))
 }

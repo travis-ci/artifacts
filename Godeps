@@ -12,6 +12,10 @@
 			"Rev": "820deefc9031d101f085ef773425fc6ca7a5363e"
 		},
 		{
+			"ImportPath": "github.com/dustin/go-humanize",
+			"Rev": "3cd90eb3d932037b141d4daff9a012e1aee7e765"
+		},
+		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
 			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
 		},

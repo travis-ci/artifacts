@@ -67,13 +67,13 @@ func (a *artifact) Reader() (io.Reader, error) {
 	return f, nil
 }
 
-func (a *artifact) Size() int64 {
+func (a *artifact) Size() uint64 {
 	fi, err := os.Stat(a.Source)
 	if err != nil {
-		return int64(0)
+		return uint64(0)
 	}
 
-	return fi.Size()
+	return uint64(fi.Size())
 }
 
 func (a *artifact) FullDestination() string {
