@@ -1,12 +1,29 @@
 #!/usr/bin/env ruby
 # vim:fileencoding=utf-8
 
+def mangle(text)
+  text.gsub(/\t/, '    ')
+    .gsub(/^(NAME|USAGE|COMMANDS|GLOBAL OPTIONS|OPTIONS|DESCRIPTION):/, '### \1')
+    .gsub(/^   ([a-z]+, [a-z])  /, '* `\1`')
+    .gsub(/^\s+/, '')
+    .gsub(/^(--[-a-z]+, -[a-zA-Z])/, '* `\1`')
+    .gsub(/^(--[-a-z]+)/, '* `\1`')
+    .gsub(/([A-Z_]{2,})/, '`\1`')
+    .gsub(/^### `([A-Z `]+)`$/, '### \1')
+    .gsub(/\[([-a-z_ ])\]/, '[`\1`]')
+    .gsub(/GLOBAL` `OPTIONS/, 'GLOBAL OPTIONS')
+    .gsub(/\*`REQUIRED`\*/, '**REQUIRED**')
+    .gsub(/^(command upload.*|artifacts \[global.*)/, '`\1`')
+    .gsub(/\s+$/, '')
+    .gsub(/^### /, "\n### ")
+end
+
 exe = "#{ENV['GOPATH'].split(':').first}/bin/artifacts"
 usage = `#{exe} help 2>&1`.chomp.split("\n").reject do |line|
   line =~ /^VERSION|\s+v\d\.\d\.\d/
 end.join("\n")
 
 $stdout.puts(
-  $stdin.read.sub(/___USAGE___/, usage)
-             .sub(/___UPLOAD_USAGE___/, `#{exe} help upload 2>&1`.chomp)
+  $stdin.read.sub(/___USAGE___/, mangle(usage))
+    .sub(/___UPLOAD_USAGE___/, mangle(`#{exe} help upload 2>&1`.chomp))
 )

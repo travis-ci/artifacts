@@ -10,8 +10,8 @@ COMMANDS:
    help, h	Shows a list of commands or help for one command
    
 GLOBAL OPTIONS:
-   --log-format, -f 'text'	log output format (text or json)
-   --debug, -D			set log level to debug
-   --version, -v		print the version
-   --help, -h			show help
+   --log-format, -f 	log output format (text or json)
+   --debug, -D		set log level to debug
+   --version, -v	print the version
+   --help, -h		show help
    
