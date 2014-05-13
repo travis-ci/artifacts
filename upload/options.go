@@ -58,6 +58,7 @@ func NewOptions() *Options {
 
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", "private")),
 		Concurrency:  env.Int("ARTIFACTS_CONCURRENCY", 3),
+		MaxSize:      int64(env.Int("ARTIFACTS_MAX_SIZE", 1024*1024*100)),
 		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", []string{})),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", "private")),
 		Private:      env.Bool("ARTIFACTS_PRIVATE", true),
