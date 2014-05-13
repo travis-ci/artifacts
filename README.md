@@ -13,7 +13,7 @@ USAGE:
    artifacts [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.2.0-2-gc90b5c9-dirty
+   v0.2.0-4-g34528d1-dirty
 
 COMMANDS:
    upload, u	upload some artifacts!
@@ -42,7 +42,7 @@ USAGE:
    command upload [command options] [arguments...]
 
 DESCRIPTION:
-   
+   Upload a set of local paths to an artifact repository
 
 OPTIONS:
    --key, -k 		upload credentials key [ARTIFACTS_KEY] *REQUIRED*

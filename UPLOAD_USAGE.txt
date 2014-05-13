@@ -5,7 +5,7 @@ USAGE:
    command upload [command options] [arguments...]
 
 DESCRIPTION:
-   
+   Upload a set of local paths to an artifact repository
 
 OPTIONS:
    --key, -k 		upload credentials key [ARTIFACTS_KEY] *REQUIRED*

@@ -30,9 +30,10 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
-			Name:      "upload",
-			ShortName: "u",
-			Usage:     "upload some artifacts!",
+			Name:        "upload",
+			ShortName:   "u",
+			Usage:       "upload some artifacts!",
+			Description: "Upload a set of local paths to an artifact repository",
 			Flags: []cli.Flag{
 				cli.StringFlag{"key, k", "", "upload credentials key [ARTIFACTS_KEY] *REQUIRED*"},
 				cli.StringFlag{"secret, s", "", "upload credentials secret [ARTIFACTS_SECRET] *REQUIRED*"},
