@@ -53,6 +53,7 @@ func main() {
 				cli.StringFlag{"bucket, b", "", "destination bucket [ARTIFACTS_BUCKET] *REQUIRED*"},
 				cli.StringFlag{"cache-control", "", "artifact cache-control header value [ARTIFACTS_CACHE_CONTROL]"},
 				cli.StringFlag{"concurrency", "", "upload worker concurrency [ARTIFACTS_CONCURRENCY]"},
+				cli.StringFlag{"max-size", "", "max combined size of uploaded artifacts [ARTIFACTS_MAX_SIZE]"},
 				cli.StringFlag{"permissions", "", "artifact access permissions [ARTIFACTS_PERMISSIONS]"},
 				cli.StringFlag{"retries", "", "number of upload retries per artifact [ARTIFACT_RETRIES]"},
 				cli.StringFlag{"target-paths, t", "", "artifact target paths (';'-delimited) [ARTIFACTS_TARGET_PATHS]"},
@@ -113,6 +114,12 @@ func overlayFlags(opts *upload.Options, c *cli.Context) {
 		intVal, err := strconv.ParseUint(value, 10, 64)
 		if err == nil {
 			opts.Concurrency = int(intVal)
+		}
+	}
+	if value := c.String("max-size"); value != "" {
+		intVal, err := strconv.ParseUint(value, 10, 64)
+		if err == nil {
+			opts.MaxSize = int64(intVal)
 		}
 	}
 	if value := c.String("permissions"); value != "" {

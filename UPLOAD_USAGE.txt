@@ -22,6 +22,7 @@ OPTIONS:
    --bucket, -b 	destination bucket [ARTIFACTS_BUCKET] *REQUIRED*
    --cache-control 	artifact cache-control header value [ARTIFACTS_CACHE_CONTROL]
    --concurrency 	upload worker concurrency [ARTIFACTS_CONCURRENCY]
+   --max-size 		max combined size of uploaded artifacts [ARTIFACTS_MAX_SIZE]
    --permissions 	artifact access permissions [ARTIFACTS_PERMISSIONS]
    --retries 		number of upload retries per artifact [ARTIFACT_RETRIES]
    --target-paths, -t 	artifact target paths (';'-delimited) [ARTIFACTS_TARGET_PATHS]
