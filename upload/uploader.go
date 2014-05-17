@@ -69,6 +69,14 @@ func (u *uploader) Upload() error {
 		"permissions":   u.Opts.Perm,
 	}).Info("uploading with settings")
 
+	u.log.WithFields(logrus.Fields{
+		"working_dir":  u.Opts.WorkingDir,
+		"target_paths": u.Opts.TargetPaths,
+		"concurrency":  u.Opts.Concurrency,
+		"max_size":     u.Opts.MaxSize,
+		"retries":      u.Opts.Retries,
+	}).Debug("other upload settings")
+
 	for i := uint64(0); i < u.Opts.Concurrency; i++ {
 		u.log.WithFields(logrus.Fields{
 			"uploader": i,
