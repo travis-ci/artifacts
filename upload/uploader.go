@@ -42,10 +42,6 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 		log: log,
 	}
 
-	if opts.Private {
-		opts.CacheControl = "private"
-	}
-
 	if opts.CacheControl == "" {
 		opts.CacheControl = "public, max-age=315360000"
 	}

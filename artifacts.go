@@ -141,12 +141,6 @@ func overlayFlags(opts *upload.Options, c *cli.Context) {
 	if value := c.String("permissions"); value != "" {
 		opts.Perm = s3.ACL(value)
 	}
-	if value := c.String("private"); value != "" {
-		boolVal, err := strconv.ParseBool(value)
-		if err == nil {
-			opts.Private = boolVal
-		}
-	}
 	if value := c.String("retries"); value != "" {
 		intVal, err := strconv.ParseUint(value, 10, 64)
 		if err == nil {

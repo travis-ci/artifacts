@@ -21,8 +21,6 @@ var (
 	DefaultPaths = []string{}
 	// DefaultPerm is the default ACL applied to each artifact
 	DefaultPerm = "private"
-	// DefaultPrivate is the default value for overriding both DefaultPerm and DefaultCacheControl
-	DefaultPrivate = true
 	// DefaultRetries is the default number of times a given artifact upload will be retried
 	DefaultRetries = uint64(2)
 	// DefaultTargetPaths is the default upload prefix for each artifact
@@ -40,7 +38,6 @@ type Options struct {
 	MaxSize      uint64
 	Paths        []string
 	Perm         s3.ACL
-	Private      bool
 	Retries      uint64
 	SecretKey    string
 	TargetPaths  []string
@@ -86,7 +83,6 @@ func NewOptions() *Options {
 		MaxSize:      env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
 		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", DefaultPaths)),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
-		Private:      env.Bool("ARTIFACTS_PRIVATE", DefaultPrivate),
 		Retries:      env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
 		TargetPaths:  targetPaths,
 		WorkingDir:   cwd,
