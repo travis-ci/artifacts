@@ -15,7 +15,7 @@ artifacts - manage your artifacts!
 * `help, h`  Shows a list of commands or help for one command
 
 ### GLOBAL OPTIONS
-* `--log-format, -f`     log output format (text or json)
+* `--log-format, -f`     log output format (text, json, or multiline)
 * `--debug, -D`        set log level to debug
 * `--version, -v`    print the version
 * `--help, -h`        show help
