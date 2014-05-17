@@ -9,6 +9,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/dustin/go-humanize"
+	"github.com/meatballhat/artifacts/logging"
 	"github.com/meatballhat/artifacts/upload"
 	"github.com/mitchellh/goamz/s3"
 )
@@ -56,7 +57,7 @@ func main() {
 	app.Usage = "manage your artifacts!"
 	app.Version = VersionString
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"log-format, f", "", "log output format (text or json)"},
+		cli.StringFlag{"log-format, f", "", "log output format (text, json, or multiline)"},
 		cli.BoolFlag{"debug, D", "set log level to debug"},
 	}
 	app.Commands = []cli.Command{
@@ -97,10 +98,16 @@ func runUpload(c *cli.Context) {
 
 func configureLog(log *logrus.Logger, c *cli.Context) {
 	log.Formatter = &logrus.TextFormatter{}
-	if c.String("format") == "json" || os.Getenv("ARTIFACTS_LOG_FORMAT") == "json" {
+
+	formatArg := c.GlobalString("log-format")
+	formatEnv := os.Getenv("ARTIFACTS_LOG_FORMAT")
+
+	if formatArg == "json" || formatEnv == "json" {
 		log.Formatter = &logrus.JSONFormatter{}
 	}
-
+	if formatArg == "multiline" || formatEnv == "multiline" {
+		log.Formatter = &logging.MultiLineFormatter{}
+	}
 	if c.Bool("debug") || os.Getenv("ARTIFACTS_DEBUG") != "" {
 		log.Level = logrus.Debug
 	}

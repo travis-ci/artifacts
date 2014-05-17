@@ -7,4 +7,4 @@ export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ";")"
 export ARTIFACTS_DEBUG=1
 export PATH="${GOPATH%%:*}/bin:$PATH"
 
-exec artifacts upload "$@"
+exec artifacts ${CMD:-upload} "$@"
