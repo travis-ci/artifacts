@@ -29,16 +29,8 @@ func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	for _, k := range keys {
 		v := entry.Data[k]
-		serialized = f.AppendKeyValue(serialized, k, v)
+		serialized = append(serialized, []byte(fmt.Sprintf("  %v: %v\n", k, v))...)
 	}
 
 	return append(serialized, '\n'), nil
-}
-
-// AppendKeyValue serializes a key-value pair to a []byte
-func (f *MultiLineFormatter) AppendKeyValue(serialized []byte, key, value interface{}) []byte {
-	if _, ok := value.(string); ok {
-		return append(serialized, []byte(fmt.Sprintf("  %v: %q\n", key, value))...)
-	}
-	return append(serialized, []byte(fmt.Sprintf("  %v: %v\n", key, value))...)
 }

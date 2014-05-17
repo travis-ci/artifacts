@@ -63,6 +63,12 @@ func (u *uploader) Upload() error {
 	allDone := uint64(0)
 	fileChan := u.files()
 
+	u.log.WithFields(logrus.Fields{
+		"bucket":        u.Opts.BucketName,
+		"cache_control": u.Opts.CacheControl,
+		"permissions":   u.Opts.Perm,
+	}).Info("uploading with settings")
+
 	for i := uint64(0); i < u.Opts.Concurrency; i++ {
 		u.log.WithFields(logrus.Fields{
 			"uploader": i,
@@ -179,7 +185,7 @@ func (u *uploader) artifactFeeder(artifacts chan *artifact) error {
 	}
 
 	u.log.WithFields(logrus.Fields{
-		"total_size": curSize.Current,
+		"total_size": humanize.Bytes(curSize.Current),
 		"count":      i,
 	}).Debug("done feeding artifacts")
 
@@ -225,7 +231,12 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 	ctype := a.ContentType()
 
 	u.log.WithFields(logrus.Fields{
-		"artifact_size":    humanize.Bytes(a.Size()),
+		"artifact_size": humanize.Bytes(a.Size()),
+		"source":        a.Source,
+		"dest":          destination,
+		"download_url":  fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, destination),
+	}).Info("uploading to s3")
+	u.log.WithFields(logrus.Fields{
 		"percent_max_size": pctMax(a.Size(), u.Opts.MaxSize),
 		"max_size":         humanize.Bytes(u.Opts.MaxSize),
 		"source":           a.Source,
@@ -233,7 +244,7 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 		"bucket":           b.Name,
 		"content_type":     ctype,
 		"cache_control":    u.Opts.CacheControl,
-	}).Info("uploading to s3")
+	}).Debug("more artifact details")
 
 	err = b.PutReaderHeader(destination, reader, int64(a.Size()),
 		map[string][]string{
