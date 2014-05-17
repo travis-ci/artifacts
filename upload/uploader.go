@@ -151,7 +151,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact,
 		}
 
 		for _, targetPath := range u.Opts.TargetPaths {
-			return func() error {
+			err := func() error {
 				curSize.Lock()
 				defer curSize.Unlock()
 
@@ -176,6 +176,9 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact,
 				artifacts <- artifact
 				return nil
 			}()
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})
