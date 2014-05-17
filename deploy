@@ -20,4 +20,5 @@ else
   echo "Not deploying as 'stable'"
 fi
 
+echo "  ARTIFACTS_TARGET_PATHS=$ARTIFACTS_TARGET_PATHS"
 ${GOPATH%%:*}/bin/artifacts upload
