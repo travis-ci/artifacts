@@ -231,11 +231,9 @@ func (u *uploader) rawUpload(b *s3.Bucket, a *artifact) error {
 	ctype := a.ContentType()
 
 	u.log.WithFields(logrus.Fields{
-		"artifact_size": humanize.Bytes(a.Size()),
-		"source":        a.Source,
-		"dest":          destination,
-		"download_url":  fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, destination),
-	}).Info("uploading to s3")
+		"download_url": fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, destination),
+	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(a.Size())))
+
 	u.log.WithFields(logrus.Fields{
 		"percent_max_size": pctMax(a.Size(), u.Opts.MaxSize),
 		"max_size":         humanize.Bytes(u.Opts.MaxSize),
