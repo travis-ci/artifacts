@@ -176,9 +176,16 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact,
 func (u *uploader) artifactFeeder(artifacts chan *artifact) error {
 	curSize := &maxSizeTracker{Current: uint64(0)}
 
+	i := 0
 	for _, path := range u.Paths.All() {
 		u.artifactFeederLoop(path, artifacts, curSize)
+		i += 1
 	}
+
+	u.log.WithFields(logrus.Fields{
+		"total_size": curSize.Current,
+		"count":      i,
+	}).Debug("done feeding artifacts")
 
 	close(artifacts)
 	return nil
