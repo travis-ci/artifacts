@@ -16,7 +16,12 @@ func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	var serialized []byte
 
 	levelText := strings.ToUpper(entry.Data["level"].(string))
-	serialized = append(serialized, []byte(fmt.Sprintf("%s: %s\n", levelText, entry.Data["msg"]))...)
+
+	msg := fmt.Sprintf("%s: %s\n", levelText, entry.Data["msg"])
+	if levelText == "ERROR" {
+		msg = fmt.Sprintf("\033[31;1m%s\033[0m", msg)
+	}
+	serialized = append(serialized, []byte(msg)...)
 
 	keys := make([]string, 0)
 	for k := range entry.Data {
