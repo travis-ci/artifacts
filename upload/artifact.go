@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	apath "github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/s3"
 )
 
@@ -23,24 +24,20 @@ const (
 )
 
 type artifact struct {
-	Root           string
-	RelativeSource string
-	Source         string
-	Destination    string
-	Prefix         string
-	Perm           s3.ACL
+	Path        *apath.Path
+	Destination string
+	Prefix      string
+	Perm        s3.ACL
 
 	Result *result
 }
 
-func newArtifact(root, relativeSource, prefix, destination string, perm s3.ACL) *artifact {
+func newArtifact(path *apath.Path, prefix, destination string, perm s3.ACL) *artifact {
 	return &artifact{
-		Root:           root,
-		RelativeSource: relativeSource,
-		Source:         filepath.Join(root, relativeSource),
-		Prefix:         prefix,
-		Destination:    destination,
-		Perm:           perm,
+		Path:        path,
+		Prefix:      prefix,
+		Destination: destination,
+		Perm:        perm,
 
 		Result: &result{},
 	}
@@ -48,12 +45,12 @@ func newArtifact(root, relativeSource, prefix, destination string, perm s3.ACL) 
 
 // ContentType infers the content type of the source file
 func (a *artifact) ContentType() string {
-	ctype := mime.TypeByExtension(path.Ext(a.Source))
+	ctype := mime.TypeByExtension(path.Ext(a.Path.From))
 	if ctype != "" {
 		return ctype
 	}
 
-	f, err := os.Open(a.Source)
+	f, err := os.Open(a.Path.Fullpath())
 	if err != nil {
 		return defaultCtype
 	}
@@ -70,12 +67,7 @@ func (a *artifact) ContentType() string {
 
 // Reader returns an io.Reader suitable for stream-y things
 func (a *artifact) Reader() (io.Reader, error) {
-	src, err := a.FullSource()
-	if err != nil {
-		return nil, err
-	}
-
-	f, err := os.Open(src)
+	f, err := os.Open(a.Path.Fullpath())
 	if err != nil {
 		return nil, err
 	}
@@ -85,12 +77,7 @@ func (a *artifact) Reader() (io.Reader, error) {
 
 // Size attempts to get the file size from the source
 func (a *artifact) Size() (uint64, error) {
-	src, err := a.FullSource()
-	if err != nil {
-		return uint64(0), err
-	}
-
-	fi, err := os.Stat(src)
+	fi, err := os.Stat(a.Path.Fullpath())
 	if err != nil {
 		return uint64(0), nil
 	}
@@ -101,15 +88,4 @@ func (a *artifact) Size() (uint64, error) {
 // FullDestination is the combined Prefix and Destination
 func (a *artifact) FullDestination() string {
 	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
-}
-
-func (a *artifact) FullSource() (string, error) {
-	for _, candidate := range []string{a.RelativeSource, a.Source} {
-		_, err := os.Stat(candidate)
-		if err == nil {
-			return candidate, nil
-		}
-	}
-
-	return "", errInvalidSource
 }

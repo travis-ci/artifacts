@@ -77,7 +77,7 @@ func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact) erro
 			if retries < opts.Retries {
 				retries += 1
 				s3p.log.WithFields(logrus.Fields{
-					"artifact": a.Source,
+					"artifact": a.Path.From,
 					"retry":    retries,
 				}).Debug("retrying")
 				time.Sleep(s3p.RetryInterval)
@@ -105,12 +105,12 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact) error
 
 	s3p.log.WithFields(logrus.Fields{
 		"download_url": fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, destination),
-	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(size)))
+	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Path.From, humanize.Bytes(size)))
 
 	s3p.log.WithFields(logrus.Fields{
 		"percent_max_size": pctMax(size, opts.MaxSize),
 		"max_size":         humanize.Bytes(opts.MaxSize),
-		"source":           a.Source,
+		"source":           a.Path.From,
 		"dest":             destination,
 		"bucket":           b.Name,
 		"content_type":     ctype,

@@ -88,7 +88,7 @@ func (u *uploader) Upload() error {
 		for _, a := range failed {
 			u.log.WithFields(logrus.Fields{
 				"err": a.Result.Err,
-			}).Error(fmt.Sprintf("failed to upload: %s", a.Source))
+			}).Error(fmt.Sprintf("failed to upload: %s", a.Path.From))
 		}
 	}()
 
@@ -135,9 +135,6 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 	to, from, root := path.To, path.From, path.Root
 	if path.IsDir() {
 		root = filepath.Join(root, from)
-		if strings.HasSuffix(root, "/") {
-			root = root + "/"
-		}
 	}
 
 	filepath.Walk(path.Fullpath(), func(f string, info os.FileInfo, err error) error {
@@ -160,7 +157,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 				u.curSize.Lock()
 				defer u.curSize.Unlock()
 
-				artifact := newArtifact(root, relPath, targetPath, destination, u.Opts.Perm)
+				artifact := newArtifact(path, targetPath, destination, u.Opts.Perm)
 				size, err := artifact.Size()
 				if err != nil {
 					return err
