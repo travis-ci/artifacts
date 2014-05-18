@@ -6,7 +6,7 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-func TestNewUploader(t *testing.T) {
+func getTestUploader() *uploader {
 	setenvs(map[string]string{
 		"TRAVIS_BUILD_NUMBER":    "3",
 		"TRAVIS_JOB_NUMBER":      "3.2",
@@ -19,6 +19,12 @@ func TestNewUploader(t *testing.T) {
 	log.Level = logrus.Panic
 
 	u := newUploader(NewOptions(), log)
+	u.Provider = &nullProvider{}
+	return u
+}
+
+func TestNewUploader(t *testing.T) {
+	u := getTestUploader()
 	if u == nil {
 		t.Errorf("options are %v", u)
 	}
@@ -41,5 +47,12 @@ func TestNewUploader(t *testing.T) {
 
 	if len(u.Paths.All()) != 2 {
 		t.Errorf("all paths length != 2: %v", len(u.Paths.All()))
+	}
+}
+
+func TestUploaderUpload(t *testing.T) {
+	u := getTestUploader()
+	if u == nil {
+		t.Errorf("options are %v", u)
 	}
 }
