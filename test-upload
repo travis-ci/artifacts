@@ -1,8 +1,15 @@
 #!/bin/bash
 
+set -e
+
+TMPPATH=$(mktemp "${TMPDIR:-/tmp}/artifacts-test.XXX")
+trap "rm -f $TMPPATH" EXIT KILL TERM
+
+echo "hey there" > $TMPPATH
+
 export ARTIFACTS_CONCURRENCY=3
 export ARTIFACTS_RETRIES=1
-export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ":")"
+export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ":"):$TMPPATH"
 export PATH="${GOPATH%%:*}/bin:$PATH"
 
 exec artifacts ${CMD:-upload} "$@"
