@@ -27,7 +27,7 @@ const (
 	uploadDescription = `
 Upload a set of local paths to an artifact repository.  The paths may be
 provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be ;-delimited.
+environmental variable, which should be :-delimited.
 
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
@@ -46,7 +46,7 @@ var (
 		cli.StringFlag{"max-size", "", fmt.Sprintf("max combined size of uploaded artifacts ($ARTIFACTS_MAX_SIZE) (default %v)", humanize.Bytes(upload.DefaultMaxSize))},
 		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
 		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact ($ARTIFACT_RETRIES) (default %v)", upload.DefaultRetries)},
-		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (';'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
+		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (':'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
 		cli.StringFlag{"working-dir", "", "working directory ($TRAVIS_BUILD_DIR) (default $PWD)"},
 	}
 )
