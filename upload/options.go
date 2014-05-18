@@ -38,6 +38,7 @@ type Options struct {
 	MaxSize      uint64
 	Paths        []string
 	Perm         s3.ACL
+	Provider     string
 	Retries      uint64
 	SecretKey    string
 	TargetPaths  []string
