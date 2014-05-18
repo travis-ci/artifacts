@@ -13,6 +13,10 @@ import (
 	"github.com/meatballhat/artifacts/path"
 )
 
+const (
+	defaultPublicCacheControl = "public, max-age=315360000"
+)
+
 type uploader struct {
 	Opts          *Options
 	Paths         *path.PathSet
@@ -37,7 +41,7 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	var provider uploadProvider
 
 	if opts.CacheControl == "" {
-		opts.CacheControl = "public, max-age=315360000"
+		opts.CacheControl = defaultPublicCacheControl
 	}
 
 	if opts.Provider == "" {
@@ -46,12 +50,7 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 
 	switch opts.Provider {
 	case "s3":
-		provider = &s3Provider{
-			RetryInterval: 3 * time.Second,
-
-			opts: opts,
-			log:  log,
-		}
+		provider = newS3Provider(opts, log)
 	}
 
 	u := &uploader{
@@ -79,6 +78,19 @@ func (u *uploader) Upload() error {
 	allDone := uint64(0)
 	inChan := u.files()
 	outChan := make(chan *artifact)
+	failed := []*artifact{}
+
+	defer func() {
+		if len(failed) == 0 {
+			return
+		}
+
+		for _, a := range failed {
+			u.log.WithFields(logrus.Fields{
+				"err": a.Result.Err,
+			}).Error(fmt.Sprintf("failed to upload: %s", a.Source))
+		}
+	}()
 
 	u.log.WithFields(logrus.Fields{
 		"bucket":        u.Opts.BucketName,
@@ -99,12 +111,15 @@ func (u *uploader) Upload() error {
 			"uploader": i,
 		}).Debug("starting uploader worker")
 
-		uploader := 0 + i
-		go u.Provider.Upload(fmt.Sprintf("%d", uploader), u.Opts, inChan, outChan, done)
+		go u.Provider.Upload(fmt.Sprintf("%d", i), u.Opts, inChan, outChan, done)
 	}
 
 	for {
 		select {
+		case outArtifact := <-outChan:
+			if outArtifact != nil && !outArtifact.Result.OK {
+				failed = append(failed, outArtifact)
+			}
 		case <-done:
 			allDone += 1
 			if allDone >= u.Opts.Concurrency {

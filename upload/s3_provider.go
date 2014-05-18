@@ -12,10 +12,18 @@ import (
 
 type s3Provider struct {
 	RetryInterval time.Duration
-	id            string
 
 	opts *Options
 	log  *logrus.Logger
+}
+
+func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
+	return &s3Provider{
+		RetryInterval: 3 * time.Second,
+
+		opts: opts,
+		log:  log,
+	}
 }
 
 func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact, out chan *artifact, done chan bool) {
@@ -42,7 +50,14 @@ func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact, out c
 	}
 
 	for artifact := range in {
-		s3p.uploadFile(opts, bucket, artifact)
+		err := s3p.uploadFile(opts, bucket, artifact)
+		if err != nil {
+			artifact.Result.OK = false
+			artifact.Result.Err = err
+		} else {
+			artifact.Result.OK = true
+		}
+		out <- artifact
 	}
 
 	done <- true
@@ -104,7 +119,6 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact) error
 			"Cache-Control": []string{opts.CacheControl},
 		}, a.Perm)
 	if err != nil {
-		s3p.log.WithFields(logrus.Fields{"err": err}).Error("failed to upload")
 		return err
 	}
 
