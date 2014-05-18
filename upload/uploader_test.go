@@ -11,8 +11,8 @@ func TestNewUploader(t *testing.T) {
 		"TRAVIS_BUILD_NUMBER":    "3",
 		"TRAVIS_JOB_NUMBER":      "3.2",
 		"ARTIFACTS_S3_BUCKET":    "foo",
-		"ARTIFACTS_TARGET_PATHS": "baz;artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER",
-		"ARTIFACTS_PATHS":        "bin/;derp",
+		"ARTIFACTS_TARGET_PATHS": "baz:artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER",
+		"ARTIFACTS_PATHS":        "bin/:derp",
 	})
 
 	log := logrus.New()
