@@ -37,7 +37,7 @@ upload - upload some artifacts!
 ### DESCRIPTION
 Upload a set of local paths to an artifact repository.  The paths may be
 provided as either positional command-line arguments or as the `$ARTIFACTS_PATHS`
-environmental variable, which should be ;-delimited.
+environmental variable, which should be :-delimited.
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
 the file extension, then by sniffing up to the first 512 bytes via the net/http
@@ -52,7 +52,7 @@ function "DetectContentType".
 * `--max-size`         max combined size of uploaded artifacts (`$ARTIFACTS_MAX_SIZE`) (default 1.0GB)
 * `--permissions`     artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
 * `--retries`         number of upload retries per artifact (`$ARTIFACT_RETRIES`) (default 2)
-* `--target-paths, -t`     artifact target paths (';'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
+* `--target-paths, -t`     artifact target paths (':'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
 * `--working-dir`     working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`)
 
 ### S3 ENVIRONMENT COMPATIBILITY
@@ -102,7 +102,7 @@ The same operation using environmental variables would look like this:
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
 export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
 export ARTIFACTS_BUCKET="my-fancy-bucket"
-export ARTIFACTS_PATHS="log/;coverage/"
+export ARTIFACTS_PATHS="log/:coverage/"
 
 artifacts upload
 ```
@@ -126,7 +126,7 @@ The same operation using environmental variables would look like this:
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
 export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
 export ARTIFACTS_BUCKET="my-fancy-bucket"
-export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
 
 artifacts upload
 ```
@@ -135,25 +135,25 @@ artifacts upload
 
 Specifying one or more custom target path will override the default of
 `artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER`.  Multiple target paths
-must be specified in ';'-delimited strings:
+must be specified in ':'-delimited strings:
 
 ``` bash
 artifacts upload \
   --key AKIT339AFIY655O3Q9DZ \
   --secret 48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1 \
   --bucket my-fancy-bucket \
-  --target-paths "artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" \
+  --target-paths "artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" \
   $(git ls-files -o)
 ```
 
 The same operation using environmental variables would look like this:
 
 ``` bash
-export ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER;artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
+export ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
 export ARTIFACTS_SECRET="48TmqyraUyJ7Efpegi6Lfd10yUskAMB0G2TtRCX1"
 export ARTIFACTS_BUCKET="my-fancy-bucket"
-export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ";")"
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
 
 artifacts upload
 ```

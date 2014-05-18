@@ -12,8 +12,8 @@ func TestNewUploader(t *testing.T) {
 	os.Setenv("TRAVIS_JOB_NUMBER", "3.2")
 
 	os.Setenv("ARTIFACTS_S3_BUCKET", "foo")
-	os.Setenv("ARTIFACTS_TARGET_PATHS", "baz;artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER")
-	os.Setenv("ARTIFACTS_PATHS", "bin/;derp")
+	os.Setenv("ARTIFACTS_TARGET_PATHS", "baz:artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER")
+	os.Setenv("ARTIFACTS_PATHS", "bin/:derp")
 
 	log := logrus.New()
 	log.Level = logrus.Panic

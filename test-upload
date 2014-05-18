@@ -2,7 +2,7 @@
 
 export ARTIFACTS_CONCURRENCY=3
 export ARTIFACTS_RETRIES=1
-export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ";")"
+export ARTIFACTS_PATHS="$(git ls-files -o | grep -v '.env' | tr "\n" ":")"
 export PATH="${GOPATH%%:*}/bin:$PATH"
 
 exec artifacts ${CMD:-upload} "$@"

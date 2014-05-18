@@ -56,7 +56,7 @@ func NewOptions() *Options {
 	cwd, _ := os.Getwd()
 	cwd = env.Get("TRAVIS_BUILD_DIR", cwd)
 
-	targetPaths := env.ExpandSlice(env.Slice("ARTIFACTS_TARGET_PATHS", ";", []string{}))
+	targetPaths := env.ExpandSlice(env.Slice("ARTIFACTS_TARGET_PATHS", ":", []string{}))
 	if len(targetPaths) == 0 {
 		targetPaths = DefaultTargetPaths
 	}
@@ -82,7 +82,7 @@ func NewOptions() *Options {
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
 		Concurrency:  env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
 		MaxSize:      env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
-		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ";", DefaultPaths)),
+		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ":", DefaultPaths)),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
 		Retries:      env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
 		TargetPaths:  targetPaths,

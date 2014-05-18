@@ -8,7 +8,7 @@ import (
 func init() {
 	os.Setenv("FOO", "1")
 	os.Setenv("BAR", "")
-	os.Setenv("BAZ", "a;b;c;;")
+	os.Setenv("BAZ", "a:b:c::")
 }
 
 func TestGet(t *testing.T) {
@@ -32,7 +32,7 @@ func TestBool(t *testing.T) {
 }
 
 func TestSlice(t *testing.T) {
-	s := Slice("BAZ", ";", []string{})
+	s := Slice("BAZ", ":", []string{})
 	if len(s) != 3 {
 		t.Fail()
 	}
