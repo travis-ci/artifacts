@@ -1,6 +1,7 @@
 package path
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,7 +25,7 @@ func NewPath(root, from, to string) *Path {
 
 // Fullpath returns the full file/dir path
 func (p *Path) Fullpath() string {
-	if strings.HasPrefix(p.From, "/") {
+	if p.IsAbs() || strings.HasPrefix(p.From, "/") {
 		return p.From
 	}
 
@@ -39,4 +40,24 @@ func (p *Path) IsDir() bool {
 	}
 
 	return fi.IsDir()
+}
+
+// IsExists tells if the path exists locally
+func (p *Path) IsExists() bool {
+	_, err := os.Stat(p.From)
+	if err != nil {
+		fmt.Printf(" ---> %v: %v\n", p.From, err)
+	}
+	return err == nil
+}
+
+// IsAbs tells if the path is absolute!
+func (p *Path) IsAbs() bool {
+	asRelpath := filepath.Join(p.Root, p.From)
+	_, err := os.Stat(asRelpath)
+	if err == nil {
+		return false
+	}
+
+	return p.IsExists()
 }

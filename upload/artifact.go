@@ -2,6 +2,7 @@ package upload
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 	"strings"
 
 	"github.com/mitchellh/goamz/s3"
+)
+
+var (
+	errInvalidSource = fmt.Errorf("invalid source path")
 )
 
 const (
@@ -65,7 +70,12 @@ func (a *artifact) ContentType() string {
 
 // Reader returns an io.Reader suitable for stream-y things
 func (a *artifact) Reader() (io.Reader, error) {
-	f, err := os.Open(a.Source)
+	src, err := a.FullSource()
+	if err != nil {
+		return nil, err
+	}
+
+	f, err := os.Open(src)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +84,32 @@ func (a *artifact) Reader() (io.Reader, error) {
 }
 
 // Size attempts to get the file size from the source
-func (a *artifact) Size() uint64 {
-	fi, err := os.Stat(a.Source)
+func (a *artifact) Size() (uint64, error) {
+	src, err := a.FullSource()
 	if err != nil {
-		return uint64(0)
+		return uint64(0), err
 	}
 
-	return uint64(fi.Size())
+	fi, err := os.Stat(src)
+	if err != nil {
+		return uint64(0), nil
+	}
+
+	return uint64(fi.Size()), nil
 }
 
 // FullDestination is the combined Prefix and Destination
 func (a *artifact) FullDestination() string {
 	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
+}
+
+func (a *artifact) FullSource() (string, error) {
+	for _, candidate := range []string{a.RelativeSource, a.Source} {
+		_, err := os.Stat(candidate)
+		if err == nil {
+			return candidate, nil
+		}
+	}
+
+	return "", errInvalidSource
 }

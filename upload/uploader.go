@@ -161,14 +161,18 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 				defer u.curSize.Unlock()
 
 				artifact := newArtifact(root, relPath, targetPath, destination, u.Opts.Perm)
-				size := artifact.Size()
+				size, err := artifact.Size()
+				if err != nil {
+					return err
+				}
+
 				u.curSize.Current += size
 				logFields := logrus.Fields{
 					"current_size":     humanize.Bytes(u.curSize.Current),
 					"max_size":         humanize.Bytes(u.Opts.MaxSize),
 					"percent_max_size": pctMax(size, u.Opts.MaxSize),
 					"artifact":         relPath,
-					"artifact_size":    humanize.Bytes(artifact.Size()),
+					"artifact_size":    humanize.Bytes(size),
 				}
 
 				if u.curSize.Current > u.Opts.MaxSize {
