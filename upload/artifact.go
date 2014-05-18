@@ -2,7 +2,6 @@ package upload
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -13,10 +12,6 @@ import (
 
 	apath "github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/s3"
-)
-
-var (
-	errInvalidSource = fmt.Errorf("invalid source path")
 )
 
 const (
@@ -43,7 +38,6 @@ func newArtifact(path *apath.Path, prefix, destination string, perm s3.ACL) *art
 	}
 }
 
-// ContentType infers the content type of the source file
 func (a *artifact) ContentType() string {
 	ctype := mime.TypeByExtension(path.Ext(a.Path.From))
 	if ctype != "" {
@@ -58,14 +52,13 @@ func (a *artifact) ContentType() string {
 	var buf bytes.Buffer
 
 	_, err = io.CopyN(&buf, f, int64(512))
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return defaultCtype
 	}
 
 	return http.DetectContentType(buf.Bytes())
 }
 
-// Reader returns an io.Reader suitable for stream-y things
 func (a *artifact) Reader() (io.Reader, error) {
 	f, err := os.Open(a.Path.Fullpath())
 	if err != nil {
@@ -75,7 +68,6 @@ func (a *artifact) Reader() (io.Reader, error) {
 	return f, nil
 }
 
-// Size attempts to get the file size from the source
 func (a *artifact) Size() (uint64, error) {
 	fi, err := os.Stat(a.Path.Fullpath())
 	if err != nil {
@@ -85,7 +77,6 @@ func (a *artifact) Size() (uint64, error) {
 	return uint64(fi.Size()), nil
 }
 
-// FullDestination is the combined Prefix and Destination
 func (a *artifact) FullDestination() string {
 	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
 }
