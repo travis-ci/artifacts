@@ -53,6 +53,11 @@ var (
 )
 
 func main() {
+	app := buildApp()
+	app.Run(os.Args)
+}
+
+func buildApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "artifacts"
 	app.Usage = "manage your artifacts!"
@@ -72,7 +77,7 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	return app
 }
 
 func runUpload(c *cli.Context) {
