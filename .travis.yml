@@ -19,6 +19,7 @@ before_install:
 - go get github.com/tools/godep
 - go get code.google.com/p/go.tools/cmd/cover
 - godep restore
+- go install -a -race std
 script:
 - make
 - ./deploy
