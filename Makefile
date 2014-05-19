@@ -20,11 +20,11 @@ test: build fmtpolice test-deps test-race coverage.html
 
 .PHONY: test-deps
 test-deps:
-	$(GO) test -i $(GOBUILD_LDFLAGS) $(GOBUILD_ARGS) $(PACKAGE) $(SUBPACKAGES)
+	$(GO) test -i $(GOBUILD_LDFLAGS) $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: test-race
 test-race:
-	$(GO) test -race $(GOBUILD_LDFLAGS) $(GOBUILD_ARGS) $(PACKAGE) $(SUBPACKAGES)
+	$(GO) test -race $(GOBUILD_LDFLAGS) $(PACKAGE) $(SUBPACKAGES)
 
 coverage.html: coverage.out
 	$(GO) tool cover -html=$^ -o $@
@@ -35,16 +35,16 @@ coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-cov
 	$(GO) tool cover -func=$@
 
 path-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(PACKAGE)/path
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/path
 
 upload-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(PACKAGE)/upload
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/upload
 
 env-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(PACKAGE)/env
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/env
 
 logging-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_ARGS) $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
 
 USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^VERSION|\s+v\d\.\d\.\d' > $@
