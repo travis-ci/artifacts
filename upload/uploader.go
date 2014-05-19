@@ -51,6 +51,13 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	switch opts.Provider {
 	case "s3":
 		provider = newS3Provider(opts, log)
+	case "null":
+		provider = newNullProvider([]string{})
+	default:
+		log.WithFields(logrus.Fields{
+			"provider": opts.Provider,
+		}).Warn("unrecognized provider, using s3 instead")
+		provider = newS3Provider(opts, log)
 	}
 
 	u := &uploader{

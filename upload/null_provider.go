@@ -13,6 +13,12 @@ type nullProvider struct {
 	SourcesToFail []string
 }
 
+func newNullProvider(sourcesToFail []string) *nullProvider {
+	return &nullProvider{
+		SourcesToFail: sourcesToFail,
+	}
+}
+
 func (np *nullProvider) Upload(id string, opts *Options, in chan *artifact, out chan *artifact, done chan bool) {
 	sort.Strings(np.SourcesToFail)
 	lenSrc := len(np.SourcesToFail)

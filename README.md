@@ -44,16 +44,17 @@ the file extension, then by sniffing up to the first 512 bytes via the net/http
 function "DetectContentType".
 
 ### OPTIONS
-* `--key, -k`         upload credentials key (`$ARTIFACTS_KEY`) *REQUIRED*
-* `--secret, -s`     upload credentials secret (`$ARTIFACTS_SECRET`) *REQUIRED*
-* `--bucket, -b`     destination bucket (`$ARTIFACTS_BUCKET`) *REQUIRED*
-* `--cache-control`     artifact cache-control header value (`$ARTIFACTS_CACHE_CONTROL`) (default "private")
-* `--concurrency`     upload worker concurrency (`$ARTIFACTS_CONCURRENCY`) (default 5)
-* `--max-size`         max combined size of uploaded artifacts (`$ARTIFACTS_MAX_SIZE`) (default 1.0GB)
-* `--permissions`     artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
-* `--retries`         number of upload retries per artifact (`$ARTIFACT_RETRIES`) (default 2)
-* `--target-paths, -t`     artifact target paths (':'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
-* `--working-dir`     working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`)
+* `--key, -k`             upload credentials key (`$ARTIFACTS_KEY`) *REQUIRED*
+* `--secret, -s`         upload credentials secret (`$ARTIFACTS_SECRET`) *REQUIRED*
+* `--bucket, -b`         destination bucket (`$ARTIFACTS_BUCKET`) *REQUIRED*
+* `--cache-control`         artifact cache-control header value (`$ARTIFACTS_CACHE_CONTROL`) (default "private")
+* `--concurrency`         upload worker concurrency (`$ARTIFACTS_CONCURRENCY`) (default 5)
+* `--max-size`             max combined size of uploaded artifacts (`$ARTIFACTS_MAX_SIZE`) (default 1.0GB)
+* `--permissions`         artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
+* `--retries`             number of upload retries per artifact (`$ARTIFACT_RETRIES`) (default 2)
+* `--target-paths, -t`         artifact target paths (':'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
+* `--upload-provider, -p`     artifact upload provider (s3, null) (`$ARTIFACTS_UPLOAD_PROVIDER`) (default "s3")
+* `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`)
 
 ### S3 ENVIRONMENT COMPATIBILITY
 

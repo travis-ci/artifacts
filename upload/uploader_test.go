@@ -8,11 +8,12 @@ import (
 
 func getTestUploader() *uploader {
 	setenvs(map[string]string{
-		"TRAVIS_BUILD_NUMBER":    "3",
-		"TRAVIS_JOB_NUMBER":      "3.2",
-		"ARTIFACTS_S3_BUCKET":    "foo",
-		"ARTIFACTS_TARGET_PATHS": "baz:artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER",
-		"ARTIFACTS_PATHS":        "bin/:derp",
+		"TRAVIS_BUILD_NUMBER":       "3",
+		"TRAVIS_JOB_NUMBER":         "3.2",
+		"ARTIFACTS_S3_BUCKET":       "foo",
+		"ARTIFACTS_TARGET_PATHS":    "baz:artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER",
+		"ARTIFACTS_PATHS":           "bin/:derp",
+		"ARTIFACTS_UPLOAD_PROVIDER": "null",
 	})
 
 	log := logrus.New()
@@ -54,5 +55,10 @@ func TestUploaderUpload(t *testing.T) {
 	u := getTestUploader()
 	if u == nil {
 		t.Errorf("options are %v", u)
+	}
+
+	err := u.Upload()
+	if err != nil {
+		t.Errorf("failed to not really upload: %v", err)
 	}
 }
