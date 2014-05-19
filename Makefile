@@ -30,7 +30,10 @@ coverage.html: coverage.out
 	$(GO) tool cover -html=$^ -o $@
 
 coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-coverage.out
+	$(GO) test -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
 	echo 'mode: count' > $@
+	grep -h -v 'mode: count' $@.tmp >> $@
+	rm -f $@.tmp
 	grep -h -v 'mode: count' $^ >> $@
 	$(GO) tool cover -func=$@
 
