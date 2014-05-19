@@ -25,6 +25,8 @@ var (
 	DefaultRetries = uint64(2)
 	// DefaultTargetPaths is the default upload prefix for each artifact
 	DefaultTargetPaths = []string{}
+	// DefaultUploadProvider is the provider used to upload (nuts)
+	DefaultUploadProvider = "s3"
 	// DefaultWorkingDir is the default working directory ... wow.
 	DefaultWorkingDir, _ = os.Getwd()
 )
@@ -86,6 +88,7 @@ func NewOptions() *Options {
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
 		Retries:      env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
 		TargetPaths:  targetPaths,
+		Provider:     env.Get("ARTIFACTS_UPLOAD_PROVIDER", DefaultUploadProvider),
 		WorkingDir:   cwd,
 	}
 }

@@ -47,6 +47,7 @@ var (
 		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
 		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact ($ARTIFACT_RETRIES) (default %v)", upload.DefaultRetries)},
 		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (':'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
+		cli.StringFlag{"upload-provider, p", "", fmt.Sprintf("artifact upload provider (s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default %#v)", upload.DefaultUploadProvider)},
 		cli.StringFlag{"working-dir", "", "working directory ($TRAVIS_BUILD_DIR) (default $PWD)"},
 	}
 )
@@ -153,6 +154,9 @@ func overlayFlags(opts *upload.Options, c *cli.Context) {
 		if err == nil {
 			opts.Retries = intVal
 		}
+	}
+	if value := c.String("upload-provider"); value != "" {
+		opts.Provider = value
 	}
 	if value := c.String("working-dir"); value != "" {
 		opts.WorkingDir = value
