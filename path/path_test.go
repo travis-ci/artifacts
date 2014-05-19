@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	testTmp, err      = ioutil.TempDir("", "artifacts-test")
+	testTmp, err      = ioutil.TempDir("", "artifacts-test-path")
 	testSomethingPath = filepath.Join(testTmp, "something")
 	testSomethingBoop = filepath.Join(testSomethingPath, "boop")
 

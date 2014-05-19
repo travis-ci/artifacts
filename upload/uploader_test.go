@@ -6,7 +6,7 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-func getTestUploader() *uploader {
+func setUploaderEnv() {
 	setenvs(map[string]string{
 		"TRAVIS_BUILD_NUMBER":       "3",
 		"TRAVIS_JOB_NUMBER":         "3.2",
@@ -15,6 +15,16 @@ func getTestUploader() *uploader {
 		"ARTIFACTS_PATHS":           "bin/:derp",
 		"ARTIFACTS_UPLOAD_PROVIDER": "null",
 	})
+}
+
+func getPanicLogger() *logrus.Logger {
+	log := logrus.New()
+	log.Level = logrus.Panic
+	return log
+}
+
+func getTestUploader() *uploader {
+	setUploaderEnv()
 
 	log := logrus.New()
 	log.Level = logrus.Panic
@@ -48,6 +58,14 @@ func TestNewUploader(t *testing.T) {
 
 	if len(u.Paths.All()) != 2 {
 		t.Errorf("all paths length != 2: %v", len(u.Paths.All()))
+	}
+}
+
+func TestUpload(t *testing.T) {
+	setUploaderEnv()
+	err := Upload(NewOptions(), getPanicLogger())
+	if err != nil {
+		t.Errorf("go boom: %v", err)
 	}
 }
 
