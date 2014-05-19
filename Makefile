@@ -60,11 +60,11 @@ README.md: USAGE.txt UPLOAD_USAGE.txt README.md.in $(shell git ls-files '*.go')
 
 .PHONY: build
 build: deps
-	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(PACKAGE)
+	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: deps
 deps:
-	$(GO) get $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(GO_TAG_ARGS) $(PACKAGE)
+	$(GO) get $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 	$(GODEP) restore
 
 .PHONY: clean
