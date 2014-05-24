@@ -14,8 +14,8 @@ type Path struct {
 	To   string
 }
 
-// NewPath makes a new *Path.  Crazy!
-func NewPath(root, from, to string) *Path {
+// New makes a new *Path.  Crazy!
+func New(root, from, to string) *Path {
 	return &Path{
 		Root: root,
 		From: from,

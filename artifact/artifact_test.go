@@ -1,4 +1,4 @@
-package upload
+package artifact
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	testTmp, err        = ioutil.TempDir("", "artifacts-test-upload")
 	testArtifactPathDir = filepath.Join(testTmp, "artifact")
 	testArtifactPaths   = map[string]string{
 		filepath.Join(testArtifactPathDir, "foo"):     "text/plain; charset=utf-8",
@@ -21,6 +22,10 @@ var (
 )
 
 func init() {
+	if err != nil {
+		log.Panicf("game over: %v\n", err)
+	}
+
 	err = os.MkdirAll(testArtifactPathDir, 0755)
 	if err != nil {
 		log.Panicf("game over: %v\n", err)
@@ -40,8 +45,8 @@ func init() {
 }
 
 func TestNewArtifact(t *testing.T) {
-	p := path.NewPath("/", "foo", "bar")
-	a := newArtifact(p, "bucket", "linux/foo", s3.PublicRead)
+	p := path.New("/", "foo", "bar")
+	a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
 	if a == nil {
 		t.Errorf("new artifact is nil")
 	}
@@ -62,23 +67,23 @@ func TestNewArtifact(t *testing.T) {
 		t.Errorf("s3 perm not set correctly: %v", a.Perm)
 	}
 
-	if a.Result == nil {
+	if a.UploadResult == nil {
 		t.Errorf("result not initialized")
 	}
 
-	if a.Result.OK {
+	if a.UploadResult.OK {
 		t.Errorf("result initialized with OK as true")
 	}
 
-	if a.Result.Err != nil {
+	if a.UploadResult.Err != nil {
 		t.Errorf("result initialized with non-nil Err")
 	}
 }
 
 func TestArtifactContentType(t *testing.T) {
 	for filepath, expectedCtype := range testArtifactPaths {
-		p := path.NewPath("whatever", filepath, "somewhere")
-		a := newArtifact(p, "bucket", "linux/foo", s3.PublicRead)
+		p := path.New("whatever", filepath, "somewhere")
+		a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
 		if a == nil {
 			t.Errorf("new artifact is nil")
 		}
@@ -92,8 +97,8 @@ func TestArtifactContentType(t *testing.T) {
 
 func TestArtifactReader(t *testing.T) {
 	for filepath := range testArtifactPaths {
-		p := path.NewPath("whatever", filepath, "somewhere")
-		a := newArtifact(p, "bucket", "linux/foo", s3.PublicRead)
+		p := path.New("whatever", filepath, "somewhere")
+		a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
 		if a == nil {
 			t.Errorf("new artifact is nil")
 		}

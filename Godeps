@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/meatballhat/artifacts",
-	"GoVersion": "go1.2",
+	"GoVersion": "go1.2.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",

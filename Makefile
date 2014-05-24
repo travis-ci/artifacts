@@ -29,7 +29,7 @@ test-race:
 coverage.html: coverage.out
 	$(GO) tool cover -html=$^ -o $@
 
-coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-coverage.out
+coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-coverage.out artifact-coverage.out
 	$(GO) test -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
 	echo 'mode: count' > $@
 	grep -h -v 'mode: count' $@.tmp >> $@
@@ -48,6 +48,9 @@ env-coverage.out:
 
 logging-coverage.out:
 	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
+
+artifact-coverage.out:
+	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/artifact
 
 USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^VERSION|\s+v\d\.\d\.\d' > $@

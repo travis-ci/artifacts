@@ -1,4 +1,4 @@
-package upload
+package artifact
 
 import (
 	"bytes"
@@ -18,27 +18,35 @@ const (
 	defaultCtype = "application/octet-stream"
 )
 
-type artifact struct {
+// Artifact is the thing that gets uploaded or whatever
+type Artifact struct {
+	RepoSlug    string
+	BuildNumber string
+	JobNumber   string
+
 	Path        *apath.Path
 	Destination string
 	Prefix      string
 	Perm        s3.ACL
 
-	Result *result
+	UploadResult *Result
 }
 
-func newArtifact(path *apath.Path, prefix, destination string, perm s3.ACL) *artifact {
-	return &artifact{
+// New creates a new *Artifact
+func New(path *apath.Path, repoSlug, prefix, destination string, perm s3.ACL) *Artifact {
+	return &Artifact{
+		RepoSlug:    repoSlug,
 		Path:        path,
 		Prefix:      prefix,
 		Destination: destination,
 		Perm:        perm,
 
-		Result: &result{},
+		UploadResult: &Result{},
 	}
 }
 
-func (a *artifact) ContentType() string {
+// ContentType makes it easier to find the perfect match
+func (a *Artifact) ContentType() string {
 	ctype := mime.TypeByExtension(path.Ext(a.Path.From))
 	if ctype != "" {
 		return ctype
@@ -59,7 +67,8 @@ func (a *artifact) ContentType() string {
 	return http.DetectContentType(buf.Bytes())
 }
 
-func (a *artifact) Reader() (io.Reader, error) {
+// Reader makes an io.Reader out of the filepath
+func (a *Artifact) Reader() (io.Reader, error) {
 	f, err := os.Open(a.Path.Fullpath())
 	if err != nil {
 		return nil, err
@@ -68,7 +77,8 @@ func (a *artifact) Reader() (io.Reader, error) {
 	return f, nil
 }
 
-func (a *artifact) Size() (uint64, error) {
+// Size reports the size of the artifact
+func (a *Artifact) Size() (uint64, error) {
 	fi, err := os.Stat(a.Path.Fullpath())
 	if err != nil {
 		return uint64(0), nil
@@ -77,6 +87,7 @@ func (a *artifact) Size() (uint64, error) {
 	return uint64(fi.Size()), nil
 }
 
-func (a *artifact) FullDestination() string {
+// FullDestination calculates the full remote destination path
+func (a *Artifact) FullDestination() string {
 	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
 }

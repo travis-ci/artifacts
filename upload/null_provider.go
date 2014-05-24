@@ -3,6 +3,8 @@ package upload
 import (
 	"fmt"
 	"sort"
+
+	"github.com/meatballhat/artifacts/artifact"
 )
 
 var (
@@ -19,17 +21,19 @@ func newNullProvider(sourcesToFail []string) *nullProvider {
 	}
 }
 
-func (np *nullProvider) Upload(id string, opts *Options, in chan *artifact, out chan *artifact, done chan bool) {
+func (np *nullProvider) Upload(id string, opts *Options,
+	in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
+
 	sort.Strings(np.SourcesToFail)
 	lenSrc := len(np.SourcesToFail)
 
 	for a := range in {
 		idx := sort.SearchStrings(np.SourcesToFail, a.Path.From)
 		if idx < 0 || idx >= lenSrc {
-			a.Result.OK = false
-			a.Result.Err = errUploadFailed
+			a.UploadResult.OK = false
+			a.UploadResult.Err = errUploadFailed
 		} else {
-			a.Result.OK = true
+			a.UploadResult.OK = true
 		}
 		out <- a
 	}

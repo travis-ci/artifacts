@@ -13,20 +13,32 @@ import (
 var (
 	// DefaultCacheControl is the default value for each artifact's Cache-Control header
 	DefaultCacheControl = "private"
+
 	// DefaultConcurrency is the default number of concurrent goroutines used during upload
 	DefaultConcurrency = uint64(5)
+
 	// DefaultMaxSize is the default maximum allowed bytes for all artifacts
 	DefaultMaxSize = uint64(1024 * 1024 * 1000)
+
 	// DefaultPaths is the default slice of local paths to upload (empty)
 	DefaultPaths = []string{}
+
 	// DefaultPerm is the default ACL applied to each artifact
 	DefaultPerm = "private"
+
+	// DefaultRepoSlug is the repo slug detected from the env
+	DefaultRepoSlug = ""
+
 	// DefaultRetries is the default number of times a given artifact upload will be retried
 	DefaultRetries = uint64(2)
+
 	// DefaultTargetPaths is the default upload prefix for each artifact
 	DefaultTargetPaths = []string{}
+
 	// DefaultUploadProvider is the provider used to upload (nuts)
 	DefaultUploadProvider = "s3"
+	// TODO: DefaultUploadProvider = "artifacts"
+
 	// DefaultWorkingDir is the default working directory ... wow.
 	DefaultWorkingDir, _ = os.Getwd()
 )
@@ -36,21 +48,29 @@ type Options struct {
 	AccessKey    string
 	BucketName   string
 	CacheControl string
-	Concurrency  uint64
-	MaxSize      uint64
-	Paths        []string
 	Perm         s3.ACL
-	Provider     string
-	Retries      uint64
 	SecretKey    string
-	TargetPaths  []string
-	WorkingDir   string
+
+	RepoSlug string
+
+	Concurrency uint64
+	MaxSize     uint64
+	Paths       []string
+	Provider    string
+	Retries     uint64
+	TargetPaths []string
+	WorkingDir  string
+
+	ArtifactsSaveURL   string
+	ArtifactsAuthToken string
 }
 
 func init() {
 	DefaultTargetPaths = append(DefaultTargetPaths, filepath.Join("artifacts",
 		env.Get("TRAVIS_BUILD_NUMBER", ""),
 		env.Get("TRAVIS_JOB_NUMBER", "")))
+
+	DefaultRepoSlug = env.Get("TRAVIS_REPO_SLUG", "")
 }
 
 // NewOptions makes some *Options with defaults!
@@ -80,16 +100,21 @@ func NewOptions() *Options {
 			"ARTIFACTS_BUCKET",
 			"ARTIFACTS_S3_BUCKET",
 		}, "")),
-
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
-		Concurrency:  env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
-		MaxSize:      env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
-		Paths:        env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ":", DefaultPaths)),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
-		Retries:      env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
-		TargetPaths:  targetPaths,
-		Provider:     env.Get("ARTIFACTS_UPLOAD_PROVIDER", DefaultUploadProvider),
-		WorkingDir:   cwd,
+
+		RepoSlug: DefaultRepoSlug,
+
+		Concurrency: env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
+		MaxSize:     env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
+		Paths:       env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ":", DefaultPaths)),
+		Provider:    env.Get("ARTIFACTS_UPLOAD_PROVIDER", DefaultUploadProvider),
+		Retries:     env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
+		TargetPaths: targetPaths,
+		WorkingDir:  cwd,
+
+		ArtifactsSaveURL:   env.Get("ARTIFACTS_SAVE_URL", ""),
+		ArtifactsAuthToken: env.Get("ARTIFACTS_AUTH_TOKEN", ""),
 	}
 }
 
