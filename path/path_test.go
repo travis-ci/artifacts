@@ -48,8 +48,8 @@ func init() {
 	fmt.Fprintf(fd, "something\n")
 }
 
-func TestNewPath(t *testing.T) {
-	p := NewPath("/xyz", "foo", "bar")
+func TestNew(t *testing.T) {
+	p := New("/xyz", "foo", "bar")
 
 	if p.Root != "/xyz" {
 		t.Fail()
@@ -66,7 +66,7 @@ func TestNewPath(t *testing.T) {
 
 func TestPathIsAbs(t *testing.T) {
 	for path, truth := range isAbsTests {
-		p := NewPath("/whatever", path, "somewhere")
+		p := New("/whatever", path, "somewhere")
 		if p.IsAbs() != truth {
 			t.Errorf("path %v IsAbs != %v\n", path, truth)
 		}
@@ -75,7 +75,7 @@ func TestPathIsAbs(t *testing.T) {
 
 func TestPathFullpath(t *testing.T) {
 	for expected, args := range fullPathTests {
-		actual := NewPath(args[0], args[1], args[2]).Fullpath()
+		actual := New(args[0], args[1], args[2]).Fullpath()
 		if expected != actual {
 			t.Errorf("%v != %v", expected, actual)
 		}
@@ -84,7 +84,7 @@ func TestPathFullpath(t *testing.T) {
 
 func TestPathIsDir(t *testing.T) {
 	for path, truth := range isDirTests {
-		p := NewPath("/whatever", path, "somewhere")
+		p := New("/whatever", path, "somewhere")
 		if p.IsDir() != truth {
 			t.Errorf("path %v IsDir != %v\n", path, truth)
 		}

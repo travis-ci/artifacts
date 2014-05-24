@@ -39,16 +39,21 @@ function "DetectContentType".
 var (
 	uploadFlags = []cli.Flag{
 		cli.StringFlag{"key, k", "", "upload credentials key ($ARTIFACTS_KEY) *REQUIRED*"},
-		cli.StringFlag{"secret, s", "", "upload credentials secret ($ARTIFACTS_SECRET) *REQUIRED*"},
 		cli.StringFlag{"bucket, b", "", "destination bucket ($ARTIFACTS_BUCKET) *REQUIRED*"},
 		cli.StringFlag{"cache-control", "", fmt.Sprintf("artifact cache-control header value ($ARTIFACTS_CACHE_CONTROL) (default %q)", upload.DefaultCacheControl)},
+		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
+		cli.StringFlag{"secret, s", "", "upload credentials secret ($ARTIFACTS_SECRET) *REQUIRED*"},
+
 		cli.StringFlag{"concurrency", "", fmt.Sprintf("upload worker concurrency ($ARTIFACTS_CONCURRENCY) (default %v)", upload.DefaultConcurrency)},
 		cli.StringFlag{"max-size", "", fmt.Sprintf("max combined size of uploaded artifacts ($ARTIFACTS_MAX_SIZE) (default %v)", humanize.Bytes(upload.DefaultMaxSize))},
-		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
 		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact ($ARTIFACT_RETRIES) (default %v)", upload.DefaultRetries)},
 		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (':'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
-		cli.StringFlag{"upload-provider, p", "", fmt.Sprintf("artifact upload provider (s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default %#v)", upload.DefaultUploadProvider)},
 		cli.StringFlag{"working-dir", "", "working directory ($TRAVIS_BUILD_DIR) (default $PWD)"},
+
+		cli.StringFlag{"upload-provider, p", "", fmt.Sprintf("artifact upload provider (artifacts, s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default %#v)", upload.DefaultUploadProvider)},
+
+		cli.StringFlag{"save-url, U", "", "artifact save URL ($ARTIFACTS_SAVE_URL)"},
+		cli.StringFlag{"auth-token, T", "", "artifact save auth token ($ARTIFACTS_AUTH_TOKEN)"},
 	}
 )
 
@@ -86,10 +91,10 @@ func runUpload(c *cli.Context) {
 	opts := upload.NewOptions()
 	overlayFlags(opts, c)
 
-	for i, arg := range c.Args() {
-		if i == 0 {
-			continue
-		}
+	for _, arg := range c.Args() {
+		log.WithFields(logrus.Fields{
+			"path": arg,
+		}).Debug("adding path from command line args")
 		opts.Paths = append(opts.Paths, arg)
 	}
 
@@ -116,6 +121,7 @@ func configureLog(log *logrus.Logger, c *cli.Context) {
 	}
 	if c.Bool("debug") || os.Getenv("ARTIFACTS_DEBUG") != "" {
 		log.Level = logrus.Debug
+		log.Debug("setting log level to debug")
 	}
 }
 
@@ -165,5 +171,11 @@ func overlayFlags(opts *upload.Options, c *cli.Context) {
 	}
 	if value := c.String("working-dir"); value != "" {
 		opts.WorkingDir = value
+	}
+	if value := c.String("save-url"); value != "" {
+		opts.ArtifactsSaveURL = value
+	}
+	if value := c.String("auth-token"); value != "" {
+		opts.ArtifactsAuthToken = value
 	}
 }

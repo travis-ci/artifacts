@@ -6,6 +6,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dustin/go-humanize"
+	"github.com/meatballhat/artifacts/artifact"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 )
@@ -26,7 +27,7 @@ func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 	}
 }
 
-func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact, out chan *artifact, done chan bool) {
+func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
 	auth, err := aws.GetAuth(opts.AccessKey, opts.SecretKey)
 
 	if err != nil {
@@ -49,48 +50,45 @@ func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact, out c
 		return
 	}
 
-	for artifact := range in {
-		err := s3p.uploadFile(opts, bucket, artifact)
+	for a := range in {
+		err := s3p.uploadFile(opts, bucket, a)
 		if err != nil {
-			artifact.Result.OK = false
-			artifact.Result.Err = err
+			a.UploadResult.OK = false
+			a.UploadResult.Err = err
 		} else {
-			artifact.Result.OK = true
+			a.UploadResult.OK = true
 		}
-		out <- artifact
+		out <- a
 	}
 
 	done <- true
 	return
 }
 
-func (s3p *s3Provider) Name() string {
-	return "s3"
-}
-
-func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact) error {
+func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artifact) error {
 	retries := uint64(0)
 
 	for {
 		err := s3p.rawUpload(opts, b, a)
-		if err != nil {
-			if retries < opts.Retries {
-				retries += 1
-				s3p.log.WithFields(logrus.Fields{
-					"artifact": a.Path.From,
-					"retry":    retries,
-				}).Debug("retrying")
-				time.Sleep(s3p.RetryInterval)
-				continue
-			} else {
-				return err
-			}
+		if err == nil {
+			return nil
 		}
-		return nil
+		if retries < opts.Retries {
+			retries++
+			s3p.log.WithFields(logrus.Fields{
+				"artifact": a.Path.From,
+				"retry":    retries,
+			}).Debug("retrying")
+			time.Sleep(s3p.RetryInterval)
+			continue
+		} else {
+			return err
+		}
 	}
+	return nil
 }
 
-func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact) error {
+func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifact) error {
 	destination := a.FullDestination()
 	reader, err := a.Reader()
 	if err != nil {
@@ -127,8 +125,4 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact) error
 	}
 
 	return nil
-}
-
-func pctMax(artifactSize, maxSize uint64) float64 {
-	return float64(100.0) * (float64(artifactSize) / float64(maxSize))
 }

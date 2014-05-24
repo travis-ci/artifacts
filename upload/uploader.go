@@ -10,6 +10,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dustin/go-humanize"
+	"github.com/meatballhat/artifacts/artifact"
 	"github.com/meatballhat/artifacts/path"
 )
 
@@ -49,6 +50,8 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	}
 
 	switch opts.Provider {
+	case "artifacts":
+		provider = newArtifactsProvider(opts, log)
 	case "s3":
 		provider = newS3Provider(opts, log)
 	case "null":
@@ -73,7 +76,10 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 		if len(parts) < 2 {
 			parts = append(parts, "")
 		}
-		u.Paths.Add(path.NewPath(opts.WorkingDir, parts[0], parts[1]))
+
+		p := path.New(opts.WorkingDir, parts[0], parts[1])
+		log.WithFields(logrus.Fields{"path": p}).Debug("adding path")
+		u.Paths.Add(p)
 	}
 
 	return u
@@ -84,8 +90,8 @@ func (u *uploader) Upload() error {
 	done := make(chan bool)
 	allDone := uint64(0)
 	inChan := u.files()
-	outChan := make(chan *artifact)
-	failed := []*artifact{}
+	outChan := make(chan *artifact.Artifact)
+	failed := []*artifact.Artifact{}
 
 	defer func() {
 		if len(failed) == 0 {
@@ -94,7 +100,7 @@ func (u *uploader) Upload() error {
 
 		for _, a := range failed {
 			u.log.WithFields(logrus.Fields{
-				"err": a.Result.Err,
+				"err": a.UploadResult.Err,
 			}).Error(fmt.Sprintf("failed to upload: %s", a.Path.From))
 		}
 	}()
@@ -124,11 +130,11 @@ func (u *uploader) Upload() error {
 	for {
 		select {
 		case outArtifact := <-outChan:
-			if outArtifact != nil && !outArtifact.Result.OK {
+			if outArtifact != nil && !outArtifact.UploadResult.OK {
 				failed = append(failed, outArtifact)
 			}
 		case <-done:
-			allDone += 1
+			allDone++
 			if allDone >= u.Opts.Concurrency {
 				return nil
 			}
@@ -138,7 +144,7 @@ func (u *uploader) Upload() error {
 	return nil
 }
 
-func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact) error {
+func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.Artifact) error {
 	to, from, root := path.To, path.From, path.Root
 	if path.IsDir() {
 		root = filepath.Join(root, from)
@@ -164,8 +170,8 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 				u.curSize.Lock()
 				defer u.curSize.Unlock()
 
-				artifact := newArtifact(path, targetPath, destination, u.Opts.Perm)
-				size, err := artifact.Size()
+				a := artifact.New(path, u.Opts.RepoSlug, targetPath, destination, u.Opts.Perm)
+				size, err := a.Size()
 				if err != nil {
 					return err
 				}
@@ -186,7 +192,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 				}
 
 				u.log.WithFields(logFields).Debug("queueing artifact")
-				artifacts <- artifact
+				artifacts <- a
 				return nil
 			}()
 			if err != nil {
@@ -199,13 +205,13 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact)
 	return nil
 }
 
-func (u *uploader) artifactFeeder(artifacts chan *artifact) error {
+func (u *uploader) artifactFeeder(artifacts chan *artifact.Artifact) error {
 	u.curSize = &maxSizeTracker{Current: uint64(0)}
 
 	i := 0
 	for _, path := range u.Paths.All() {
 		u.artifactFeederLoop(path, artifacts)
-		i += 1
+		i++
 	}
 
 	u.log.WithFields(logrus.Fields{
@@ -217,8 +223,8 @@ func (u *uploader) artifactFeeder(artifacts chan *artifact) error {
 	return nil
 }
 
-func (u *uploader) files() chan *artifact {
-	artifacts := make(chan *artifact)
+func (u *uploader) files() chan *artifact.Artifact {
+	artifacts := make(chan *artifact.Artifact)
 	go u.artifactFeeder(artifacts)
 	return artifacts
 }

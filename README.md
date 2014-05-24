@@ -45,16 +45,18 @@ function "DetectContentType".
 
 ### OPTIONS
 * `--key, -k`             upload credentials key (`$ARTIFACTS_KEY`) *REQUIRED*
-* `--secret, -s`         upload credentials secret (`$ARTIFACTS_SECRET`) *REQUIRED*
 * `--bucket, -b`         destination bucket (`$ARTIFACTS_BUCKET`) *REQUIRED*
 * `--cache-control`         artifact cache-control header value (`$ARTIFACTS_CACHE_CONTROL`) (default "private")
+* `--permissions`         artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
+* `--secret, -s`         upload credentials secret (`$ARTIFACTS_SECRET`) *REQUIRED*
 * `--concurrency`         upload worker concurrency (`$ARTIFACTS_CONCURRENCY`) (default 5)
 * `--max-size`             max combined size of uploaded artifacts (`$ARTIFACTS_MAX_SIZE`) (default 1.0GB)
-* `--permissions`         artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
 * `--retries`             number of upload retries per artifact (`$ARTIFACT_RETRIES`) (default 2)
 * `--target-paths, -t`         artifact target paths (':'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
-* `--upload-provider, -p`     artifact upload provider (s3, null) (`$ARTIFACTS_UPLOAD_PROVIDER`) (default "s3")
 * `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`)
+* `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (`$ARTIFACTS_UPLOAD_PROVIDER`) (default "s3")
+* `--save-url, -U`         artifact save URL (`$ARTIFACTS_SAVE_URL`)
+* `--auth-token, -T`         artifact save auth token (`$ARTIFACTS_AUTH_TOKEN`)
 
 ### S3 ENVIRONMENT COMPATIBILITY
 
