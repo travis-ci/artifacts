@@ -120,6 +120,14 @@ func NewOptions() *Options {
 
 // Validate checks for validity!
 func (opts *Options) Validate() error {
+	if opts.Provider == "s3" {
+		return opts.validateS3()
+	}
+
+	return nil
+}
+
+func (opts *Options) validateS3() error {
 	if opts.BucketName == "" {
 		return fmt.Errorf("no bucket name given")
 	}
