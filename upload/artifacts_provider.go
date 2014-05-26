@@ -28,7 +28,7 @@ func newArtifactsProvider(opts *Options, log *logrus.Logger) *artifactsProvider 
 func (ap *artifactsProvider) Upload(id string, opts *Options,
 	in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
 
-	cl := client.New(ap.opts.ArtifactsSaveURL, ap.opts.ArtifactsAuthToken, ap.log)
+	cl := client.New(ap.opts.ArtifactsSaveHost, ap.opts.ArtifactsAuthToken, ap.log)
 
 	for a := range in {
 		err := ap.uploadFile(cl, a)

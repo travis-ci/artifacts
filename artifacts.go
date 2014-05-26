@@ -52,7 +52,7 @@ var (
 
 		cli.StringFlag{"upload-provider, p", "", fmt.Sprintf("artifact upload provider (artifacts, s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default %#v)", upload.DefaultUploadProvider)},
 
-		cli.StringFlag{"save-url, U", "", "artifact save URL ($ARTIFACTS_SAVE_URL)"},
+		cli.StringFlag{"save-host, H", "", "artifact save host ($ARTIFACTS_SAVE_HOST)"},
 		cli.StringFlag{"auth-token, T", "", "artifact save auth token ($ARTIFACTS_AUTH_TOKEN)"},
 	}
 )
@@ -172,8 +172,8 @@ func overlayFlags(opts *upload.Options, c *cli.Context) {
 	if value := c.String("working-dir"); value != "" {
 		opts.WorkingDir = value
 	}
-	if value := c.String("save-url"); value != "" {
-		opts.ArtifactsSaveURL = value
+	if value := c.String("save-host"); value != "" {
+		opts.ArtifactsSaveHost = value
 	}
 	if value := c.String("auth-token"); value != "" {
 		opts.ArtifactsAuthToken = value

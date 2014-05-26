@@ -150,6 +150,15 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.
 		root = filepath.Join(root, from)
 	}
 
+	artifactOpts := &artifact.Options{
+		Perm:        u.Opts.Perm,
+		RepoSlug:    u.Opts.RepoSlug,
+		BuildNumber: u.Opts.BuildNumber,
+		BuildID:     u.Opts.BuildID,
+		JobNumber:   u.Opts.JobNumber,
+		JobID:       u.Opts.JobID,
+	}
+
 	filepath.Walk(path.Fullpath(), func(f string, info os.FileInfo, err error) error {
 		if info != nil && info.IsDir() {
 			return nil
@@ -170,7 +179,8 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.
 				u.curSize.Lock()
 				defer u.curSize.Unlock()
 
-				a := artifact.New(path, u.Opts.RepoSlug, targetPath, destination, u.Opts.Perm)
+				a := artifact.New(path, targetPath, destination, artifactOpts)
+
 				size, err := a.Size()
 				if err != nil {
 					return err
