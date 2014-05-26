@@ -22,7 +22,9 @@ const (
 type Artifact struct {
 	RepoSlug    string
 	BuildNumber string
+	BuildID     string
 	JobNumber   string
+	JobID       string
 
 	Path        *apath.Path
 	Destination string
@@ -33,13 +35,18 @@ type Artifact struct {
 }
 
 // New creates a new *Artifact
-func New(path *apath.Path, repoSlug, prefix, destination string, perm s3.ACL) *Artifact {
+func New(path *apath.Path, prefix, destination string, opts *Options) *Artifact {
 	return &Artifact{
-		RepoSlug:    repoSlug,
 		Path:        path,
 		Prefix:      prefix,
 		Destination: destination,
-		Perm:        perm,
+
+		RepoSlug:    opts.RepoSlug,
+		BuildNumber: opts.BuildNumber,
+		BuildID:     opts.BuildID,
+		JobNumber:   opts.JobNumber,
+		JobID:       opts.JobID,
+		Perm:        opts.Perm,
 
 		UploadResult: &Result{},
 	}

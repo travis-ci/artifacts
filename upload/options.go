@@ -29,6 +29,18 @@ var (
 	// DefaultRepoSlug is the repo slug detected from the env
 	DefaultRepoSlug = ""
 
+	// DefaultBuildNumber is the build number detected from the env
+	DefaultBuildNumber = ""
+
+	// DefaultBuildID is the build id detected from the env
+	DefaultBuildID = ""
+
+	// DefaultJobNumber is the build number detected from the env
+	DefaultJobNumber = ""
+
+	// DefaultJobID is the build id detected from the env
+	DefaultJobID = ""
+
 	// DefaultRetries is the default number of times a given artifact upload will be retried
 	DefaultRetries = uint64(2)
 
@@ -51,7 +63,11 @@ type Options struct {
 	Perm         s3.ACL
 	SecretKey    string
 
-	RepoSlug string
+	RepoSlug    string
+	BuildNumber string
+	BuildID     string
+	JobNumber   string
+	JobID       string
 
 	Concurrency uint64
 	MaxSize     uint64
@@ -61,7 +77,7 @@ type Options struct {
 	TargetPaths []string
 	WorkingDir  string
 
-	ArtifactsSaveURL   string
+	ArtifactsSaveHost  string
 	ArtifactsAuthToken string
 }
 
@@ -71,6 +87,10 @@ func init() {
 		env.Get("TRAVIS_JOB_NUMBER", "")))
 
 	DefaultRepoSlug = env.Get("TRAVIS_REPO_SLUG", "")
+	DefaultBuildNumber = env.Get("TRAVIS_BUILD_NUMBER", "")
+	DefaultBuildID = env.Get("TRAVIS_BUILD_ID", "")
+	DefaultJobNumber = env.Get("TRAVIS_JOB_NUMBER", "")
+	DefaultJobID = env.Get("TRAVIS_JOB_ID", "")
 }
 
 // NewOptions makes some *Options with defaults!
@@ -103,7 +123,11 @@ func NewOptions() *Options {
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
 
-		RepoSlug: DefaultRepoSlug,
+		RepoSlug:    DefaultRepoSlug,
+		BuildNumber: DefaultBuildNumber,
+		BuildID:     DefaultBuildID,
+		JobNumber:   DefaultJobNumber,
+		JobID:       DefaultJobID,
 
 		Concurrency: env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
 		MaxSize:     env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
@@ -113,7 +137,7 @@ func NewOptions() *Options {
 		TargetPaths: targetPaths,
 		WorkingDir:  cwd,
 
-		ArtifactsSaveURL:   env.Get("ARTIFACTS_SAVE_URL", ""),
+		ArtifactsSaveHost:  env.Get("ARTIFACTS_SAVE_HOST", ""),
 		ArtifactsAuthToken: env.Get("ARTIFACTS_AUTH_TOKEN", ""),
 	}
 }

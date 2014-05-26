@@ -28,6 +28,6 @@ OPTIONS:
    --target-paths, -t 		artifact target paths (':'-delimited) ($ARTIFACTS_TARGET_PATHS) (default []string{"artifacts"})
    --working-dir 		working directory ($TRAVIS_BUILD_DIR) (default $PWD)
    --upload-provider, -p 	artifact upload provider (artifacts, s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default "s3")
-   --save-url, -U 		artifact save URL ($ARTIFACTS_SAVE_URL)
+   --save-host, -H 		artifact save host ($ARTIFACTS_SAVE_HOST)
    --auth-token, -T 		artifact save auth token ($ARTIFACTS_AUTH_TOKEN)
    

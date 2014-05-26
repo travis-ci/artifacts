@@ -46,7 +46,10 @@ func init() {
 
 func TestNewArtifact(t *testing.T) {
 	p := path.New("/", "foo", "bar")
-	a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
+	a := New(p, "bucket", "linux/foo", &Options{
+		Perm:     s3.PublicRead,
+		RepoSlug: "owner/foo",
+	})
 	if a == nil {
 		t.Errorf("new artifact is nil")
 	}
@@ -83,7 +86,10 @@ func TestNewArtifact(t *testing.T) {
 func TestArtifactContentType(t *testing.T) {
 	for filepath, expectedCtype := range testArtifactPaths {
 		p := path.New("whatever", filepath, "somewhere")
-		a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
+		a := New(p, "bucket", "linux/foo", &Options{
+			Perm:     s3.PublicRead,
+			RepoSlug: "owner/foo",
+		})
 		if a == nil {
 			t.Errorf("new artifact is nil")
 		}
@@ -98,7 +104,10 @@ func TestArtifactContentType(t *testing.T) {
 func TestArtifactReader(t *testing.T) {
 	for filepath := range testArtifactPaths {
 		p := path.New("whatever", filepath, "somewhere")
-		a := New(p, "owner/foo", "bucket", "linux/foo", s3.PublicRead)
+		a := New(p, "bucket", "linux/foo", &Options{
+			Perm:     s3.PublicRead,
+			RepoSlug: "owner/foo",
+		})
 		if a == nil {
 			t.Errorf("new artifact is nil")
 		}

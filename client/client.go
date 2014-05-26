@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -16,7 +17,7 @@ var (
 
 // Client does stuff with the server
 type Client struct {
-	SaveURL       string
+	SaveHost      string
 	Token         string
 	RetryInterval time.Duration
 
@@ -24,9 +25,9 @@ type Client struct {
 }
 
 // New creates a new *Client
-func New(url, token string, log *logrus.Logger) *Client {
+func New(host, token string, log *logrus.Logger) *Client {
 	return &Client{
-		SaveURL:       url,
+		SaveHost:      host,
 		Token:         token,
 		RetryInterval: 3 * time.Second,
 
@@ -41,7 +42,17 @@ func (c *Client) PutArtifact(a *artifact.Artifact) error {
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", c.SaveURL, reader)
+	// e.g. hostname.example.org/owner/repo/jobs/123456/path/to/artifact
+	fullURL := fmt.Sprintf("%s/%s",
+		c.SaveHost,
+		path.Join(a.RepoSlug, "jobs", a.JobID, a.Destination))
+
+	c.log.WithFields(logrus.Fields{
+		"url":    fullURL,
+		"source": a.Path.From,
+	}).Debug("putting artifact to url")
+
+	req, err := http.NewRequest("PUT", fullURL, reader)
 	if err != nil {
 		return err
 	}
