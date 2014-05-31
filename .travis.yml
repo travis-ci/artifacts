@@ -8,7 +8,7 @@ env:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
   - ARTIFACTS_CONCURRENCY=5
   - ARTIFACTS_S3_BUCKET=meatballhat
-  - ARTIFACTS_TARGET_PATHS="artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
+  - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_COMMIT"
   - ARTIFACTS_PERMISSIONS=public-read
   - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'
   - ARTIFACTS_LOG_FORMAT=multiline
@@ -21,6 +21,6 @@ before_install:
 - godep restore
 - go install -a -race std
 script:
-- make
+- make all crossbuild
 - ./deploy
 - ./install

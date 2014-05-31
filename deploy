@@ -15,7 +15,7 @@ if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
    [[ $TRAVIS_BRANCH == 'master' ]] &&
    [[ $TRAVIS_GO_VERSION == 'go1.2.2' ]] ; then
   echo "Deploying as 'stable'"
-  export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/stable"
+  export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/stable"
 else
   echo "Not deploying as 'stable'"
 fi
