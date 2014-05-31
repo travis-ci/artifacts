@@ -29,3 +29,6 @@ _testmain.go
 /artifacts.test
 
 /.env
+/.gox-bootstrap
+/build/
+/SHA256SUMS

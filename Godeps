@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Rev": "13600d23259ccda5a64370722cc80c8928e565cb"
+			"Rev": "d54646ba8e0f9846d5e8faee6d54c7893746e4e1"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",

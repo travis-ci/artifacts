@@ -2,9 +2,14 @@
 
 set -e
 
+SHA256SUMMER=sha256sum
+if ! sha256sum --version >/dev/null 2>&1 ; then
+  SHA256SUMMER=gsha256sum
+fi
+
 cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
-sha256sum ${ARTIFACTS_PATHS//:/ } > SHA256SUMS
+$SHA256SUMMER ${ARTIFACTS_PATHS//:/ } > SHA256SUMS
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
 
 echo "  TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
@@ -15,7 +20,7 @@ if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
    [[ $TRAVIS_BRANCH == 'master' ]] &&
    [[ $TRAVIS_GO_VERSION == 'go1.2.2' ]] ; then
   echo "Deploying as 'stable'"
-  export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/$(go env GOOS)/$(go env GOARCH)/$TRAVIS_REPO_SLUG/stable"
+  export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/stable"
 else
   echo "Not deploying as 'stable'"
 fi
