@@ -3,6 +3,9 @@ language: go
 go:
 - 1.2.2
 - tip
+matrix:
+  allowed_failures:
+  - go: tip
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
