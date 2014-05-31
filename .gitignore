@@ -31,3 +31,4 @@ _testmain.go
 /.env
 /.gox-bootstrap
 /build/
+/SHA256SUMS

@@ -12,7 +12,7 @@ GOX ?= gox
 GODEP ?= godep
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
-GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -os="linux darwin windows"
+GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="linux/amd64 darwin/amd64 windows/amd64"
 
 .PHONY: all
 all: clean test save USAGE.txt UPLOAD_USAGE.txt README.md
