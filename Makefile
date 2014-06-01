@@ -77,9 +77,8 @@ crossbuild: deps .gox-bootstrap
 
 .PHONY: deps
 deps:
-	$(GO) get $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
-	$(GO) get github.com/mitchellh/gox
 	$(GODEP) restore
+	$(GO) get github.com/mitchellh/gox
 
 .PHONY: clean
 clean:
