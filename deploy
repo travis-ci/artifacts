@@ -7,7 +7,6 @@ if ! sha256sum --version >/dev/null 2>&1 ; then
   SHA256SUMMER=gsha256sum
 fi
 
-cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
 $SHA256SUMMER ${ARTIFACTS_PATHS//:/ } > SHA256SUMS
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
