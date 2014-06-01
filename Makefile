@@ -12,7 +12,8 @@ GOX ?= gox
 GODEP ?= godep
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
-GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="linux/amd64 darwin/amd64 windows/amd64"
+GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
+GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
 .PHONY: all
 all: clean test save USAGE.txt UPLOAD_USAGE.txt README.md
@@ -64,7 +65,7 @@ README.md: USAGE.txt UPLOAD_USAGE.txt README.md.in $(shell git ls-files '*.go')
 	./build-readme < README.md.in > README.md
 
 .gox-bootstrap:
-	$(GOX) -build-toolchain > $@
+	$(GOX) -build-toolchain -osarch="$(GOX_OSARCH)" -verbose 2>&1 | tee $@
 
 .PHONY: build
 build: deps
@@ -76,9 +77,8 @@ crossbuild: deps .gox-bootstrap
 
 .PHONY: deps
 deps:
-	$(GO) get $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
-	$(GO) get github.com/mitchellh/gox
 	$(GODEP) restore
+	$(GO) get github.com/mitchellh/gox
 
 .PHONY: clean
 clean:
