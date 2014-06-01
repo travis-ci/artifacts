@@ -7,10 +7,8 @@ if ! sha256sum --version >/dev/null 2>&1 ; then
   SHA256SUMMER=gsha256sum
 fi
 
-cp -v ${GOPATH%%:*}/bin/artifacts ./artifacts
-export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
+export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":"):SHA256SUMS"
 $SHA256SUMMER ${ARTIFACTS_PATHS//:/ } > SHA256SUMS
-export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":")"
 
 echo "  TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
 echo "  TRAVIS_BRANCH=$TRAVIS_BRANCH"
@@ -26,4 +24,4 @@ else
 fi
 
 echo "  ARTIFACTS_TARGET_PATHS=$ARTIFACTS_TARGET_PATHS"
-${GOPATH%%:*}/bin/artifacts upload
+exec ${GOPATH%%:*}/bin/artifacts upload
