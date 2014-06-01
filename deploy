@@ -24,4 +24,4 @@ else
 fi
 
 echo "  ARTIFACTS_TARGET_PATHS=$ARTIFACTS_TARGET_PATHS"
-${GOPATH%%:*}/bin/artifacts upload
+exec ${GOPATH%%:*}/bin/artifacts upload
