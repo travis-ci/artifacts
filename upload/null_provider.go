@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/meatballhat/artifacts/artifact"
+	"github.com/travis-ci/artifacts/artifact"
 )
 
 var (

@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/meatballhat/artifacts",
+	"ImportPath": "github.com/travis-ci/artifacts",
 	"GoVersion": "go1.2.2",
 	"Deps": [
 		{

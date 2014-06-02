@@ -10,8 +10,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/dustin/go-humanize"
-	"github.com/meatballhat/artifacts/artifact"
-	"github.com/meatballhat/artifacts/path"
+	"github.com/travis-ci/artifacts/artifact"
+	"github.com/travis-ci/artifacts/path"
 )
 
 const (

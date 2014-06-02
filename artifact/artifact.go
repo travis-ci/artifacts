@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	apath "github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/s3"
+	apath "github.com/travis-ci/artifacts/path"
 )
 
 const (

@@ -9,9 +9,9 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/dustin/go-humanize"
-	"github.com/meatballhat/artifacts/logging"
-	"github.com/meatballhat/artifacts/upload"
 	"github.com/mitchellh/goamz/s3"
+	"github.com/travis-ci/artifacts/logging"
+	"github.com/travis-ci/artifacts/upload"
 )
 
 var (

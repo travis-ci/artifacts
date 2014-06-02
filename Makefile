@@ -1,4 +1,4 @@
-PACKAGE := github.com/meatballhat/artifacts
+PACKAGE := github.com/travis-ci/artifacts
 SUBPACKAGES := $(PACKAGE)/path $(PACKAGE)/upload $(PACKAGE)/env $(PACKAGE)/upload
 
 VERSION_VAR := main.VersionString
