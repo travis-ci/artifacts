@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/meatballhat/artifacts/artifact"
+	"github.com/travis-ci/artifacts/artifact"
 )
 
 var (

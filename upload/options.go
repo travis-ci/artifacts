@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/meatballhat/artifacts/env"
 	"github.com/mitchellh/goamz/s3"
+	"github.com/travis-ci/artifacts/env"
 )
 
 var (

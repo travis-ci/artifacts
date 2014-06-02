@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/meatballhat/artifacts/path"
 	"github.com/mitchellh/goamz/s3"
+	"github.com/travis-ci/artifacts/path"
 )
 
 var (

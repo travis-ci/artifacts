@@ -1,7 +1,7 @@
 package upload
 
 import (
-	"github.com/meatballhat/artifacts/artifact"
+	"github.com/travis-ci/artifacts/artifact"
 )
 
 type uploadProvider interface {
