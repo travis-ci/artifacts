@@ -16,7 +16,7 @@ GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
 GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
 .PHONY: all
-all: clean test save USAGE.txt UPLOAD_USAGE.txt README.md
+all: clean test save USAGE.txt UPLOAD_USAGE.txt USAGE.md
 
 .PHONY: test
 test: build fmtpolice test-deps test-race coverage.html
@@ -61,8 +61,8 @@ USAGE.txt: build
 UPLOAD_USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help upload > $@
 
-README.md: USAGE.txt UPLOAD_USAGE.txt README.md.in $(shell git ls-files '*.go')
-	./build-readme < README.md.in > README.md
+USAGE.md: USAGE.txt UPLOAD_USAGE.txt $(shell git ls-files '*.go')
+	./markdownify-usage < USAGE.in.md > USAGE.md
 
 .gox-bootstrap:
 	$(GOX) -build-toolchain -osarch="$(GOX_OSARCH)" -verbose 2>&1 | tee $@
