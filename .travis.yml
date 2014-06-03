@@ -10,8 +10,8 @@ env:
   - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'
   - ARTIFACTS_LOG_FORMAT=multiline
   - ARTIFACTS_DEBUG=1
-  - secure: s2EqeZxaJE90bakWEgbscC9uloXWB98vqcS6kEUOxkHByasts4BFm9uQbYu5UhVEUieAIWObt3817MpqxWdRPwRkmbHBuil7bCX3+x4n4JRIqVytl3Paw63xtLM46/VdNwyaJX8qe8//0F6B5KGW0BjWnCzIXYcRu6fCLtCYnno=
-  - secure: PRHJRw6Avk/5Q4s/LU6hAb1dOL5PTFG6MZDtzmo5mr1IAZW5CybNILbbDqb2BgIymOJ+rK6Sbp76Dd02jGPjl9JnTaKD/u/FnE1UCWEp1M7mIsw8ofg3yDIJthtrNbGvgtgk9g4KuCBTqWOw64+m8cnlqG9SSAVI/dQ/hzFoKHk=
+  - secure: uaCV3EJoH33CMDiI7DvC3pXBv6LwdJ6sKTk3oEpntOyQ2aAbab79oTp/XC1+jiERFr0EOlbjpjm5XpZVOo3XVEvdQRWN14XdngyqvN9s8SRhYedP/K6ujQffu0UZu0f/171M+Zcx2dUNzfyY7BDT+v7YVOKy952kEVaiV6byEMs=
+  - secure: Ko4W2n2WOM9HtsqJ6yab8D/r/to1OwQp0fXHyfdQ6GHzphwCZ9JgU27fWEDhmENA5hDpJ+fePCyf8G7fDpnzuFMD9kcHWe9SdvAu9FoEWGtkFbvsjfVntnfGOV0HJE1kH65gC1D3evD8lkZEi0CJHDbOSc87LF7wg4JDqQOVtY8=
 before_install:
 - go get github.com/tools/godep
 - go get code.google.com/p/go.tools/cmd/cover
