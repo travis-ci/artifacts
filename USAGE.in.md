@@ -1,7 +1,7 @@
 Travis CI Artifacts Uploader Usage
 ==================================
 
-:boom: *generated file* :boom:
+___GENERATED_WARNING___
 
 ## global options
 
