@@ -20,4 +20,4 @@ before_install:
 script:
 - make all crossbuild
 - "[[ $TRAVIS_PULL_REQUEST == false ]] && ./deploy"
-- "./install || true"
+- travis_retry ./install
