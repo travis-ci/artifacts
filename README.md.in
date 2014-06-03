@@ -1,7 +1,7 @@
 artifacts
 =========
 
-Travis CI Artifact thingy
+Travis CI Artifact Uploader
 
 # Installation
 
@@ -18,7 +18,7 @@ There is also an [install script](./install) for Linux and OSX that may
 be used like so:
 
 ``` bash
-curl -sL https://raw.githubusercontent.com/meatballhat/artifacts/master/install | bash
+curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 ```
 
 Once the binary is in your `$PATH` and has been made executable, you
