@@ -1,9 +1,9 @@
-artifacts
-=========
+Travis CI Artifacts Uploader
+============================
 
-Travis CI Artifact Uploader
+A smart little Go app to help aid in uploading build artifacts.
 
-# Installation
+## Installation
 
 There are pre-built binaries of the latest stable build for 64-bit
 Linux, OSX, and Windows available here via the following links.  Please
