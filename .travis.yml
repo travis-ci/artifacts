@@ -19,5 +19,5 @@ before_install:
 - go install -a -race std
 script:
 - make all crossbuild
-- ./deploy
-- ./install || true
+- if [[ $TRAVIS_PULL_REQUEST == false ]] ; then ./deploy ; fi
+- travis_retry ./install
