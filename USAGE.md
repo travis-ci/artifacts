@@ -1,7 +1,9 @@
 Travis CI Artifacts Uploader Usage
 ==================================
 
-:boom: *generated file* :boom:
+:boom: **Warning: file generated from [USAGE.in.md](./USAGE.in.md) ** :boom:
+<!-- 2014-06-03 14:38:09 UTC -->
+
 
 ## global options
 
