@@ -15,3 +15,5 @@ S3.  All of the required arguments may be provided as command line
 arguments or environment variables.
 
 ___UPLOAD_USAGE___
+
+<!-- ___CHECKSUM___ -->
