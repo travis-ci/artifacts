@@ -2,7 +2,6 @@ Travis CI Artifacts Uploader Usage
 ==================================
 
 :boom: **Warning: file generated from [USAGE.in.md](./USAGE.in.md) ** :boom:
-<!-- 2014-06-03 14:38:09 UTC -->
 
 
 ## global options
@@ -61,3 +60,5 @@ function "DetectContentType".
 * `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (`$ARTIFACTS_UPLOAD_PROVIDER`) (default "s3")
 * `--save-host, -H`         artifact save host (`$ARTIFACTS_SAVE_HOST`)
 * `--auth-token, -T`         artifact save auth token (`$ARTIFACTS_AUTH_TOKEN`)
+
+<!-- YGBLaxh9n1qb5RpfKTp+TFHqoyHGGp7beeqKl95dHC4= -->
