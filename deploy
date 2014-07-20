@@ -16,7 +16,7 @@ echo "  TRAVIS_GO_VERSION=$TRAVIS_GO_VERSION"
 
 if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
    [[ $TRAVIS_BRANCH == 'master' ]] &&
-   [[ $TRAVIS_GO_VERSION == 'go1.2.2' ]] ; then
+   [[ $TRAVIS_GO_VERSION == 'go1.3' ]] ; then
   echo "Deploying as 'stable'"
   export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/stable"
 else

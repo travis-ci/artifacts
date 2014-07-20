@@ -1,5 +1,6 @@
 ---
 language: go
+go: 1.3
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
