@@ -56,7 +56,7 @@ artifact-coverage.out:
 	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/artifact
 
 USAGE.txt: build
-	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^VERSION|\s+v\d\.\d\.\d' > $@
+	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^(VERSION|\s+v[0-9]\.[0-9]\.[0-9])' > $@
 
 UPLOAD_USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help upload > $@
