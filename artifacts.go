@@ -38,22 +38,74 @@ function "DetectContentType".
 
 var (
 	uploadFlags = []cli.Flag{
-		cli.StringFlag{"key, k", "", "upload credentials key ($ARTIFACTS_KEY) *REQUIRED*"},
-		cli.StringFlag{"bucket, b", "", "destination bucket ($ARTIFACTS_BUCKET) *REQUIRED*"},
-		cli.StringFlag{"cache-control", "", fmt.Sprintf("artifact cache-control header value ($ARTIFACTS_CACHE_CONTROL) (default %q)", upload.DefaultCacheControl)},
-		cli.StringFlag{"permissions", "", fmt.Sprintf("artifact access permissions ($ARTIFACTS_PERMISSIONS) (default %q)", upload.DefaultPerm)},
-		cli.StringFlag{"secret, s", "", "upload credentials secret ($ARTIFACTS_SECRET) *REQUIRED*"},
+		cli.StringFlag{
+			Name:   "key, k",
+			EnvVar: "ARTIFACTS_KEY",
+			Usage:  "upload credentials key *REQUIRED*",
+		},
+		cli.StringFlag{
+			Name:   "bucket, b",
+			EnvVar: "ARTIFACTS_BUCKET",
+			Usage:  "destination bucket *REQUIRED*",
+		},
+		cli.StringFlag{
+			Name:   "cache-control",
+			EnvVar: "ARTIFACTS_CACHE_CONTROL",
+			Usage:  fmt.Sprintf("artifact cache-control header value (default %q)", upload.DefaultCacheControl),
+		},
+		cli.StringFlag{
+			Name:   "permissions",
+			EnvVar: "ARTIFACTS_PERMISSIONS",
+			Usage:  fmt.Sprintf("artifact access permissions (default %q)", upload.DefaultPerm),
+		},
+		cli.StringFlag{
+			Name:   "secret, s",
+			EnvVar: "ARTIFACTS_SECRET",
+			Usage:  "upload credentials secret *REQUIRED*",
+		},
 
-		cli.StringFlag{"concurrency", "", fmt.Sprintf("upload worker concurrency ($ARTIFACTS_CONCURRENCY) (default %v)", upload.DefaultConcurrency)},
-		cli.StringFlag{"max-size", "", fmt.Sprintf("max combined size of uploaded artifacts ($ARTIFACTS_MAX_SIZE) (default %v)", humanize.Bytes(upload.DefaultMaxSize))},
-		cli.StringFlag{"retries", "", fmt.Sprintf("number of upload retries per artifact ($ARTIFACT_RETRIES) (default %v)", upload.DefaultRetries)},
-		cli.StringFlag{"target-paths, t", "", fmt.Sprintf("artifact target paths (':'-delimited) ($ARTIFACTS_TARGET_PATHS) (default %#v)", upload.DefaultTargetPaths)},
-		cli.StringFlag{"working-dir", "", "working directory ($TRAVIS_BUILD_DIR) (default $PWD)"},
+		cli.StringFlag{
+			Name:   "concurrency",
+			EnvVar: "ARTIFACTS_CONCURRENCY",
+			Usage:  fmt.Sprintf("upload worker concurrency (default %v)", upload.DefaultConcurrency),
+		},
+		cli.StringFlag{
+			Name:   "max-size",
+			EnvVar: "ARTIFACTS_MAX_SIZE",
+			Usage:  fmt.Sprintf("max combined size of uploaded artifacts (default %v)", humanize.Bytes(upload.DefaultMaxSize)),
+		},
+		cli.StringFlag{
+			Name:   "retries",
+			EnvVar: "ARTIFACTS_RETRIES",
+			Usage:  fmt.Sprintf("number of upload retries per artifact (default %v)", upload.DefaultRetries),
+		},
+		cli.StringFlag{
+			Name:   "target-paths, t",
+			EnvVar: "ARTIFACTS_TARGET_PATHS",
+			Usage:  fmt.Sprintf("artifact target paths (':'-delimited) (default %#v)", upload.DefaultTargetPaths),
+		},
+		cli.StringFlag{
+			Name:   "working-dir",
+			EnvVar: "TRAVIS_BUILD_DIR",
+			Usage:  "working directory ($TRAVIS_BUILD_DIR) (default $PWD)",
+		},
 
-		cli.StringFlag{"upload-provider, p", "", fmt.Sprintf("artifact upload provider (artifacts, s3, null) ($ARTIFACTS_UPLOAD_PROVIDER) (default %#v)", upload.DefaultUploadProvider)},
+		cli.StringFlag{
+			Name:   "upload-provider, p",
+			EnvVar: "ARTIFACTS_UPLOAD_PROVIDER",
+			Usage:  fmt.Sprintf("artifact upload provider (artifacts, s3, null) (default %#v)", upload.DefaultUploadProvider),
+		},
 
-		cli.StringFlag{"save-host, H", "", "artifact save host ($ARTIFACTS_SAVE_HOST)"},
-		cli.StringFlag{"auth-token, T", "", "artifact save auth token ($ARTIFACTS_AUTH_TOKEN)"},
+		cli.StringFlag{
+			Name:   "save-host, H",
+			EnvVar: "ARTIFACTS_SAVE_HOST",
+			Usage:  "artifact save host",
+		},
+		cli.StringFlag{
+			Name:   "auth-token, T",
+			EnvVar: "ARTIFACTS_AUTH_TOKEN",
+			Usage:  "artifact save auth token",
+		},
 	}
 )
 
@@ -68,8 +120,16 @@ func buildApp() *cli.App {
 	app.Usage = "manage your artifacts!"
 	app.Version = VersionString
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"log-format, f", "", "log output format (text, json, or multiline)"},
-		cli.BoolFlag{"debug, D", "set log level to debug"},
+		cli.StringFlag{
+			Name:   "log-format, f",
+			EnvVar: "ARTIFACTS_LOG_FORMAT",
+			Usage:  "log output format (text, json, or multiline)",
+		},
+		cli.BoolFlag{
+			Name:   "debug, D",
+			EnvVar: "ARTIFACTS_DEBUG",
+			Usage:  "set log level to debug",
+		},
 	}
 	app.Commands = []cli.Command{
 		{
@@ -111,15 +171,14 @@ func configureLog(log *logrus.Logger, c *cli.Context) {
 	log.Formatter = &logrus.TextFormatter{}
 
 	formatArg := c.GlobalString("log-format")
-	formatEnv := os.Getenv("ARTIFACTS_LOG_FORMAT")
 
-	if formatArg == "json" || formatEnv == "json" {
+	if formatArg == "json" {
 		log.Formatter = &logrus.JSONFormatter{}
 	}
-	if formatArg == "multiline" || formatEnv == "multiline" {
+	if formatArg == "multiline" {
 		log.Formatter = &logging.MultiLineFormatter{}
 	}
-	if c.Bool("debug") || os.Getenv("ARTIFACTS_DEBUG") != "" {
+	if c.Bool("debug") {
 		log.Level = logrus.Debug
 		log.Debug("setting log level to debug")
 	}
