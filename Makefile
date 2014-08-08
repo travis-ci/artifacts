@@ -86,7 +86,7 @@ clean:
 	rm -vf coverage.html *coverage.out
 	$(GO) clean $(PACKAGE) $(SUBPACKAGES) || true
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
-		find $${GOPATH%%:*}/pkg -name '*artifacts*' | xargs rm -rfv || true; \
+		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs rm -rfv || true; \
 	fi
 	rm -rvf ./build
 
