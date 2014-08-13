@@ -16,6 +16,36 @@
 			"Rev": "3cd90eb3d932037b141d4daff9a012e1aee7e765"
 		},
 		{
+			"ImportPath": "github.com/meatballhat/artifacts/artifact",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
+			"ImportPath": "github.com/meatballhat/artifacts/client",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
+			"ImportPath": "github.com/meatballhat/artifacts/env",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
+			"ImportPath": "github.com/meatballhat/artifacts/logging",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
+			"ImportPath": "github.com/meatballhat/artifacts/path",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
+			"ImportPath": "github.com/meatballhat/artifacts/upload",
+			"Comment": "v0.6.2-4-g5d61fbf",
+			"Rev": "5d61fbfaaa39b6b75f1a1d9bcec6b2e8b0ba99ab"
+		},
+		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
 			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
 		},
