@@ -146,8 +146,11 @@ func (u *uploader) Upload() error {
 
 func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.Artifact) error {
 	to, from, root := path.To, path.From, path.Root
+	u.log.WithField("path", path).Debug("incoming path")
+
 	if path.IsDir() {
 		root = filepath.Join(root, from)
+		u.log.WithField("root", root).Debug("path is dir, so setting root to root+from")
 	}
 
 	artifactOpts := &artifact.Options{
