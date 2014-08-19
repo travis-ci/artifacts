@@ -1,5 +1,11 @@
 PACKAGE := github.com/travis-ci/artifacts
-SUBPACKAGES := $(PACKAGE)/path $(PACKAGE)/upload $(PACKAGE)/env $(PACKAGE)/upload
+SUBPACKAGES := \
+	$(PACKAGE)/artifact \
+	$(PACKAGE)/client \
+	$(PACKAGE)/env \
+	$(PACKAGE)/logging \
+	$(PACKAGE)/path \
+	$(PACKAGE)/upload
 
 VERSION_VAR := main.VersionString
 REPO_VERSION := $(shell git describe --always --dirty --tags)
@@ -92,7 +98,7 @@ clean:
 
 .PHONY: save
 save:
-	$(GODEP) save -copy=false
+	$(GODEP) save -copy=false $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: fmtpolice
 fmtpolice:

@@ -179,7 +179,7 @@ func configureLog(log *logrus.Logger, c *cli.Context) {
 		log.Formatter = &logging.MultiLineFormatter{}
 	}
 	if c.Bool("debug") {
-		log.Level = logrus.Debug
+		log.Level = logrus.DebugLevel
 		log.Debug("setting log level to debug")
 	}
 }

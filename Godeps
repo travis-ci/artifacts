@@ -1,28 +1,37 @@
 {
 	"ImportPath": "github.com/travis-ci/artifacts",
 	"GoVersion": "go1.3",
+	"Packages": [
+		"github.com/travis-ci/artifacts",
+		"github.com/travis-ci/artifacts/artifact",
+		"github.com/travis-ci/artifacts/client",
+		"github.com/travis-ci/artifacts/env",
+		"github.com/travis-ci/artifacts/logging",
+		"github.com/travis-ci/artifacts/path",
+		"github.com/travis-ci/artifacts/upload"
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.2.0-4-gd54646b",
-			"Rev": "d54646ba8e0f9846d5e8faee6d54c7893746e4e1"
+			"Comment": "v0.5.1",
+			"Rev": "736840a898fb560e3d93413410a4cb1371f42f71"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-16-gaa19913",
-			"Rev": "aa19913be3107ab75ea67a5a88d667d62a69dbbd"
+			"Comment": "1.2.0-22-g687db20",
+			"Rev": "687db20fc379d1686465a28e9959707cd1acc990"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
-			"Rev": "3cd90eb3d932037b141d4daff9a012e1aee7e765"
+			"Rev": "cb7b800be3f0238405be0e57d481740cfc4fb285"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
-			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
+			"Rev": "9ebe83c699d34a62874821575395f7653f651581"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/s3",
-			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
+			"Rev": "9ebe83c699d34a62874821575395f7653f651581"
 		}
 	]
 }
