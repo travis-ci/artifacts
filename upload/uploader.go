@@ -55,7 +55,7 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 	case "s3":
 		provider = newS3Provider(opts, log)
 	case "null":
-		provider = newNullProvider([]string{})
+		provider = newNullProvider(nil, log)
 	default:
 		log.WithFields(logrus.Fields{
 			"provider": opts.Provider,
@@ -101,7 +101,7 @@ func (u *uploader) Upload() error {
 		for _, a := range failed {
 			u.log.WithFields(logrus.Fields{
 				"err": a.UploadResult.Err,
-			}).Error(fmt.Sprintf("failed to upload: %s", a.Path.From))
+			}).Error(fmt.Sprintf("failed to upload: %s", a.Source))
 		}
 	}()
 
@@ -146,8 +146,11 @@ func (u *uploader) Upload() error {
 
 func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.Artifact) error {
 	to, from, root := path.To, path.From, path.Root
+	u.log.WithField("path", path).Debug("incoming path")
+
 	if path.IsDir() {
 		root = filepath.Join(root, from)
+		u.log.WithField("root", root).Debug("path is dir, so setting root to root+from")
 	}
 
 	artifactOpts := &artifact.Options{
@@ -159,18 +162,19 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.
 		JobID:       u.Opts.JobID,
 	}
 
-	filepath.Walk(path.Fullpath(), func(f string, info os.FileInfo, err error) error {
+	filepath.Walk(path.Fullpath(), func(source string, info os.FileInfo, err error) error {
 		if info != nil && info.IsDir() {
+			u.log.WithField("path", source).Debug("skipping directory")
 			return nil
 		}
 
-		relPath := strings.Replace(strings.Replace(f, root, "", -1), root+"/", "", -1)
-		destination := relPath
+		relPath := strings.Replace(strings.Replace(source, root, "", -1), root+"/", "", -1)
+		dest := relPath
 		if len(to) > 0 {
 			if path.IsDir() {
-				destination = filepath.Join(to, relPath)
+				dest = filepath.Join(to, relPath)
 			} else {
-				destination = to
+				dest = to
 			}
 		}
 
@@ -179,7 +183,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.
 				u.curSize.Lock()
 				defer u.curSize.Unlock()
 
-				a := artifact.New(path, targetPath, destination, artifactOpts)
+				a := artifact.New(path, targetPath, source, dest, artifactOpts)
 
 				size, err := a.Size()
 				if err != nil {

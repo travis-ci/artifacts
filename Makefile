@@ -39,7 +39,7 @@ coverage.html: coverage.out
 	$(GO) tool cover -html=$^ -o $@
 
 coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-coverage.out artifact-coverage.out
-	$(GO) test -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
+	$(GO) test -v -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
 	echo 'mode: count' > $@
 	grep -h -v 'mode: count' $@.tmp >> $@
 	rm -f $@.tmp
@@ -47,19 +47,19 @@ coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-cov
 	$(GO) tool cover -func=$@
 
 path-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/path
+	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/path
 
 upload-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/upload
+	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/upload
 
 env-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/env
+	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/env
 
 logging-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
+	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
 
 artifact-coverage.out:
-	$(GO) test -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/artifact
+	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/artifact
 
 USAGE.txt: build
 	$${GOPATH%%:*}/bin/artifacts help | grep -v -E '^(VERSION|\s+v[0-9]\.[0-9]\.[0-9])' > $@

@@ -76,7 +76,7 @@ func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artif
 		if retries < opts.Retries {
 			retries++
 			s3p.log.WithFields(logrus.Fields{
-				"artifact": a.Path.From,
+				"artifact": a.Source,
 				"retry":    retries,
 			}).Debug("retrying")
 			time.Sleep(s3p.RetryInterval)
@@ -89,7 +89,7 @@ func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artif
 }
 
 func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifact) error {
-	destination := a.FullDestination()
+	dest := a.FullDest()
 	reader, err := a.Reader()
 	if err != nil {
 		return err
@@ -102,20 +102,20 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 	}
 
 	s3p.log.WithFields(logrus.Fields{
-		"download_url": fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, destination),
-	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Path.From, humanize.Bytes(size)))
+		"download_url": fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, dest),
+	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(size)))
 
 	s3p.log.WithFields(logrus.Fields{
 		"percent_max_size": pctMax(size, opts.MaxSize),
 		"max_size":         humanize.Bytes(opts.MaxSize),
-		"source":           a.Path.From,
-		"dest":             destination,
+		"source":           a.Source,
+		"dest":             dest,
 		"bucket":           b.Name,
 		"content_type":     ctype,
 		"cache_control":    opts.CacheControl,
 	}).Debug("more artifact details")
 
-	err = b.PutReaderHeader(destination, reader, int64(size),
+	err = b.PutReaderHeader(dest, reader, int64(size),
 		map[string][]string{
 			"Content-Type":  []string{ctype},
 			"Cache-Control": []string{opts.CacheControl},

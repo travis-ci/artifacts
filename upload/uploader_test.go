@@ -1,9 +1,14 @@
 package upload
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
+)
+
+var (
+	isDebug = os.Getenv("ARTIFACTS_DEBUG") != ""
 )
 
 func setUploaderEnv() {
@@ -20,6 +25,9 @@ func setUploaderEnv() {
 func getPanicLogger() *logrus.Logger {
 	log := logrus.New()
 	log.Level = logrus.PanicLevel
+	if isDebug {
+		log.Level = logrus.DebugLevel
+	}
 	return log
 }
 
@@ -28,9 +36,12 @@ func getTestUploader() *uploader {
 
 	log := logrus.New()
 	log.Level = logrus.PanicLevel
+	if isDebug {
+		log.Level = logrus.DebugLevel
+	}
 
 	u := newUploader(NewOptions(), log)
-	u.Provider = &nullProvider{}
+	u.Provider = newNullProvider(nil, log)
 	return u
 }
 
