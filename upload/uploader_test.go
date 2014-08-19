@@ -20,9 +20,9 @@ func setUploaderEnv() {
 
 func getPanicLogger() *logrus.Logger {
 	log := logrus.New()
-	log.Level = logrus.Panic
+	log.Level = logrus.PanicLevel
 	if os.Getenv("ARTIFACTS_DEBUG") != "" {
-		log.Level = logrus.Debug
+		log.Level = logrus.DebugLevel
 	}
 	return log
 }
@@ -31,7 +31,7 @@ func getTestUploader() *uploader {
 	setUploaderEnv()
 
 	log := logrus.New()
-	log.Level = logrus.Panic
+	log.Level = logrus.PanicLevel
 
 	u := newUploader(NewOptions(), log)
 	u.Provider = &nullProvider{}

@@ -1,5 +1,11 @@
 PACKAGE := github.com/travis-ci/artifacts
-SUBPACKAGES := $(PACKAGE)/path $(PACKAGE)/upload $(PACKAGE)/env $(PACKAGE)/upload
+SUBPACKAGES := \
+	$(PACKAGE)/artifact \
+	$(PACKAGE)/client \
+	$(PACKAGE)/env \
+	$(PACKAGE)/logging \
+	$(PACKAGE)/path \
+	$(PACKAGE)/upload
 
 VERSION_VAR := main.VersionString
 REPO_VERSION := $(shell git describe --always --dirty --tags)
@@ -86,13 +92,13 @@ clean:
 	rm -vf coverage.html *coverage.out
 	$(GO) clean $(PACKAGE) $(SUBPACKAGES) || true
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
-		find $${GOPATH%%:*}/pkg -name '*artifacts*' | xargs rm -rfv || true; \
+		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs rm -rfv || true; \
 	fi
 	rm -rvf ./build
 
 .PHONY: save
 save:
-	$(GODEP) save -copy=false
+	$(GODEP) save -copy=false $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: fmtpolice
 fmtpolice:
