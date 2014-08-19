@@ -7,6 +7,10 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
+var (
+	isDebug = os.Getenv("ARTIFACTS_DEBUG") != ""
+)
+
 func setUploaderEnv() {
 	setenvs(map[string]string{
 		"TRAVIS_BUILD_NUMBER":       "3",
@@ -21,7 +25,7 @@ func setUploaderEnv() {
 func getPanicLogger() *logrus.Logger {
 	log := logrus.New()
 	log.Level = logrus.PanicLevel
-	if os.Getenv("ARTIFACTS_DEBUG") != "" {
+	if isDebug {
 		log.Level = logrus.DebugLevel
 	}
 	return log
@@ -32,6 +36,9 @@ func getTestUploader() *uploader {
 
 	log := logrus.New()
 	log.Level = logrus.PanicLevel
+	if isDebug {
+		log.Level = logrus.DebugLevel
+	}
 
 	u := newUploader(NewOptions(), log)
 	u.Provider = &nullProvider{}

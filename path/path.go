@@ -1,7 +1,6 @@
 package path
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,9 +44,6 @@ func (p *Path) IsDir() bool {
 // IsExists tells if the path exists locally
 func (p *Path) IsExists() bool {
 	_, err := os.Stat(p.From)
-	if err != nil {
-		fmt.Printf(" ---> %v: %v\n", p.From, err)
-	}
 	return err == nil
 }
 
