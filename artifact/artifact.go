@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/mitchellh/goamz/s3"
-	apath "github.com/travis-ci/artifacts/path"
 )
 
 const (
@@ -26,7 +25,6 @@ type Artifact struct {
 	JobNumber   string
 	JobID       string
 
-	Path   *apath.Path
 	Source string
 	Dest   string
 	Prefix string
@@ -36,9 +34,8 @@ type Artifact struct {
 }
 
 // New creates a new *Artifact
-func New(path *apath.Path, prefix, source, dest string, opts *Options) *Artifact {
+func New(prefix, source, dest string, opts *Options) *Artifact {
 	return &Artifact{
-		Path:   path,
 		Prefix: prefix,
 		Source: source,
 		Dest:   dest,
@@ -61,7 +58,7 @@ func (a *Artifact) ContentType() string {
 		return ctype
 	}
 
-	f, err := os.Open(a.Path.Fullpath())
+	f, err := os.Open(a.Source)
 	if err != nil {
 		return defaultCtype
 	}
@@ -78,7 +75,7 @@ func (a *Artifact) ContentType() string {
 
 // Reader makes an io.Reader out of the filepath
 func (a *Artifact) Reader() (io.Reader, error) {
-	f, err := os.Open(a.Path.Fullpath())
+	f, err := os.Open(a.Source)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +85,7 @@ func (a *Artifact) Reader() (io.Reader, error) {
 
 // Size reports the size of the artifact
 func (a *Artifact) Size() (uint64, error) {
-	fi, err := os.Stat(a.Path.Fullpath())
+	fi, err := os.Stat(a.Source)
 	if err != nil {
 		return uint64(0), nil
 	}

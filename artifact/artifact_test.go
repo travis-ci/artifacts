@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/mitchellh/goamz/s3"
-	"github.com/travis-ci/artifacts/path"
 )
 
 var (
@@ -45,17 +44,12 @@ func init() {
 }
 
 func TestNewArtifact(t *testing.T) {
-	p := path.New("/", "foo", "bar")
-	a := New(p, "bucket", "/foo/bar", "linux/foo", &Options{
+	a := New("bucket", "/foo/bar", "linux/foo", &Options{
 		Perm:     s3.PublicRead,
 		RepoSlug: "owner/foo",
 	})
 	if a == nil {
 		t.Errorf("new artifact is nil")
-	}
-
-	if a.Path != p {
-		t.Errorf("path not set correctly: %v", a.Path)
 	}
 
 	if a.Prefix != "bucket" {
@@ -85,8 +79,7 @@ func TestNewArtifact(t *testing.T) {
 
 func TestArtifactContentType(t *testing.T) {
 	for filepath, expectedCtype := range testArtifactPaths {
-		p := path.New("whatever", filepath, "somewhere")
-		a := New(p, "bucket", "whatever/"+filepath, "linux/foo", &Options{
+		a := New("bucket", filepath, "linux/foo", &Options{
 			Perm:     s3.PublicRead,
 			RepoSlug: "owner/foo",
 		})
@@ -103,8 +96,7 @@ func TestArtifactContentType(t *testing.T) {
 
 func TestArtifactReader(t *testing.T) {
 	for filepath := range testArtifactPaths {
-		p := path.New("whatever", filepath, "somewhere")
-		a := New(p, "bucket", "whatever/"+filepath, "linux/foo", &Options{
+		a := New("bucket", filepath, "linux/foo", &Options{
 			Perm:     s3.PublicRead,
 			RepoSlug: "owner/foo",
 		})

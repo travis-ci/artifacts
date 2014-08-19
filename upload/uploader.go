@@ -183,7 +183,7 @@ func (u *uploader) artifactFeederLoop(path *path.Path, artifacts chan *artifact.
 				u.curSize.Lock()
 				defer u.curSize.Unlock()
 
-				a := artifact.New(path, targetPath, source, dest, artifactOpts)
+				a := artifact.New(targetPath, source, dest, artifactOpts)
 
 				size, err := a.Size()
 				if err != nil {
