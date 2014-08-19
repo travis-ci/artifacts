@@ -15,7 +15,7 @@ type MultiLineFormatter struct{}
 func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	var serialized []byte
 
-	levelText := strings.ToUpper(entry.Data["level"].(string))
+	levelText := strings.ToUpper(entry.Level.String())
 
 	msg := fmt.Sprintf("%s: %s\n", levelText, entry.Data["msg"])
 	if levelText == "ERROR" {

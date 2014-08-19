@@ -11,6 +11,7 @@ func TestFormat(t *testing.T) {
 	log := logrus.New()
 	entry := &logrus.Entry{
 		Logger: log,
+		Level:  logrus.InfoLevel,
 		Data: logrus.Fields{
 			"level": "info",
 			"msg":   "something",

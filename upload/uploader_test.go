@@ -19,7 +19,7 @@ func setUploaderEnv() {
 
 func getPanicLogger() *logrus.Logger {
 	log := logrus.New()
-	log.Level = logrus.Panic
+	log.Level = logrus.PanicLevel
 	return log
 }
 
@@ -27,7 +27,7 @@ func getTestUploader() *uploader {
 	setUploaderEnv()
 
 	log := logrus.New()
-	log.Level = logrus.Panic
+	log.Level = logrus.PanicLevel
 
 	u := newUploader(NewOptions(), log)
 	u.Provider = &nullProvider{}

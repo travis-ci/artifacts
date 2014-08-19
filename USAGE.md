@@ -18,10 +18,10 @@ artifacts - manage your artifacts!
 * `help, h`  Shows a list of commands or help for one command
 
 ### GLOBAL OPTIONS
-* `--log-format, -f`     log output format (text, json, or multiline)
-* `--debug, -D`        set log level to debug
-* `--version, -v`    print the version
+* `--log-format, -f`     log output format (text, json, or multiline) [`$ARTIFACTS_LOG_FORMAT`]
+* `--debug, -D`        set log level to debug [`$ARTIFACTS_DEBUG`]
 * `--help, -h`        show help
+* `--version, -v`    print the version
 
 ## upload
 
@@ -47,18 +47,18 @@ the file extension, then by sniffing up to the first 512 bytes via the net/http
 function "DetectContentType".
 
 ### OPTIONS
-* `--key, -k`             upload credentials key (`$ARTIFACTS_KEY`) *REQUIRED*
-* `--bucket, -b`         destination bucket (`$ARTIFACTS_BUCKET`) *REQUIRED*
-* `--cache-control`         artifact cache-control header value (`$ARTIFACTS_CACHE_CONTROL`) (default "private")
-* `--permissions`         artifact access permissions (`$ARTIFACTS_PERMISSIONS`) (default "private")
-* `--secret, -s`         upload credentials secret (`$ARTIFACTS_SECRET`) *REQUIRED*
-* `--concurrency`         upload worker concurrency (`$ARTIFACTS_CONCURRENCY`) (default 5)
-* `--max-size`             max combined size of uploaded artifacts (`$ARTIFACTS_MAX_SIZE`) (default 1.0GB)
-* `--retries`             number of upload retries per artifact (`$ARTIFACT_RETRIES`) (default 2)
-* `--target-paths, -t`         artifact target paths (':'-delimited) (`$ARTIFACTS_TARGET_PATHS`) (default []string{"artifacts"})
-* `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`)
-* `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (`$ARTIFACTS_UPLOAD_PROVIDER`) (default "s3")
-* `--save-host, -H`         artifact save host (`$ARTIFACTS_SAVE_HOST`)
-* `--auth-token, -T`         artifact save auth token (`$ARTIFACTS_AUTH_TOKEN`)
+* `--key, -k`             upload credentials key *REQUIRED* [`$ARTIFACTS_KEY`]
+* `--bucket, -b`         destination bucket *REQUIRED* [`$ARTIFACTS_BUCKET`]
+* `--cache-control`         artifact cache-control header value (default "private") [`$ARTIFACTS_CACHE_CONTROL`]
+* `--permissions`         artifact access permissions (default "private") [`$ARTIFACTS_PERMISSIONS`]
+* `--secret, -s`         upload credentials secret *REQUIRED* [`$ARTIFACTS_SECRET`]
+* `--concurrency`         upload worker concurrency (default 5) [`$ARTIFACTS_CONCURRENCY`]
+* `--max-size`             max combined size of uploaded artifacts (default 1.0GB) [`$ARTIFACTS_MAX_SIZE`]
+* `--retries`             number of upload retries per artifact (default 2) [`$ARTIFACTS_RETRIES`]
+* `--target-paths, -t`         artifact target paths (':'-delimited) (default []string{"artifacts"}) [`$ARTIFACTS_TARGET_PATHS`]
+* `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default `$PWD`) [`$TRAVIS_BUILD_DIR`]
+* `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (default "s3") [`$ARTIFACTS_UPLOAD_PROVIDER`]
+* `--save-host, -H`         artifact save host [`$ARTIFACTS_SAVE_HOST`]
+* `--auth-token, -T`         artifact save auth token [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- YGBLaxh9n1qb5RpfKTp+TFHqoyHGGp7beeqKl95dHC4= -->
+<!-- DjshFaVULjDNnXpXDFXlSdU4JeWbtMGCXTvW1PZhDBY= -->
