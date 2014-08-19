@@ -41,7 +41,7 @@ func getTestUploader() *uploader {
 	}
 
 	u := newUploader(NewOptions(), log)
-	u.Provider = &nullProvider{}
+	u.Provider = newNullProvider(nil, log)
 	return u
 }
 

@@ -56,7 +56,7 @@ func (ap *artifactsProvider) uploadFile(cl *client.Client, a *artifact.Artifact)
 		if retries < ap.opts.Retries {
 			retries++
 			ap.log.WithFields(logrus.Fields{
-				"artifact": a.Path.From,
+				"artifact": a.Source,
 				"retry":    retries,
 			}).Debug("retrying")
 			time.Sleep(ap.RetryInterval)
@@ -78,8 +78,8 @@ func (ap *artifactsProvider) rawUpload(cl *client.Client, a *artifact.Artifact) 
 	ap.log.WithFields(logrus.Fields{
 		"percent_max_size": pctMax(size, ap.opts.MaxSize),
 		"max_size":         humanize.Bytes(ap.opts.MaxSize),
-		"source":           a.Path.From,
-		"dest":             a.FullDestination(),
+		"source":           a.Source,
+		"dest":             a.FullDest(),
 		"content_type":     ctype,
 		"cache_control":    ap.opts.CacheControl,
 	}).Debug("more artifact details")

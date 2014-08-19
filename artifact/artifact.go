@@ -26,20 +26,22 @@ type Artifact struct {
 	JobNumber   string
 	JobID       string
 
-	Path        *apath.Path
-	Destination string
-	Prefix      string
-	Perm        s3.ACL
+	Path   *apath.Path
+	Source string
+	Dest   string
+	Prefix string
+	Perm   s3.ACL
 
 	UploadResult *Result
 }
 
 // New creates a new *Artifact
-func New(path *apath.Path, prefix, destination string, opts *Options) *Artifact {
+func New(path *apath.Path, prefix, source, dest string, opts *Options) *Artifact {
 	return &Artifact{
-		Path:        path,
-		Prefix:      prefix,
-		Destination: destination,
+		Path:   path,
+		Prefix: prefix,
+		Source: source,
+		Dest:   dest,
 
 		RepoSlug:    opts.RepoSlug,
 		BuildNumber: opts.BuildNumber,
@@ -54,7 +56,7 @@ func New(path *apath.Path, prefix, destination string, opts *Options) *Artifact 
 
 // ContentType makes it easier to find the perfect match
 func (a *Artifact) ContentType() string {
-	ctype := mime.TypeByExtension(path.Ext(a.Path.From))
+	ctype := mime.TypeByExtension(path.Ext(a.Source))
 	if ctype != "" {
 		return ctype
 	}
@@ -94,7 +96,7 @@ func (a *Artifact) Size() (uint64, error) {
 	return uint64(fi.Size()), nil
 }
 
-// FullDestination calculates the full remote destination path
-func (a *Artifact) FullDestination() string {
-	return strings.TrimLeft(filepath.Join(a.Prefix, a.Destination), "/")
+// FullDest calculates the full remote destination path
+func (a *Artifact) FullDest() string {
+	return strings.TrimLeft(filepath.Join(a.Prefix, a.Dest), "/")
 }
