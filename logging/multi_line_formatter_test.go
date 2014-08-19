@@ -10,13 +10,10 @@ func TestFormat(t *testing.T) {
 	formatter := &MultiLineFormatter{}
 	log := logrus.New()
 	entry := &logrus.Entry{
-		Logger: log,
-		Level:  logrus.InfoLevel,
-		Data: logrus.Fields{
-			"level": "info",
-			"msg":   "something",
-			"foo":   "bar",
-		},
+		Logger:  log,
+		Level:   logrus.InfoLevel,
+		Message: "something",
+		Data:    logrus.Fields{"foo": "bar"},
 	}
 
 	bytes, err := formatter.Format(entry)

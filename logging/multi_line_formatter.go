@@ -17,7 +17,7 @@ func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	levelText := strings.ToUpper(entry.Level.String())
 
-	msg := fmt.Sprintf("%s: %s\n", levelText, entry.Data["msg"])
+	msg := fmt.Sprintf("%s: %s\n", levelText, entry.Message)
 	if levelText == "ERROR" {
 		msg = fmt.Sprintf("\033[31;1m%s\033[0m", msg)
 	}
@@ -25,7 +25,7 @@ func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	keys := make([]string, 0)
 	for k := range entry.Data {
-		if k != "level" && k != "time" && k != "msg" {
+		if k != "time" {
 			keys = append(keys, k)
 		}
 	}
