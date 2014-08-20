@@ -7,6 +7,13 @@ SUBPACKAGES := \
 	$(PACKAGE)/path \
 	$(PACKAGE)/upload
 
+COVERPROFILES := \
+	artifact-coverage.coverprofile \
+	env-coverage.coverprofile \
+	logging-coverage.coverprofile \
+	path-coverage.coverprofile \
+	upload-coverage.coverprofile
+
 VERSION_VAR := main.VersionString
 REPO_VERSION := $(shell git describe --always --dirty --tags)
 
@@ -35,10 +42,10 @@ test-deps:
 test-race:
 	$(GO) test -race $(GOBUILD_LDFLAGS) $(PACKAGE) $(SUBPACKAGES)
 
-coverage.html: coverage.out
+coverage.html: coverage.coverprofile
 	$(GO) tool cover -html=$^ -o $@
 
-coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-coverage.out artifact-coverage.out
+coverage.coverprofile: $(COVERPROFILES)
 	$(GO) test -v -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
 	echo 'mode: count' > $@
 	grep -h -v 'mode: count' $@.tmp >> $@
@@ -46,19 +53,19 @@ coverage.out: path-coverage.out upload-coverage.out env-coverage.out logging-cov
 	grep -h -v 'mode: count' $^ >> $@
 	$(GO) tool cover -func=$@
 
-path-coverage.out:
+path-coverage.coverprofile:
 	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/path
 
-upload-coverage.out:
+upload-coverage.coverprofile:
 	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/upload
 
-env-coverage.out:
+env-coverage.coverprofile:
 	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/env
 
-logging-coverage.out:
+logging-coverage.coverprofile:
 	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/logging
 
-artifact-coverage.out:
+artifact-coverage.coverprofile:
 	$(GO) test -v -covermode=count -coverprofile=$@ $(GOBUILD_LDFLAGS) $(PACKAGE)/artifact
 
 USAGE.txt: build
@@ -74,7 +81,10 @@ USAGE.md: USAGE.txt UPLOAD_USAGE.txt $(shell git ls-files '*.go')
 	$(GOX) -build-toolchain -osarch="$(GOX_OSARCH)" -verbose 2>&1 | tee $@
 
 .PHONY: build
-build: deps
+build: deps .build
+
+.PHONY: .build
+.build:
 	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: crossbuild
@@ -82,14 +92,19 @@ crossbuild: deps .gox-bootstrap
 	$(GOX) $(GOX_FLAGS) $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: deps
-deps:
-	$(GODEP) restore
-	$(GO) get github.com/mitchellh/gox
+deps: .gox-install .deps
+
+.deps:
+	$(GODEP) restore && touch $@
+
+.gox-install:
+	$(GO) get -x github.com/mitchellh/gox > $@
 
 .PHONY: clean
 clean:
+	rm -vf .gox-* .deps
 	rm -vf $${GOPATH%%:*}/bin/artifacts
-	rm -vf coverage.html *coverage.out
+	rm -vf coverage.html *.coverprofile
 	$(GO) clean $(PACKAGE) $(SUBPACKAGES) || true
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
 		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs rm -rfv || true; \
