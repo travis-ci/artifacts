@@ -22,7 +22,7 @@ _testmain.go
 *.exe
 *.test
 
-*coverage.out
+*.coverprofile
 *coverage.html
 
 /artifacts
@@ -30,5 +30,7 @@ _testmain.go
 
 /.env
 /.gox-bootstrap
+/.gox-install
+/.deps
 /build/
 /SHA256SUMS

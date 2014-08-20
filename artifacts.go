@@ -118,7 +118,7 @@ func buildApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "artifacts"
 	app.Usage = "manage your artifacts!"
-	app.Version = VersionString
+	app.Version = fmt.Sprintf("%s revision=%s", VersionString, RevisionString)
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "log-format, f",
