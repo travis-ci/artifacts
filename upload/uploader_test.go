@@ -34,12 +34,7 @@ func getPanicLogger() *logrus.Logger {
 func getTestUploader() *uploader {
 	setUploaderEnv()
 
-	log := logrus.New()
-	log.Level = logrus.PanicLevel
-	if isDebug {
-		log.Level = logrus.DebugLevel
-	}
-
+	log := getPanicLogger()
 	u := newUploader(NewOptions(), log)
 	u.Provider = newNullProvider(nil, log)
 	return u
@@ -69,6 +64,35 @@ func TestNewUploader(t *testing.T) {
 
 	if len(u.Paths.All()) != 2 {
 		t.Errorf("all paths length != 2: %v", len(u.Paths.All()))
+	}
+}
+
+var testOptsProviderCases = map[string]string{
+	"artifacts": "artifacts",
+	"s3":        "s3",
+	"null":      "null",
+	"foo":       "s3",
+	"":          "s3",
+}
+
+func TestNewUploaderProviderOptions(t *testing.T) {
+	opts := NewOptions()
+	for opt, name := range testOptsProviderCases {
+		opts.Provider = opt
+		u := newUploader(opts, getPanicLogger())
+		if u.Provider.Name() != name {
+			t.Fatalf("new uploader does not have %s provider: %q != %q",
+				name, u.Provider.Name(), name)
+		}
+	}
+}
+
+func TestNewUploaderUnsetCacheControlOption(t *testing.T) {
+	opts := NewOptions()
+	opts.CacheControl = ""
+	u := newUploader(opts, getPanicLogger())
+	if u.Opts.CacheControl != defaultPublicCacheControl {
+		t.Fatalf("new uploader cache control option not defaulted")
 	}
 }
 

@@ -126,3 +126,7 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 
 	return nil
 }
+
+func (s3p *s3Provider) Name() string {
+	return "s3"
+}
