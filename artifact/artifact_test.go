@@ -11,12 +11,36 @@ import (
 	"github.com/mitchellh/goamz/s3"
 )
 
+type testPath struct {
+	Path        string
+	ContentType string
+	Valid       bool
+}
+
 var (
 	testTmp, err        = ioutil.TempDir("", "artifacts-test-upload")
 	testArtifactPathDir = filepath.Join(testTmp, "artifact")
-	testArtifactPaths   = map[string]string{
-		filepath.Join(testArtifactPathDir, "foo"):     "text/plain; charset=utf-8",
-		filepath.Join(testArtifactPathDir, "foo.csv"): "text/csv; charset=utf-8",
+	testArtifactPaths   = []*testPath{
+		&testPath{
+			Path:        filepath.Join(testArtifactPathDir, "foo"),
+			ContentType: "text/plain; charset=utf-8",
+			Valid:       true,
+		},
+		&testPath{
+			Path:        filepath.Join(testArtifactPathDir, "foo.csv"),
+			ContentType: "text/csv; charset=utf-8",
+			Valid:       true,
+		},
+		&testPath{
+			Path:        filepath.Join(testArtifactPathDir, "nonexistent"),
+			ContentType: defaultCtype,
+			Valid:       false,
+		},
+		&testPath{
+			Path:        filepath.Join(testArtifactPathDir, "unreadable"),
+			ContentType: defaultCtype,
+			Valid:       false,
+		},
 	}
 )
 
@@ -30,15 +54,24 @@ func init() {
 		log.Panicf("game over: %v\n", err)
 	}
 
-	for filepath := range testArtifactPaths {
-		fd, err := os.Create(filepath)
+	for _, p := range testArtifactPaths {
+		if filepath.Base(p.Path) == "nonexistent" {
+			continue
+		}
+
+		fd, err := os.Create(p.Path)
 		if err != nil {
 			log.Panicf("game over: %v\n", err)
 		}
 
 		defer fd.Close()
+
 		for i := 0; i < 512; i++ {
 			fmt.Fprintf(fd, "something\n")
+		}
+
+		if filepath.Base(p.Path) == "unreadable" {
+			fd.Chmod(0000)
 		}
 	}
 }
@@ -49,64 +82,68 @@ func TestNewArtifact(t *testing.T) {
 		RepoSlug: "owner/foo",
 	})
 	if a == nil {
-		t.Errorf("new artifact is nil")
+		t.Fatalf("new artifact is nil")
 	}
 
 	if a.Prefix != "bucket" {
-		t.Errorf("prefix not set correctly: %v", a.Prefix)
+		t.Fatalf("prefix not set correctly: %v", a.Prefix)
 	}
 
 	if a.Dest != "linux/foo" {
-		t.Errorf("destination not set correctly: %v", a.Dest)
+		t.Fatalf("destination not set correctly: %v", a.Dest)
 	}
 
 	if a.Perm != s3.PublicRead {
-		t.Errorf("s3 perm not set correctly: %v", a.Perm)
+		t.Fatalf("s3 perm not set correctly: %v", a.Perm)
 	}
 
 	if a.UploadResult == nil {
-		t.Errorf("result not initialized")
+		t.Fatalf("result not initialized")
 	}
 
 	if a.UploadResult.OK {
-		t.Errorf("result initialized with OK as true")
+		t.Fatalf("result initialized with OK as true")
 	}
 
 	if a.UploadResult.Err != nil {
-		t.Errorf("result initialized with non-nil Err")
+		t.Fatalf("result initialized with non-nil Err")
 	}
 }
 
 func TestArtifactContentType(t *testing.T) {
-	for filepath, expectedCtype := range testArtifactPaths {
-		a := New("bucket", filepath, "linux/foo", &Options{
+	for _, p := range testArtifactPaths {
+		a := New("bucket", p.Path, "linux/foo", &Options{
 			Perm:     s3.PublicRead,
 			RepoSlug: "owner/foo",
 		})
 		if a == nil {
-			t.Errorf("new artifact is nil")
+			t.Fatalf("new artifact is nil")
 		}
 
 		actualCtype := a.ContentType()
-		if expectedCtype != actualCtype {
-			t.Errorf("%v != %v", expectedCtype, actualCtype)
+		if p.ContentType != actualCtype {
+			t.Fatalf("%v: %v != %v", p.Path, p.ContentType, actualCtype)
 		}
 	}
 }
 
 func TestArtifactReader(t *testing.T) {
-	for filepath := range testArtifactPaths {
-		a := New("bucket", filepath, "linux/foo", &Options{
+	for _, p := range testArtifactPaths {
+		if !p.Valid {
+			continue
+		}
+
+		a := New("bucket", p.Path, "linux/foo", &Options{
 			Perm:     s3.PublicRead,
 			RepoSlug: "owner/foo",
 		})
 		if a == nil {
-			t.Errorf("new artifact is nil")
+			t.Fatalf("new artifact is nil")
 		}
 
 		reader, err := a.Reader()
 		if err != nil {
-			t.Error(err)
+			t.Fatalf("error getting reader: %v", err)
 		}
 
 		_, err = ioutil.ReadAll(reader)

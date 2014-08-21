@@ -11,6 +11,8 @@ var (
 )
 
 func init() {
+	os.Clearenv()
+
 	if err != nil {
 		log.Panicf("game over: %v\n", err)
 	}
