@@ -1,8 +1,12 @@
 package upload
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestOptionsValidate(t *testing.T) {
+	os.Clearenv()
 	opts := NewOptions()
 	opts.Provider = "null"
 
@@ -12,6 +16,7 @@ func TestOptionsValidate(t *testing.T) {
 }
 
 func TestOptionsValidateS3(t *testing.T) {
+	os.Clearenv()
 	opts := NewOptions()
 	opts.Provider = "s3"
 
@@ -48,5 +53,4 @@ func TestOptionsValidateS3(t *testing.T) {
 	if opts.Validate() != nil {
 		t.Fatalf("valid s3 options were deemed invalid")
 	}
-
 }
