@@ -52,3 +52,7 @@ func (np *nullProvider) Upload(id string, opts *Options,
 
 	done <- true
 }
+
+func (np *nullProvider) Name() string {
+	return "null"
+}

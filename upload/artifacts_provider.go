@@ -86,3 +86,7 @@ func (ap *artifactsProvider) rawUpload(cl *client.Client, a *artifact.Artifact) 
 
 	return cl.PutArtifact(a)
 }
+
+func (ap *artifactsProvider) Name() string {
+	return "artifacts"
+}
