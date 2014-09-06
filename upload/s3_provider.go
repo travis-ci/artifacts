@@ -11,11 +11,18 @@ import (
 	"github.com/travis-ci/artifacts/artifact"
 )
 
+var (
+	nilAuth aws.Auth
+)
+
 type s3Provider struct {
 	RetryInterval time.Duration
 
 	opts *Options
 	log  *logrus.Logger
+
+	overrideConn *s3.S3
+	overrideAuth aws.Auth
 }
 
 func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
@@ -24,11 +31,13 @@ func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 
 		opts: opts,
 		log:  log,
+
+		overrideAuth: nilAuth,
 	}
 }
 
 func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
-	auth, err := aws.GetAuth(opts.AccessKey, opts.SecretKey)
+	auth, err := s3p.getAuth(opts.AccessKey, opts.SecretKey)
 
 	if err != nil {
 		s3p.log.WithFields(logrus.Fields{
@@ -39,7 +48,7 @@ func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifa
 		return
 	}
 
-	conn := s3.New(auth, aws.USEast)
+	conn := s3p.getConn(auth)
 	bucket := conn.Bucket(opts.BucketName)
 
 	if bucket == nil {
@@ -125,6 +134,24 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 	}
 
 	return nil
+}
+
+func (s3p *s3Provider) getConn(auth aws.Auth) *s3.S3 {
+	if s3p.overrideConn != nil {
+		s3p.log.WithField("conn", s3p.overrideConn).Debug("using override connection")
+		return s3p.overrideConn
+	}
+	s3p.log.Debug("creating new connection")
+	return s3.New(auth, aws.USEast)
+}
+
+func (s3p *s3Provider) getAuth(accessKey, secretKey string) (aws.Auth, error) {
+	if s3p.overrideAuth != nilAuth {
+		s3p.log.WithField("auth", s3p.overrideAuth).Debug("using override auth")
+		return s3p.overrideAuth, nil
+	}
+	s3p.log.Debug("creating new auth")
+	return aws.GetAuth(accessKey, secretKey)
 }
 
 func (s3p *s3Provider) Name() string {
