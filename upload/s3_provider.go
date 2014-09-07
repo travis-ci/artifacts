@@ -87,6 +87,7 @@ func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artif
 			s3p.log.WithFields(logrus.Fields{
 				"artifact": a.Source,
 				"retry":    retries,
+				"err":      err,
 			}).Debug("retrying")
 			time.Sleep(s3p.RetryInterval)
 			continue

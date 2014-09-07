@@ -25,6 +25,7 @@ GOX ?= gox
 GODEP ?= godep
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
+GOTEST_FLAGS ?=
 GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
 GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
@@ -40,7 +41,7 @@ test-deps:
 
 .PHONY: test-race
 test-race:
-	$(GO) test -race $(GOBUILD_LDFLAGS) $(PACKAGE) $(SUBPACKAGES)
+	$(GO) test -race $(GOTEST_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE) $(SUBPACKAGES)
 
 coverage.html: coverage.coverprofile
 	$(GO) tool cover -html=$^ -o $@

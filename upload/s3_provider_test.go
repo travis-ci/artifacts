@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -22,6 +23,10 @@ var (
 func init() {
 	s3srv.SetUp()
 	testS3 = s3.New(s3srv.Auth, s3srv.Region)
+	err = testS3.Bucket("bucket").PutBucket(s3.ACL("public-read"))
+	if err != nil {
+		panic(err)
+	}
 }
 
 type localS3Server struct {
@@ -78,7 +83,19 @@ func TestS3ProviderUpload(t *testing.T) {
 	go s3p.Upload("test-0", opts, in, out, done)
 
 	go func() {
-		in <- &artifact.Artifact{}
+		for _, p := range testArtifactPaths {
+			if !p.Valid {
+				continue
+			}
+
+			a := artifact.New("bucket", p.Path, "linux/foo", &artifact.Options{
+				Perm:     s3.PublicRead,
+				RepoSlug: "owner/foo",
+			})
+
+			in <- a
+			fmt.Printf("---> Fed artifact: %#v\n", a)
+		}
 		close(in)
 	}()
 
