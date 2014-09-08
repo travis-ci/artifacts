@@ -11,8 +11,6 @@ env:
   - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'
   - ARTIFACTS_LOG_FORMAT=multiline
   - ARTIFACTS_DEBUG=1
-  - secure: uaCV3EJoH33CMDiI7DvC3pXBv6LwdJ6sKTk3oEpntOyQ2aAbab79oTp/XC1+jiERFr0EOlbjpjm5XpZVOo3XVEvdQRWN14XdngyqvN9s8SRhYedP/K6ujQffu0UZu0f/171M+Zcx2dUNzfyY7BDT+v7YVOKy952kEVaiV6byEMs=
-  - secure: Ko4W2n2WOM9HtsqJ6yab8D/r/to1OwQp0fXHyfdQ6GHzphwCZ9JgU27fWEDhmENA5hDpJ+fePCyf8G7fDpnzuFMD9kcHWe9SdvAu9FoEWGtkFbvsjfVntnfGOV0HJE1kH65gC1D3evD8lkZEi0CJHDbOSc87LF7wg4JDqQOVtY8=
 before_install:
 - go get github.com/tools/godep
 - go get code.google.com/p/go.tools/cmd/cover
@@ -20,5 +18,5 @@ before_install:
 - go install -a -race std
 script:
 - make all crossbuild
-- if [[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_SECURE_ENV_VARS == true ]] ; then ./deploy ; fi
+- if [[ $TRAVIS_PULL_REQUEST == false ]] ; then ./deploy ; fi
 - travis_retry ./install
