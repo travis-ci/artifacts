@@ -57,9 +57,9 @@ function "DetectContentType".
 * `--max-size`             max combined size of uploaded artifacts (default 1.0GB) [`$ARTIFACTS_MAX_SIZE`]
 * `--retries`             number of upload retries per artifact (default 2) [`$ARTIFACTS_RETRIES`]
 * `--target-paths, -t`         artifact target paths (':'-delimited) (default "artifacts") [`$ARTIFACTS_TARGET_PATHS`]
-* `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default "/home/me/gopath/src/github.com/travis-ci/artifacts") [`$TRAVIS_BUILD_DIR`]
+* `--working-dir`         working directory (`$TRAVIS_BUILD_DIR`) (default ".") [`$TRAVIS_BUILD_DIR`]
 * `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (default "s3") [`$ARTIFACTS_UPLOAD_PROVIDER`]
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- jvO0AJP6USiSsMDINIu4P9J9w4tUnbYtF8eTExXODuo= -->
+<!-- mcJmFMeM4wGaL1CzA5EbXZ4d3Fv5RjHHF8hgMQ/yfzs= -->
