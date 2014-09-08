@@ -13,6 +13,8 @@ import (
 
 var (
 	errFailedPut = fmt.Errorf("failed to put artifact to artifacts service")
+
+	defaultRetryInterval = 3 * time.Second
 )
 
 // Client does stuff with the server
@@ -29,7 +31,7 @@ func New(host, token string, log *logrus.Logger) *Client {
 	return &Client{
 		SaveHost:      host,
 		Token:         token,
-		RetryInterval: 3 * time.Second,
+		RetryInterval: defaultRetryInterval,
 
 		log: log,
 	}
