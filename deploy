@@ -10,18 +10,18 @@ fi
 export ARTIFACTS_PATHS="$(git ls-files -o | tr "\n" ":"):SHA256SUMS"
 $SHA256SUMMER ${ARTIFACTS_PATHS//:/ } > SHA256SUMS
 
-echo "  TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-echo "  TRAVIS_BRANCH=$TRAVIS_BRANCH"
-echo "  TRAVIS_GO_VERSION=$TRAVIS_GO_VERSION"
+echo "    TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+echo "    TRAVIS_BRANCH=$TRAVIS_BRANCH"
+echo "    TRAVIS_GO_VERSION=$TRAVIS_GO_VERSION"
 
 if [[ $TRAVIS_PULL_REQUEST == 'false' ]] &&
    [[ $TRAVIS_BRANCH == 'master' ]] &&
    [[ $TRAVIS_GO_VERSION == 'go1.3.1' ]] ; then
-  echo "Deploying as 'stable'"
+  echo "    # Deploying as 'stable'"
   export ARTIFACTS_TARGET_PATHS="$ARTIFACTS_TARGET_PATHS:artifacts/stable"
 else
-  echo "Not deploying as 'stable'"
+  echo "    # Not deploying as 'stable'"
 fi
 
-echo "  ARTIFACTS_TARGET_PATHS=$ARTIFACTS_TARGET_PATHS"
+echo "    ARTIFACTS_TARGET_PATHS=$ARTIFACTS_TARGET_PATHS"
 exec ${GOPATH%%:*}/bin/artifacts upload
