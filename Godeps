@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/travis-ci/artifacts",
-	"GoVersion": "go1.3",
+	"GoVersion": "go1.3.1",
 	"Packages": [
 		"github.com/travis-ci/artifacts",
 		"github.com/travis-ci/artifacts/artifact",
