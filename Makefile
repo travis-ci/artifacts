@@ -33,7 +33,10 @@ GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 all: clean test save USAGE.txt UPLOAD_USAGE.txt USAGE.md
 
 .PHONY: test
-test: build fmtpolice test-deps test-race coverage.html
+test: build fmtpolice test-deps .test
+
+.PHONY: .test
+.test: test-race coverage.html
 
 .PHONY: test-deps
 test-deps:

@@ -9,16 +9,22 @@ import (
 	"github.com/travis-ci/artifacts/client"
 )
 
+var (
+	defaultProviderRetryInterval = 3 * time.Second
+)
+
 type artifactsProvider struct {
 	RetryInterval time.Duration
 
 	opts *Options
 	log  *logrus.Logger
+
+	overrideClient client.ArtifactPutter
 }
 
 func newArtifactsProvider(opts *Options, log *logrus.Logger) *artifactsProvider {
 	return &artifactsProvider{
-		RetryInterval: 3 * time.Second,
+		RetryInterval: defaultProviderRetryInterval,
 
 		opts: opts,
 		log:  log,
@@ -28,7 +34,7 @@ func newArtifactsProvider(opts *Options, log *logrus.Logger) *artifactsProvider 
 func (ap *artifactsProvider) Upload(id string, opts *Options,
 	in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
 
-	cl := client.New(ap.opts.ArtifactsSaveHost, ap.opts.ArtifactsAuthToken, ap.log)
+	cl := ap.getClient()
 
 	for a := range in {
 		err := ap.uploadFile(cl, a)
@@ -45,7 +51,7 @@ func (ap *artifactsProvider) Upload(id string, opts *Options,
 	return
 }
 
-func (ap *artifactsProvider) uploadFile(cl *client.Client, a *artifact.Artifact) error {
+func (ap *artifactsProvider) uploadFile(cl client.ArtifactPutter, a *artifact.Artifact) error {
 	retries := uint64(0)
 
 	for {
@@ -58,6 +64,7 @@ func (ap *artifactsProvider) uploadFile(cl *client.Client, a *artifact.Artifact)
 			ap.log.WithFields(logrus.Fields{
 				"artifact": a.Source,
 				"retry":    retries,
+				"err":      err,
 			}).Debug("retrying")
 			time.Sleep(ap.RetryInterval)
 			continue
@@ -68,7 +75,7 @@ func (ap *artifactsProvider) uploadFile(cl *client.Client, a *artifact.Artifact)
 	return nil
 }
 
-func (ap *artifactsProvider) rawUpload(cl *client.Client, a *artifact.Artifact) error {
+func (ap *artifactsProvider) rawUpload(cl client.ArtifactPutter, a *artifact.Artifact) error {
 	ctype := a.ContentType()
 	size, err := a.Size()
 	if err != nil {
@@ -85,6 +92,16 @@ func (ap *artifactsProvider) rawUpload(cl *client.Client, a *artifact.Artifact) 
 	}).Debug("more artifact details")
 
 	return cl.PutArtifact(a)
+}
+
+func (ap *artifactsProvider) getClient() client.ArtifactPutter {
+	if ap.overrideClient != nil {
+		ap.log.WithField("client", ap.overrideClient).Debug("using override client")
+		return ap.overrideClient
+	}
+
+	ap.log.Debug("creating new client")
+	return client.New(ap.opts.ArtifactsSaveHost, ap.opts.ArtifactsAuthToken, ap.log)
 }
 
 func (ap *artifactsProvider) Name() string {

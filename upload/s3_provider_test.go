@@ -57,12 +57,12 @@ func (s *localS3Server) SetUp() {
 func TestNewS3Provider(t *testing.T) {
 	s3p := newS3Provider(NewOptions(), getPanicLogger())
 
-	if s3p.RetryInterval != (3 * time.Second) {
-		t.Fatalf("wrong default retry interval")
+	if s3p.RetryInterval != defaultProviderRetryInterval {
+		t.Fatalf("RetryInterval %v != %v", s3p.RetryInterval, defaultProviderRetryInterval)
 	}
 
 	if s3p.Name() != "s3" {
-		t.Fatalf("wrong name")
+		t.Fatalf("Name %v != s3", s3p.Name())
 	}
 }
 

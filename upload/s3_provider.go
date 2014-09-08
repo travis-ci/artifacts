@@ -27,7 +27,7 @@ type s3Provider struct {
 
 func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 	return &s3Provider{
-		RetryInterval: 3 * time.Second,
+		RetryInterval: defaultProviderRetryInterval,
 
 		opts: opts,
 		log:  log,
@@ -142,6 +142,7 @@ func (s3p *s3Provider) getConn(auth aws.Auth) *s3.S3 {
 		s3p.log.WithField("conn", s3p.overrideConn).Debug("using override connection")
 		return s3p.overrideConn
 	}
+
 	s3p.log.Debug("creating new connection")
 	return s3.New(auth, aws.USEast)
 }
