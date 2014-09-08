@@ -17,17 +17,18 @@ function "DetectContentType".
 
 
 OPTIONS:
-   --key, -k 			upload credentials key *REQUIRED* [$ARTIFACTS_KEY]
-   --bucket, -b 		destination bucket *REQUIRED* [$ARTIFACTS_BUCKET]
+   --key, -k 			upload credentials key *REQUIRED* (default "") [$ARTIFACTS_KEY]
+   --bucket, -b 		destination bucket *REQUIRED* (default "") [$ARTIFACTS_BUCKET]
    --cache-control 		artifact cache-control header value (default "private") [$ARTIFACTS_CACHE_CONTROL]
    --permissions 		artifact access permissions (default "private") [$ARTIFACTS_PERMISSIONS]
-   --secret, -s 		upload credentials secret *REQUIRED* [$ARTIFACTS_SECRET]
+   --secret, -s 		upload credentials secret *REQUIRED* (default "") [$ARTIFACTS_SECRET]
+   --s3-region 			region used when storing to S3 (default "us-east-1") [$ARTIFACTS_S3_REGION]
    --concurrency 		upload worker concurrency (default 5) [$ARTIFACTS_CONCURRENCY]
    --max-size 			max combined size of uploaded artifacts (default 1.0GB) [$ARTIFACTS_MAX_SIZE]
    --retries 			number of upload retries per artifact (default 2) [$ARTIFACTS_RETRIES]
-   --target-paths, -t 		artifact target paths (':'-delimited) (default []string{"artifacts"}) [$ARTIFACTS_TARGET_PATHS]
-   --working-dir 		working directory ($TRAVIS_BUILD_DIR) (default $PWD) [$TRAVIS_BUILD_DIR]
+   --target-paths, -t 		artifact target paths (':'-delimited) (default "artifacts") [$ARTIFACTS_TARGET_PATHS]
+   --working-dir 		working directory ($TRAVIS_BUILD_DIR) (default ".") [$TRAVIS_BUILD_DIR]
    --upload-provider, -p 	artifact upload provider (artifacts, s3, null) (default "s3") [$ARTIFACTS_UPLOAD_PROVIDER]
-   --save-host, -H 		artifact save host [$ARTIFACTS_SAVE_HOST]
-   --auth-token, -T 		artifact save auth token [$ARTIFACTS_AUTH_TOKEN]
+   --save-host, -H 		artifact save host (default "") [$ARTIFACTS_SAVE_HOST]
+   --auth-token, -T 		artifact save auth token (default "") [$ARTIFACTS_AUTH_TOKEN]
    

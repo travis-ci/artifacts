@@ -29,6 +29,9 @@ GOTEST_FLAGS ?=
 GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
 GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
+TRAVIS_BUILD_DIR ?= .
+export TRAVIS_BUILD_DIR
+
 .PHONY: all
 all: clean test save USAGE.txt UPLOAD_USAGE.txt USAGE.md
 
