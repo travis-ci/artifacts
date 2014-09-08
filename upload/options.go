@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/travis-ci/artifacts/env"
 )
@@ -25,6 +26,9 @@ var (
 
 	// DefaultPerm is the default ACL applied to each artifact
 	DefaultPerm = "private"
+
+	// DefaultS3Region is the default region used when storing to S3
+	DefaultS3Region = aws.USEast
 
 	// DefaultRepoSlug is the repo slug detected from the env
 	DefaultRepoSlug = ""
@@ -62,6 +66,7 @@ type Options struct {
 	CacheControl string
 	Perm         s3.ACL
 	SecretKey    string
+	S3Region     string
 
 	RepoSlug    string
 	BuildNumber string
@@ -122,6 +127,7 @@ func NewOptions() *Options {
 		}, "")),
 		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
 		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
+		S3Region:     env.Get("ARTIFACTS_S3_REGION", DefaultS3Region.Name),
 
 		RepoSlug:    DefaultRepoSlug,
 		BuildNumber: DefaultBuildNumber,

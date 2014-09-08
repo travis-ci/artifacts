@@ -114,3 +114,20 @@ func TestS3ProviderUpload(t *testing.T) {
 		}
 	}
 }
+
+func TestS3ProviderRegionOption(t *testing.T) {
+	opts := NewOptions()
+
+	for input, output := range map[string]string{
+		"us-west-2":  "us-west-2",
+		"bogus-9000": "us-east-1",
+	} {
+		opts.S3Region = input
+		s3p := newS3Provider(opts, getPanicLogger())
+
+		region := s3p.getRegion()
+		if region.Name != output {
+			t.Fatalf("region %v != %v", region.Name, output)
+		}
+	}
+}

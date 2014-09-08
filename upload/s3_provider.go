@@ -111,8 +111,12 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 		return err
 	}
 
+	downloadHost := s3p.getRegion().S3BucketEndpoint
+	if downloadHost == "" {
+		downloadHost = fmt.Sprintf("https://%s.s3.amazonaws.com", b.Name)
+	}
 	s3p.log.WithFields(logrus.Fields{
-		"download_url": fmt.Sprintf("https://s3.amazonaws.com/%s/%s", b.Name, dest),
+		"download_url": fmt.Sprintf("%s/%s", downloadHost, dest),
 	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(size)))
 
 	s3p.log.WithFields(logrus.Fields{
@@ -143,8 +147,7 @@ func (s3p *s3Provider) getConn(auth aws.Auth) *s3.S3 {
 		return s3p.overrideConn
 	}
 
-	s3p.log.Debug("creating new connection")
-	return s3.New(auth, aws.USEast)
+	return s3.New(auth, s3p.getRegion())
 }
 
 func (s3p *s3Provider) getAuth(accessKey, secretKey string) (aws.Auth, error) {
@@ -152,8 +155,23 @@ func (s3p *s3Provider) getAuth(accessKey, secretKey string) (aws.Auth, error) {
 		s3p.log.WithField("auth", s3p.overrideAuth).Debug("using override auth")
 		return s3p.overrideAuth, nil
 	}
+
 	s3p.log.Debug("creating new auth")
 	return aws.GetAuth(accessKey, secretKey)
+}
+
+func (s3p *s3Provider) getRegion() aws.Region {
+	region, ok := aws.Regions[s3p.opts.S3Region]
+
+	if !ok {
+		s3p.log.WithFields(logrus.Fields{
+			"region":  s3p.opts.S3Region,
+			"default": DefaultS3Region.Name,
+		}).Warn(fmt.Sprintf("invalid region, defaulting to %s", DefaultS3Region.Name))
+		region = DefaultS3Region
+	}
+
+	return region
 }
 
 func (s3p *s3Provider) Name() string {

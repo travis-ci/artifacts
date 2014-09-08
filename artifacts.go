@@ -10,17 +10,9 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/dustin/go-humanize"
 	"github.com/mitchellh/goamz/s3"
+	"github.com/travis-ci/artifacts/env"
 	"github.com/travis-ci/artifacts/logging"
 	"github.com/travis-ci/artifacts/upload"
-)
-
-var (
-	// VersionString contains the compiled-in version number
-	VersionString = "?"
-	// RevisionString contains the compiled-in git rev
-	RevisionString = "?"
-
-	log = logrus.New()
 )
 
 const (
@@ -37,74 +29,101 @@ function "DetectContentType".
 )
 
 var (
+	// VersionString contains the compiled-in version number
+	VersionString = "?"
+	// RevisionString contains the compiled-in git rev
+	RevisionString = "?"
+
+	log    = logrus.New()
+	cwd, _ = os.Getwd()
+
 	uploadFlags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "key, k",
 			EnvVar: "ARTIFACTS_KEY",
-			Usage:  "upload credentials key *REQUIRED*",
+			Usage: fmt.Sprintf("upload credentials key *REQUIRED* (default %q)",
+				env.Get("ARTIFACTS_KEY", "")),
 		},
 		cli.StringFlag{
 			Name:   "bucket, b",
 			EnvVar: "ARTIFACTS_BUCKET",
-			Usage:  "destination bucket *REQUIRED*",
+			Usage: fmt.Sprintf("destination bucket *REQUIRED* (default %q)",
+				env.Get("ARTIFACTS_BUCKET", "")),
 		},
 		cli.StringFlag{
 			Name:   "cache-control",
 			EnvVar: "ARTIFACTS_CACHE_CONTROL",
-			Usage:  fmt.Sprintf("artifact cache-control header value (default %q)", upload.DefaultCacheControl),
+			Usage: fmt.Sprintf("artifact cache-control header value (default %q)",
+				env.Get("ARTIFACTS_CACHE_CONTROL", upload.DefaultCacheControl)),
 		},
 		cli.StringFlag{
 			Name:   "permissions",
 			EnvVar: "ARTIFACTS_PERMISSIONS",
-			Usage:  fmt.Sprintf("artifact access permissions (default %q)", upload.DefaultPerm),
+			Usage: fmt.Sprintf("artifact access permissions (default %q)",
+				env.Get("ARTIFACTS_PERMISSIONS", upload.DefaultPerm)),
 		},
 		cli.StringFlag{
 			Name:   "secret, s",
 			EnvVar: "ARTIFACTS_SECRET",
-			Usage:  "upload credentials secret *REQUIRED*",
+			Usage: fmt.Sprintf("upload credentials secret *REQUIRED* (default %q)",
+				env.Get("ARTIFACTS_SECRET", "")),
+		},
+		cli.StringFlag{
+			Name:   "s3-region",
+			EnvVar: "ARTIFACTS_S3_REGION",
+			Usage: fmt.Sprintf("region used when storing to S3 (default %q)",
+				env.Get("ARTIFACTS_S3_REGION", upload.DefaultS3Region.Name)),
 		},
 
 		cli.StringFlag{
 			Name:   "concurrency",
 			EnvVar: "ARTIFACTS_CONCURRENCY",
-			Usage:  fmt.Sprintf("upload worker concurrency (default %v)", upload.DefaultConcurrency),
+			Usage: fmt.Sprintf("upload worker concurrency (default %v)",
+				env.Uint("ARTIFACTS_CONCURRENCY", upload.DefaultConcurrency)),
 		},
 		cli.StringFlag{
 			Name:   "max-size",
 			EnvVar: "ARTIFACTS_MAX_SIZE",
-			Usage:  fmt.Sprintf("max combined size of uploaded artifacts (default %v)", humanize.Bytes(upload.DefaultMaxSize)),
+			Usage: fmt.Sprintf("max combined size of uploaded artifacts (default %v)",
+				humanize.Bytes(env.UintSize("ARTIFACTS_MAX_SIZE", upload.DefaultMaxSize))),
 		},
 		cli.StringFlag{
 			Name:   "retries",
 			EnvVar: "ARTIFACTS_RETRIES",
-			Usage:  fmt.Sprintf("number of upload retries per artifact (default %v)", upload.DefaultRetries),
+			Usage: fmt.Sprintf("number of upload retries per artifact (default %v)",
+				env.Uint("ARTIFACTS_RETRIES", upload.DefaultRetries)),
 		},
 		cli.StringFlag{
 			Name:   "target-paths, t",
 			EnvVar: "ARTIFACTS_TARGET_PATHS",
-			Usage:  fmt.Sprintf("artifact target paths (':'-delimited) (default %#v)", upload.DefaultTargetPaths),
+			Usage: fmt.Sprintf("artifact target paths (':'-delimited) (default %#v)",
+				strings.Join(env.Slice("ARTIFACTS_TARGET_PATHS", ":", upload.DefaultTargetPaths), ":")),
 		},
 		cli.StringFlag{
 			Name:   "working-dir",
 			EnvVar: "TRAVIS_BUILD_DIR",
-			Usage:  "working directory ($TRAVIS_BUILD_DIR) (default $PWD)",
+			Usage: fmt.Sprintf("working directory ($TRAVIS_BUILD_DIR) (default %q)",
+				env.Cascade([]string{"TRAVIS_BUILD_DIR", "PWD"}, cwd)),
 		},
 
 		cli.StringFlag{
 			Name:   "upload-provider, p",
 			EnvVar: "ARTIFACTS_UPLOAD_PROVIDER",
-			Usage:  fmt.Sprintf("artifact upload provider (artifacts, s3, null) (default %#v)", upload.DefaultUploadProvider),
+			Usage: fmt.Sprintf("artifact upload provider (artifacts, s3, null) (default %#v)",
+				env.Get("ARTIFACTS_UPLOAD_PROVIDER", upload.DefaultUploadProvider)),
 		},
 
 		cli.StringFlag{
 			Name:   "save-host, H",
 			EnvVar: "ARTIFACTS_SAVE_HOST",
-			Usage:  "artifact save host",
+			Usage: fmt.Sprintf("artifact save host (default %q)",
+				env.Get("ARTIFACTS_SAVE_HOST", "")),
 		},
 		cli.StringFlag{
 			Name:   "auth-token, T",
 			EnvVar: "ARTIFACTS_AUTH_TOKEN",
-			Usage:  "artifact save auth token",
+			Usage: fmt.Sprintf("artifact save auth token (default %q)",
+				env.Get("ARTIFACTS_AUTH_TOKEN", "")),
 		},
 	}
 )
