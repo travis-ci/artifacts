@@ -88,7 +88,7 @@ func UintSize(key string, dflt uint64) uint64 {
 
 	if strings.ContainsAny(value, "BKMGTPEZYbkmgtpezy") {
 		b, err := humanize.ParseBytes(value)
-		if err != nil {
+		if err == nil {
 			return b
 		}
 	}
