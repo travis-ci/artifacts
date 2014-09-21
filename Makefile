@@ -22,7 +22,7 @@ REPO_REV := $(shell git rev-parse --sq HEAD)
 
 GO ?= go
 GOX ?= gox
-GODEP ?= godep
+GODERP ?= goderp
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
 GOTEST_FLAGS ?=
@@ -33,7 +33,7 @@ TRAVIS_BUILD_DIR ?= .
 export TRAVIS_BUILD_DIR
 
 .PHONY: all
-all: clean test save USAGE.txt UPLOAD_USAGE.txt USAGE.md
+all: clean test USAGE.txt UPLOAD_USAGE.txt USAGE.md
 
 .PHONY: test
 test: build fmtpolice test-deps .test
@@ -102,7 +102,7 @@ crossbuild: deps .gox-bootstrap
 deps: .gox-install .deps
 
 .deps:
-	$(GODEP) restore && touch $@
+	$(GODERP) restore && touch $@
 
 .gox-install:
 	$(GO) get -x github.com/mitchellh/gox > $@
@@ -120,7 +120,7 @@ clean:
 
 .PHONY: save
 save:
-	$(GODEP) save -copy=false $(PACKAGE) $(SUBPACKAGES)
+	$(GODERP) save $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: fmtpolice
 fmtpolice:
