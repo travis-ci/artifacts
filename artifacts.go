@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/dustin/go-humanize"
-	"github.com/mitchellh/goamz/s3"
 	"github.com/travis-ci/artifacts/env"
 	"github.com/travis-ci/artifacts/logging"
 	"github.com/travis-ci/artifacts/upload"
@@ -73,6 +71,37 @@ var (
 			EnvVar: "ARTIFACTS_S3_REGION",
 			Usage: fmt.Sprintf("region used when storing to S3 (default %q)",
 				env.Get("ARTIFACTS_S3_REGION", upload.DefaultS3Region.Name)),
+		},
+
+		cli.StringFlag{
+			Name:   "repo-slug, r",
+			EnvVar: "TRAVIS_REPO_SLUG",
+			Usage: fmt.Sprintf("The repo owner/name slug (default %q)",
+				env.Get("TRAVIS_REPO_SLUG", upload.DefaultRepoSlug)),
+		},
+		cli.StringFlag{
+			Name:   "build-number",
+			EnvVar: "TRAVIS_BUILD_NUMBER",
+			Usage: fmt.Sprintf("The build number (default %q)",
+				env.Get("TRAVIS_BUILD_NUMBER", upload.DefaultBuildNumber)),
+		},
+		cli.StringFlag{
+			Name:   "build-id",
+			EnvVar: "TRAVIS_BUILD_ID",
+			Usage: fmt.Sprintf("The build id (default %q)",
+				env.Get("TRAVIS_BUILD_ID", upload.DefaultBuildID)),
+		},
+		cli.StringFlag{
+			Name:   "job-number",
+			EnvVar: "TRAVIS_JOB_NUMBER",
+			Usage: fmt.Sprintf("The job number (default %q)",
+				env.Get("TRAVIS_JOB_NUMBER", upload.DefaultJobNumber)),
+		},
+		cli.StringFlag{
+			Name:   "job-id",
+			EnvVar: "TRAVIS_JOB_ID",
+			Usage: fmt.Sprintf("The job id (default %q)",
+				env.Get("TRAVIS_JOB_ID", upload.DefaultJobID)),
 		},
 
 		cli.StringFlag{
@@ -168,14 +197,7 @@ func runUpload(c *cli.Context) {
 	configureLog(log, c)
 
 	opts := upload.NewOptions()
-	overlayFlags(opts, c)
-
-	for _, arg := range c.Args() {
-		log.WithFields(logrus.Fields{
-			"path": arg,
-		}).Debug("adding path from command line args")
-		opts.Paths = append(opts.Paths, arg)
-	}
+	opts.UpdateFromCLI(c)
 
 	if err := opts.Validate(); err != nil {
 		log.Fatal(err)
@@ -197,63 +219,8 @@ func configureLog(log *logrus.Logger, c *cli.Context) {
 	if formatArg == "multiline" {
 		log.Formatter = &logging.MultiLineFormatter{}
 	}
-	if c.Bool("debug") {
+	if c.GlobalBool("debug") {
 		log.Level = logrus.DebugLevel
 		log.Debug("setting log level to debug")
-	}
-}
-
-func overlayFlags(opts *upload.Options, c *cli.Context) {
-	if value := c.String("key"); value != "" {
-		opts.AccessKey = value
-	}
-	if value := c.String("secret"); value != "" {
-		opts.SecretKey = value
-	}
-	if value := c.String("bucket"); value != "" {
-		opts.BucketName = value
-	}
-	if value := c.String("cache-control"); value != "" {
-		opts.CacheControl = value
-	}
-	if value := c.String("concurrency"); value != "" {
-		intVal, err := strconv.ParseUint(value, 10, 64)
-		if err == nil {
-			opts.Concurrency = intVal
-		}
-	}
-	if value := c.String("max-size"); value != "" {
-		if strings.ContainsAny(value, "BKMGTPEZYbkmgtpezy") {
-			b, err := humanize.ParseBytes(value)
-			if err == nil {
-				opts.MaxSize = b
-			}
-		} else {
-			intVal, err := strconv.ParseUint(value, 10, 64)
-			if err == nil {
-				opts.MaxSize = intVal
-			}
-		}
-	}
-	if value := c.String("permissions"); value != "" {
-		opts.Perm = s3.ACL(value)
-	}
-	if value := c.String("retries"); value != "" {
-		intVal, err := strconv.ParseUint(value, 10, 64)
-		if err == nil {
-			opts.Retries = intVal
-		}
-	}
-	if value := c.String("upload-provider"); value != "" {
-		opts.Provider = value
-	}
-	if value := c.String("working-dir"); value != "" {
-		opts.WorkingDir = value
-	}
-	if value := c.String("save-host"); value != "" {
-		opts.ArtifactsSaveHost = value
-	}
-	if value := c.String("auth-token"); value != "" {
-		opts.ArtifactsAuthToken = value
 	}
 }

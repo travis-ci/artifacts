@@ -53,6 +53,11 @@ function "DetectContentType".
 * `--permissions`         artifact access permissions (default "private") [`$ARTIFACTS_PERMISSIONS`]
 * `--secret, -s`         upload credentials secret *REQUIRED* (default "") [`$ARTIFACTS_SECRET`]
 * `--s`3-region             region used when storing to S3 (default "us-east-1") [`$ARTIFACTS_S`3_REGION]
+* `--repo-slug, -r`         The repo owner/name slug (default "") [`$TRAVIS_REPO_SLUG`]
+* `--build-number`         The build number (default "") [`$TRAVIS_BUILD_NUMBER`]
+* `--build-id`             The build id (default "") [`$TRAVIS_BUILD_ID`]
+* `--job-number`         The job number (default "") [`$TRAVIS_JOB_NUMBER`]
+* `--job-id`             The job id (default "") [`$TRAVIS_JOB_ID`]
 * `--concurrency`         upload worker concurrency (default 5) [`$ARTIFACTS_CONCURRENCY`]
 * `--max-size`             max combined size of uploaded artifacts (default 1.0GB) [`$ARTIFACTS_MAX_SIZE`]
 * `--retries`             number of upload retries per artifact (default 2) [`$ARTIFACTS_RETRIES`]
@@ -62,4 +67,4 @@ function "DetectContentType".
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- mcJmFMeM4wGaL1CzA5EbXZ4d3Fv5RjHHF8hgMQ/yfzs= -->
+<!-- zr8KIk6x8H8DTVg4Z0dTghJ0hapjfBk6B6YCpu1/M3s= -->

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
+	"github.com/codegangsta/cli"
+	"github.com/dustin/go-humanize"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/travis-ci/artifacts/env"
@@ -59,31 +62,35 @@ var (
 	DefaultWorkingDir, _ = os.Getwd()
 )
 
+const (
+	sizeChars = "BKMGTPEZYbkmgtpezy"
+)
+
 // Options is used in the call to Upload
 type Options struct {
-	AccessKey    string
-	BucketName   string
-	CacheControl string
-	Perm         s3.ACL
-	SecretKey    string
-	S3Region     string
+	AccessKey    string `cli:"key" env:"ARTIFACTS_KEY"`
+	BucketName   string `cli:"bucket" env:"ARTIFACTS_BUCKET"`
+	CacheControl string `cli:"cache-control" env:"ARTIFACTS_CACHE_CONTROL"`
+	Perm         s3.ACL `cli:"permissions" env:"ARTIFACTS_PERMISSIONS"`
+	SecretKey    string `cli:"secret" env:"ARTIFACTS_SECRET"`
+	S3Region     string `cli:"s3-region" env:"ARTIFACTS_S3_REGION"`
 
-	RepoSlug    string
-	BuildNumber string
-	BuildID     string
-	JobNumber   string
-	JobID       string
+	RepoSlug    string `cli:"repo-slug" env:"TRAVIS_REPO_SLUG"`
+	BuildNumber string `cli:"build-number" env:"TRAVIS_BUILD_NUMBER"`
+	BuildID     string `cli:"build-id" env:"TRAVIS_BUILD_ID"`
+	JobNumber   string `cli:"job-number" env:"TRAVIS_JOB_NUMBER"`
+	JobID       string `cli:"job-id" env:"TRAVIS_JOB_ID"`
 
-	Concurrency uint64
-	MaxSize     uint64
-	Paths       []string
-	Provider    string
-	Retries     uint64
-	TargetPaths []string
-	WorkingDir  string
+	Concurrency uint64   `cli:"concurrency" env:"ARTIFACTS_CONCURRENCY"`
+	MaxSize     uint64   `cli:"max-size" env:"ARTIFACTS_MAX_SIZE"`
+	Paths       []string `env:"ARTIFACTS_PATHS"`
+	Provider    string   `cli:"upload-provider" env:"ARTIFACTS_UPLOAD_PROVIDER"`
+	Retries     uint64   `cli:"retries" env:"ARTIFACTS_RETRIES"`
+	TargetPaths []string `cli:"target-paths" env:"ARTIFACTS_TARGET_PATHS"`
+	WorkingDir  string   `cli:"working-dir" env:"TRAVIS_BUILD_DIR"`
 
-	ArtifactsSaveHost  string
-	ArtifactsAuthToken string
+	ArtifactsSaveHost  string `cli:"save-host" env:"ARTIFACTS_SAVE_HOST"`
+	ArtifactsAuthToken string `cli:"auth-token" env:"ARTIFACTS_AUTH_TOKEN"`
 }
 
 func init() {
@@ -145,6 +152,96 @@ func NewOptions() *Options {
 
 		ArtifactsSaveHost:  env.Get("ARTIFACTS_SAVE_HOST", ""),
 		ArtifactsAuthToken: env.Get("ARTIFACTS_AUTH_TOKEN", ""),
+	}
+}
+
+func (opts *Options) UpdateFromCLI(c *cli.Context) {
+	if value := c.String("key"); value != "" {
+		opts.AccessKey = value
+	}
+	if value := c.String("bucket"); value != "" {
+		opts.BucketName = value
+	}
+	if value := c.String("cache-control"); value != "" {
+		opts.CacheControl = value
+	}
+	if value := c.String("permissions"); value != "" {
+		opts.Perm = s3.ACL(value)
+	}
+	if value := c.String("secret"); value != "" {
+		opts.SecretKey = value
+	}
+	if value := c.String("s3-region"); value != "" {
+		opts.S3Region = value
+	}
+
+	if value := c.String("repo-slug"); value != "" {
+		opts.RepoSlug = value
+	}
+	if value := c.String("build-number"); value != "" {
+		opts.BuildNumber = value
+	}
+	if value := c.String("build-id"); value != "" {
+		opts.BuildID = value
+	}
+	if value := c.String("job-number"); value != "" {
+		opts.JobNumber = value
+	}
+	if value := c.String("job-id"); value != "" {
+		opts.JobID = value
+	}
+
+	if value := c.String("concurrency"); value != "" {
+		intVal, err := strconv.ParseUint(value, 10, 64)
+		if err == nil {
+			opts.Concurrency = intVal
+		}
+	}
+	if value := c.String("max-size"); value != "" {
+		if strings.ContainsAny(value, sizeChars) {
+			b, err := humanize.ParseBytes(value)
+			if err == nil {
+				opts.MaxSize = b
+			}
+		} else {
+			intVal, err := strconv.ParseUint(value, 10, 64)
+			if err == nil {
+				opts.MaxSize = intVal
+			}
+		}
+	}
+	if value := c.String("upload-provider"); value != "" {
+		opts.Provider = value
+	}
+	if value := c.String("retries"); value != "" {
+		intVal, err := strconv.ParseUint(value, 10, 64)
+		if err == nil {
+			opts.Retries = intVal
+		}
+	}
+	if value := c.String("target-paths"); value != "" {
+		tp := []string{}
+		for _, part := range strings.Split(value, ":") {
+			trimmed := strings.TrimSpace(part)
+			if trimmed != "" {
+				tp = append(tp, trimmed)
+			}
+		}
+		opts.TargetPaths = tp
+	}
+	if value := c.String("working-dir"); value != "" {
+		opts.WorkingDir = value
+	}
+
+	if value := c.String("save-host"); value != "" {
+		opts.ArtifactsSaveHost = value
+	}
+	if value := c.String("auth-token"); value != "" {
+		opts.ArtifactsAuthToken = value
+	}
+
+	for _, arg := range c.Args() {
+		opts.Paths = append(opts.Paths, arg)
 	}
 }
 
