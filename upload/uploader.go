@@ -20,7 +20,7 @@ const (
 
 type uploader struct {
 	Opts          *Options
-	Paths         *path.PathSet
+	Paths         *path.Set
 	RetryInterval time.Duration
 	Provider      uploadProvider
 
@@ -65,7 +65,7 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 
 	u := &uploader{
 		Opts:     opts,
-		Paths:    path.NewPathSet(),
+		Paths:    path.NewSet(),
 		Provider: provider,
 
 		log: log,

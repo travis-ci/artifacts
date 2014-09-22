@@ -5,28 +5,28 @@ import (
 	"sync"
 )
 
-// PathSet is a set of paths and their behaviors
-type PathSet struct {
+// Set is a set of paths and their behaviors
+type Set struct {
 	sync.Mutex
 	paths map[string]*Path
 }
 
-// NewPathSet creates a new *PathSet
-func NewPathSet() *PathSet {
-	return &PathSet{
+// NewSet creates a new *Set
+func NewSet() *Set {
+	return &Set{
 		paths: map[string]*Path{},
 	}
 }
 
 // Add adds a path to the set
-func (ps *PathSet) Add(p *Path) {
+func (ps *Set) Add(p *Path) {
 	ps.Lock()
 	defer ps.Unlock()
 	ps.paths[fmt.Sprintf("%#v", p)] = p
 }
 
 // All returns each path in the pathset
-func (ps *PathSet) All() []*Path {
+func (ps *Set) All() []*Path {
 	ps.Lock()
 	defer ps.Unlock()
 

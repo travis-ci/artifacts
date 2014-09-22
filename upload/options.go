@@ -155,6 +155,7 @@ func NewOptions() *Options {
 	}
 }
 
+// UpdateFromCLI overlays a *cli.Context onto internal options
 func (opts *Options) UpdateFromCLI(c *cli.Context) {
 	if value := c.String("key"); value != "" {
 		opts.AccessKey = value
