@@ -10,7 +10,7 @@ import (
 
 // Get returns a string from the env
 func Get(key, dflt string) string {
-	value := os.Getenv(key)
+	value := strings.TrimSpace(os.Getenv(key))
 	if value == "" {
 		return dflt
 	}
@@ -20,20 +20,27 @@ func Get(key, dflt string) string {
 
 // Cascade is like Get, but with a bunch of tries
 func Cascade(keys []string, dflt string) string {
+	value, _ := CascadeMatch(keys, dflt)
+	return value
+}
+
+// CascadeMatch is like Cascade, but also returns which env var
+// was used to retrieve the value
+func CascadeMatch(keys []string, dflt string) (string, string) {
 	for _, key := range keys {
-		value := os.Getenv(key)
+		value := strings.TrimSpace(os.Getenv(key))
 		if value == "" {
 			continue
 		}
-		return value
+		return value, key
 	}
 
-	return dflt
+	return dflt, ""
 }
 
 // Bool returns a bool from the env
 func Bool(key string, dflt bool) bool {
-	value := os.Getenv(key)
+	value := strings.TrimSpace(os.Getenv(key))
 	if value == "" {
 		return dflt
 	}
@@ -48,7 +55,7 @@ func Bool(key string, dflt bool) bool {
 
 // Slice returns a string slice from the env given a delimiter
 func Slice(key, delim string, dflt []string) []string {
-	value := os.Getenv(key)
+	value := strings.TrimSpace(os.Getenv(key))
 	if value == "" {
 		return dflt
 	}
@@ -61,12 +68,12 @@ func Slice(key, delim string, dflt []string) []string {
 		}
 	}
 
-	return ret
+	return ExpandSlice(ret)
 }
 
 // Uint returns an uint from the env
 func Uint(key string, dflt uint64) uint64 {
-	value := os.Getenv(key)
+	value := strings.TrimSpace(os.Getenv(key))
 	if value == "" {
 		return dflt
 	}
@@ -81,7 +88,7 @@ func Uint(key string, dflt uint64) uint64 {
 
 // UintSize returns a size-like uint from the env
 func UintSize(key string, dflt uint64) uint64 {
-	value := os.Getenv(key)
+	value := strings.TrimSpace(os.Getenv(key))
 	if value == "" {
 		return dflt
 	}

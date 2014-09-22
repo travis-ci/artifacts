@@ -3,160 +3,135 @@ package upload
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/codegangsta/cli"
 	"github.com/dustin/go-humanize"
-	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/travis-ci/artifacts/env"
-)
-
-var (
-	// DefaultCacheControl is the default value for each artifact's Cache-Control header
-	DefaultCacheControl = "private"
-
-	// DefaultConcurrency is the default number of concurrent goroutines used during upload
-	DefaultConcurrency = uint64(5)
-
-	// DefaultMaxSize is the default maximum allowed bytes for all artifacts
-	DefaultMaxSize = uint64(1024 * 1024 * 1000)
-
-	// DefaultPaths is the default slice of local paths to upload (empty)
-	DefaultPaths = []string{}
-
-	// DefaultPerm is the default ACL applied to each artifact
-	DefaultPerm = "private"
-
-	// DefaultS3Region is the default region used when storing to S3
-	DefaultS3Region = aws.USEast
-
-	// DefaultRepoSlug is the repo slug detected from the env
-	DefaultRepoSlug = ""
-
-	// DefaultBuildNumber is the build number detected from the env
-	DefaultBuildNumber = ""
-
-	// DefaultBuildID is the build id detected from the env
-	DefaultBuildID = ""
-
-	// DefaultJobNumber is the build number detected from the env
-	DefaultJobNumber = ""
-
-	// DefaultJobID is the build id detected from the env
-	DefaultJobID = ""
-
-	// DefaultRetries is the default number of times a given artifact upload will be retried
-	DefaultRetries = uint64(2)
-
-	// DefaultTargetPaths is the default upload prefix for each artifact
-	DefaultTargetPaths = []string{}
-
-	// DefaultUploadProvider is the provider used to upload (nuts)
-	DefaultUploadProvider = "s3"
-	// TODO: DefaultUploadProvider = "artifacts"
-
-	// DefaultWorkingDir is the default working directory ... wow.
-	DefaultWorkingDir, _ = os.Getwd()
 )
 
 const (
 	sizeChars = "BKMGTPEZYbkmgtpezy"
 )
 
+var (
+	DefaultOptions = NewOptions()
+)
+
 // Options is used in the call to Upload
 type Options struct {
-	AccessKey    string `cli:"key" env:"ARTIFACTS_KEY"`
-	BucketName   string `cli:"bucket" env:"ARTIFACTS_BUCKET"`
-	CacheControl string `cli:"cache-control" env:"ARTIFACTS_CACHE_CONTROL"`
-	Perm         s3.ACL `cli:"permissions" env:"ARTIFACTS_PERMISSIONS"`
-	SecretKey    string `cli:"secret" env:"ARTIFACTS_SECRET"`
-	S3Region     string `cli:"s3-region" env:"ARTIFACTS_S3_REGION"`
+	AccessKey    string `cli:"key, k" doc:"upload credentials key *REQUIRED*" env:"ARTIFACTS_KEY,ARTIFACTS_AWS_ACCESS_KEY,AWS_ACCESS_KEY_ID,AWS_ACCESS_KEY"`
+	BucketName   string `cli:"bucket, b" doc:"destination bucket *REQUIRED*" env:"ARTIFACTS_BUCKET,ARTIFACTS_S3_BUCKET"`
+	CacheControl string `cli:"cache-control" doc:"artifact cache-control header value" env:"ARTIFACTS_CACHE_CONTROL" default:"private"`
+	Perm         s3.ACL `cli:"permissions" doc:"artifact access permissions" env:"ARTIFACTS_PERMISSIONS" default:"private"`
+	SecretKey    string `cli:"secret, s" doc:"upload credentials secret *REQUIRED*" env:"ARTIFACTS_SECRET,ARTIFACTS_AWS_SECRET_KEY,AWS_SECRET_ACCESS_KEY,AWS_SECRET_KEY"`
+	S3Region     string `cli:"s3-region" doc:"region used when storing to S3" env:"ARTIFACTS_S3_REGION" default:"us-east-1"`
 
-	RepoSlug    string `cli:"repo-slug" env:"TRAVIS_REPO_SLUG"`
-	BuildNumber string `cli:"build-number" env:"TRAVIS_BUILD_NUMBER"`
-	BuildID     string `cli:"build-id" env:"TRAVIS_BUILD_ID"`
-	JobNumber   string `cli:"job-number" env:"TRAVIS_JOB_NUMBER"`
-	JobID       string `cli:"job-id" env:"TRAVIS_JOB_ID"`
+	RepoSlug    string `cli:"repo-slug, r" doc:"repo owner/name slug" env:"ARTIFACTS_REPO_SLUG,TRAVIS_REPO_SLUG"`
+	BuildNumber string `cli:"build-number" doc:"build number" env:"ARTIFACTS_BUILD_NUMBER,TRAVIS_BUILD_NUMBER"`
+	BuildID     string `cli:"build-id" doc:"build id" env:"ARTIFACTS_BUILD_ID,TRAVIS_BUILD_ID"`
+	JobNumber   string `cli:"job-number" doc:"job number" env:"ARTIFACTS_JOB_NUMBER,TRAVIS_JOB_NUMBER"`
+	JobID       string `cli:"job-id" doc:"job id" env:"ARTIFACTS_JOB_ID,TRAVIS_JOB_ID"`
 
-	Concurrency uint64   `cli:"concurrency" env:"ARTIFACTS_CONCURRENCY"`
-	MaxSize     uint64   `cli:"max-size" env:"ARTIFACTS_MAX_SIZE"`
+	Concurrency uint64   `cli:"concurrency" doc:"upload worker concurrency" env:"ARTIFACTS_CONCURRENCY" default:"5"`
+	MaxSize     uint64   `cli:"max-size" doc:"max combined size of uploaded artifacts" env:"ARTIFACTS_MAX_SIZE" default:"1048576000"`
 	Paths       []string `env:"ARTIFACTS_PATHS"`
-	Provider    string   `cli:"upload-provider" env:"ARTIFACTS_UPLOAD_PROVIDER"`
-	Retries     uint64   `cli:"retries" env:"ARTIFACTS_RETRIES"`
-	TargetPaths []string `cli:"target-paths" env:"ARTIFACTS_TARGET_PATHS"`
-	WorkingDir  string   `cli:"working-dir" env:"TRAVIS_BUILD_DIR"`
+	Provider    string   `cli:"upload-provider, p" doc:"artifact upload provider (artifacts, s3, null)" env:"ARTIFACTS_UPLOAD_PROVIDER" default:"s3"`
+	Retries     uint64   `cli:"retries" doc:"number of upload retries per artifact" env:"ARTIFACTS_RETRIES" default:"2"`
+	TargetPaths []string `cli:"target-paths, t" doc:"artifact target paths (':'-delimited) " env:"ARTIFACTS_TARGET_PATHS" default:"artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER"`
+	WorkingDir  string   `cli:"working-dir" doc:"working directory" env:"ARTIFACTS_WORKING_DIR,TRAVIS_BUILD_DIR,PWD" default:"."`
 
-	ArtifactsSaveHost  string `cli:"save-host" env:"ARTIFACTS_SAVE_HOST"`
-	ArtifactsAuthToken string `cli:"auth-token" env:"ARTIFACTS_AUTH_TOKEN"`
-}
-
-func init() {
-	DefaultTargetPaths = append(DefaultTargetPaths, filepath.Join("artifacts",
-		env.Get("TRAVIS_BUILD_NUMBER", ""),
-		env.Get("TRAVIS_JOB_NUMBER", "")))
-
-	DefaultRepoSlug = env.Get("TRAVIS_REPO_SLUG", "")
-	DefaultBuildNumber = env.Get("TRAVIS_BUILD_NUMBER", "")
-	DefaultBuildID = env.Get("TRAVIS_BUILD_ID", "")
-	DefaultJobNumber = env.Get("TRAVIS_JOB_NUMBER", "")
-	DefaultJobID = env.Get("TRAVIS_JOB_ID", "")
+	ArtifactsSaveHost  string `cli:"save-host, H" doc:"artifact save host" env:"ARTIFACTS_SAVE_HOST"`
+	ArtifactsAuthToken string `cli:"auth-token, T" doc:"artifact save auth token" env:"ARTIFACTS_AUTH_TOKEN"`
 }
 
 // NewOptions makes some *Options with defaults!
 func NewOptions() *Options {
-	cwd, _ := os.Getwd()
-	cwd = env.Get("TRAVIS_BUILD_DIR", cwd)
+	opts := &Options{}
+	opts.reset()
+	return opts
+}
 
-	targetPaths := env.ExpandSlice(env.Slice("ARTIFACTS_TARGET_PATHS", ":", []string{}))
-	if len(targetPaths) == 0 {
-		targetPaths = DefaultTargetPaths
+func (opts *Options) Flags() []cli.Flag {
+	dflt := DefaultOptions
+	flags := []cli.Flag{}
+
+	s := reflect.ValueOf(dflt).Elem()
+	t := s.Type()
+
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Field(i)
+		if !f.CanSet() {
+			continue
+		}
+
+		tag := t.Field(i).Tag
+		name := tag.Get("cli")
+		if name == "" {
+			continue
+		}
+
+		flags = append(flags, cli.StringFlag{
+			Name:   name,
+			EnvVar: strings.Split(tag.Get("env"), ",")[0],
+			Usage:  fmt.Sprintf("%v (default %q)", tag.Get("doc"), fmt.Sprintf("%v", f.Interface())),
+		})
 	}
 
-	return &Options{
-		AccessKey: env.Cascade([]string{
-			"ARTIFACTS_KEY",
-			"ARTIFACTS_AWS_ACCESS_KEY",
-			"AWS_ACCESS_KEY_ID",
-			"AWS_ACCESS_KEY",
-		}, ""),
-		SecretKey: env.Cascade([]string{
-			"ARTIFACTS_SECRET",
-			"ARTIFACTS_AWS_SECRET_KEY",
-			"AWS_SECRET_ACCESS_KEY",
-			"AWS_SECRET_KEY",
-		}, ""),
-		BucketName: strings.TrimSpace(env.Cascade([]string{
-			"ARTIFACTS_BUCKET",
-			"ARTIFACTS_S3_BUCKET",
-		}, "")),
-		CacheControl: strings.TrimSpace(env.Get("ARTIFACTS_CACHE_CONTROL", DefaultCacheControl)),
-		Perm:         s3.ACL(env.Get("ARTIFACTS_PERMISSIONS", DefaultPerm)),
-		S3Region:     env.Get("ARTIFACTS_S3_REGION", DefaultS3Region.Name),
+	return flags
+}
 
-		RepoSlug:    DefaultRepoSlug,
-		BuildNumber: DefaultBuildNumber,
-		BuildID:     DefaultBuildID,
-		JobNumber:   DefaultJobNumber,
-		JobID:       DefaultJobID,
+func (opts *Options) reset() {
+	s := reflect.ValueOf(opts).Elem()
+	t := s.Type()
 
-		Concurrency: env.Uint("ARTIFACTS_CONCURRENCY", DefaultConcurrency),
-		MaxSize:     env.UintSize("ARTIFACTS_MAX_SIZE", DefaultMaxSize),
-		Paths:       env.ExpandSlice(env.Slice("ARTIFACTS_PATHS", ":", DefaultPaths)),
-		Provider:    env.Get("ARTIFACTS_UPLOAD_PROVIDER", DefaultUploadProvider),
-		Retries:     env.Uint("ARTIFACTS_RETRIES", DefaultRetries),
-		TargetPaths: targetPaths,
-		WorkingDir:  cwd,
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Field(i)
+		if !f.CanSet() {
+			continue
+		}
 
-		ArtifactsSaveHost:  env.Get("ARTIFACTS_SAVE_HOST", ""),
-		ArtifactsAuthToken: env.Get("ARTIFACTS_AUTH_TOKEN", ""),
+		tag := t.Field(i).Tag
+		dflt := os.ExpandEnv(tag.Get("default"))
+		envKeys := strings.Split(tag.Get("env"), ",")
+		value, envVar := env.CascadeMatch(envKeys, dflt)
+
+		if value == "" {
+			continue
+		}
+
+		if envVar == "" {
+			envVar = envKeys[0]
+		}
+
+		value = os.ExpandEnv(value)
+
+		k := f.Kind()
+		switch k {
+		case reflect.String:
+			f.SetString(value)
+		case reflect.Uint64:
+			uintVal, err := strconv.ParseUint(dflt, 10, 64)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ERROR: %v", err)
+			} else {
+				f.SetUint(env.Uint(envVar, uintVal))
+			}
+		case reflect.Slice:
+			sliceValue := env.Slice(envVar, ":", strings.Split(":", dflt))
+			f.Set(reflect.ValueOf(sliceValue))
+		default:
+			panic(fmt.Sprintf("unknown kind wat: %v", k))
+		}
 	}
 }
 
 // UpdateFromCLI overlays a *cli.Context onto internal options
 func (opts *Options) UpdateFromCLI(c *cli.Context) {
+	// FIXME use reflection for this bit, too
 	if value := c.String("key"); value != "" {
 		opts.AccessKey = value
 	}

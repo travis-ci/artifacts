@@ -3,12 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
-	"github.com/dustin/go-humanize"
-	"github.com/travis-ci/artifacts/env"
 	"github.com/travis-ci/artifacts/logging"
 	"github.com/travis-ci/artifacts/upload"
 )
@@ -32,129 +29,8 @@ var (
 	// RevisionString contains the compiled-in git rev
 	RevisionString = "?"
 
-	log    = logrus.New()
-	cwd, _ = os.Getwd()
-
-	uploadFlags = []cli.Flag{
-		cli.StringFlag{
-			Name:   "key, k",
-			EnvVar: "ARTIFACTS_KEY",
-			Usage: fmt.Sprintf("upload credentials key *REQUIRED* (default %q)",
-				env.Get("ARTIFACTS_KEY", "")),
-		},
-		cli.StringFlag{
-			Name:   "bucket, b",
-			EnvVar: "ARTIFACTS_BUCKET",
-			Usage: fmt.Sprintf("destination bucket *REQUIRED* (default %q)",
-				env.Get("ARTIFACTS_BUCKET", "")),
-		},
-		cli.StringFlag{
-			Name:   "cache-control",
-			EnvVar: "ARTIFACTS_CACHE_CONTROL",
-			Usage: fmt.Sprintf("artifact cache-control header value (default %q)",
-				env.Get("ARTIFACTS_CACHE_CONTROL", upload.DefaultCacheControl)),
-		},
-		cli.StringFlag{
-			Name:   "permissions",
-			EnvVar: "ARTIFACTS_PERMISSIONS",
-			Usage: fmt.Sprintf("artifact access permissions (default %q)",
-				env.Get("ARTIFACTS_PERMISSIONS", upload.DefaultPerm)),
-		},
-		cli.StringFlag{
-			Name:   "secret, s",
-			EnvVar: "ARTIFACTS_SECRET",
-			Usage: fmt.Sprintf("upload credentials secret *REQUIRED* (default %q)",
-				env.Get("ARTIFACTS_SECRET", "")),
-		},
-		cli.StringFlag{
-			Name:   "s3-region",
-			EnvVar: "ARTIFACTS_S3_REGION",
-			Usage: fmt.Sprintf("region used when storing to S3 (default %q)",
-				env.Get("ARTIFACTS_S3_REGION", upload.DefaultS3Region.Name)),
-		},
-
-		cli.StringFlag{
-			Name:   "repo-slug, r",
-			EnvVar: "TRAVIS_REPO_SLUG",
-			Usage: fmt.Sprintf("The repo owner/name slug (default %q)",
-				env.Get("TRAVIS_REPO_SLUG", upload.DefaultRepoSlug)),
-		},
-		cli.StringFlag{
-			Name:   "build-number",
-			EnvVar: "TRAVIS_BUILD_NUMBER",
-			Usage: fmt.Sprintf("The build number (default %q)",
-				env.Get("TRAVIS_BUILD_NUMBER", upload.DefaultBuildNumber)),
-		},
-		cli.StringFlag{
-			Name:   "build-id",
-			EnvVar: "TRAVIS_BUILD_ID",
-			Usage: fmt.Sprintf("The build id (default %q)",
-				env.Get("TRAVIS_BUILD_ID", upload.DefaultBuildID)),
-		},
-		cli.StringFlag{
-			Name:   "job-number",
-			EnvVar: "TRAVIS_JOB_NUMBER",
-			Usage: fmt.Sprintf("The job number (default %q)",
-				env.Get("TRAVIS_JOB_NUMBER", upload.DefaultJobNumber)),
-		},
-		cli.StringFlag{
-			Name:   "job-id",
-			EnvVar: "TRAVIS_JOB_ID",
-			Usage: fmt.Sprintf("The job id (default %q)",
-				env.Get("TRAVIS_JOB_ID", upload.DefaultJobID)),
-		},
-
-		cli.StringFlag{
-			Name:   "concurrency",
-			EnvVar: "ARTIFACTS_CONCURRENCY",
-			Usage: fmt.Sprintf("upload worker concurrency (default %v)",
-				env.Uint("ARTIFACTS_CONCURRENCY", upload.DefaultConcurrency)),
-		},
-		cli.StringFlag{
-			Name:   "max-size",
-			EnvVar: "ARTIFACTS_MAX_SIZE",
-			Usage: fmt.Sprintf("max combined size of uploaded artifacts (default %v)",
-				humanize.Bytes(env.UintSize("ARTIFACTS_MAX_SIZE", upload.DefaultMaxSize))),
-		},
-		cli.StringFlag{
-			Name:   "retries",
-			EnvVar: "ARTIFACTS_RETRIES",
-			Usage: fmt.Sprintf("number of upload retries per artifact (default %v)",
-				env.Uint("ARTIFACTS_RETRIES", upload.DefaultRetries)),
-		},
-		cli.StringFlag{
-			Name:   "target-paths, t",
-			EnvVar: "ARTIFACTS_TARGET_PATHS",
-			Usage: fmt.Sprintf("artifact target paths (':'-delimited) (default %#v)",
-				strings.Join(env.Slice("ARTIFACTS_TARGET_PATHS", ":", upload.DefaultTargetPaths), ":")),
-		},
-		cli.StringFlag{
-			Name:   "working-dir",
-			EnvVar: "TRAVIS_BUILD_DIR",
-			Usage: fmt.Sprintf("working directory ($TRAVIS_BUILD_DIR) (default %q)",
-				env.Cascade([]string{"TRAVIS_BUILD_DIR", "PWD"}, cwd)),
-		},
-
-		cli.StringFlag{
-			Name:   "upload-provider, p",
-			EnvVar: "ARTIFACTS_UPLOAD_PROVIDER",
-			Usage: fmt.Sprintf("artifact upload provider (artifacts, s3, null) (default %#v)",
-				env.Get("ARTIFACTS_UPLOAD_PROVIDER", upload.DefaultUploadProvider)),
-		},
-
-		cli.StringFlag{
-			Name:   "save-host, H",
-			EnvVar: "ARTIFACTS_SAVE_HOST",
-			Usage: fmt.Sprintf("artifact save host (default %q)",
-				env.Get("ARTIFACTS_SAVE_HOST", "")),
-		},
-		cli.StringFlag{
-			Name:   "auth-token, T",
-			EnvVar: "ARTIFACTS_AUTH_TOKEN",
-			Usage: fmt.Sprintf("artifact save auth token (default %q)",
-				env.Get("ARTIFACTS_AUTH_TOKEN", "")),
-		},
-	}
+	log         = logrus.New()
+	uploadFlags = upload.DefaultOptions.Flags()
 )
 
 func main() {
