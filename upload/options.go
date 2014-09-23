@@ -240,16 +240,25 @@ func (opts *Options) UpdateFromCLI(c *cli.Context) {
 
 	for i := 0; i < s.NumField(); i++ {
 		f := s.Field(i)
+		if !f.CanSet() {
+			continue
+		}
+
 		tf := t.Field(i)
 
-		name := optsMaps["cli"][tf.Name]
+		names := optsMaps["cli"][tf.Name]
+		nameParts := strings.Split(names, ",")
+		if len(nameParts) < 1 {
+			continue
+		}
 
+		name := nameParts[0]
 		value := c.String(name)
 		if value == "" {
 			continue
 		}
 
-		switch tf.Name {
+		switch name {
 		case "concurrency", "retries":
 			intVal, err := strconv.ParseUint(value, 10, 64)
 			if err == nil {
@@ -277,7 +286,9 @@ func (opts *Options) UpdateFromCLI(c *cli.Context) {
 			}
 			opts.TargetPaths = tp
 		default:
-			f.SetString(value)
+			if f.Kind() == reflect.String {
+				f.SetString(value)
+			}
 		}
 	}
 
