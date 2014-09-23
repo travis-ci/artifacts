@@ -2,15 +2,15 @@ package path
 
 import "testing"
 
-func TestNewPathSet(t *testing.T) {
-	ps := NewPathSet()
+func TestNewSet(t *testing.T) {
+	ps := NewSet()
 	if len(ps.All()) > 0 {
-		t.Fatalf("new PathSet has non-empty paths")
+		t.Fatalf("new Set has non-empty paths")
 	}
 }
 
-func TestPathSetDeDuping(t *testing.T) {
-	ps := NewPathSet()
+func TestSetDeDuping(t *testing.T) {
+	ps := NewSet()
 
 	ps.Add(New("/", "foo", "bar"))
 	ps.Add(New("/", "foo", "bar"))

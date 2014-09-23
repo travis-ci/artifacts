@@ -166,9 +166,9 @@ func (s3p *s3Provider) getRegion() aws.Region {
 	if !ok {
 		s3p.log.WithFields(logrus.Fields{
 			"region":  s3p.opts.S3Region,
-			"default": DefaultS3Region.Name,
-		}).Warn(fmt.Sprintf("invalid region, defaulting to %s", DefaultS3Region.Name))
-		region = DefaultS3Region
+			"default": DefaultOptions.S3Region,
+		}).Warn(fmt.Sprintf("invalid region, defaulting to %s", DefaultOptions.S3Region))
+		region = aws.Regions[DefaultOptions.S3Region]
 	}
 
 	return region

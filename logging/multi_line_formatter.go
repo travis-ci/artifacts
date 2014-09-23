@@ -23,7 +23,7 @@ func (f *MultiLineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 	serialized = append(serialized, []byte(msg)...)
 
-	keys := make([]string, 0)
+	keys := []string{}
 	for k := range entry.Data {
 		if k != "time" {
 			keys = append(keys, k)
