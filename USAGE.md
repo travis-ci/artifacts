@@ -62,9 +62,9 @@ function "DetectContentType".
 * `--max-size`             max combined size of uploaded artifacts (default "1048576000") [`$ARTIFACTS_MAX_SIZE`]
 * `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (default "s3") [`$ARTIFACTS_UPLOAD_PROVIDER`]
 * `--retries`             number of upload retries per artifact (default "2") [`$ARTIFACTS_RETRIES`]
-* `--target-paths, -t`         artifact target paths (':'-delimited)  (default "[:]") [`$ARTIFACTS_TARGET_PATHS`]
+* `--target-paths, -t`         artifact target paths (':'-delimited) (default "[:]") [`$ARTIFACTS_TARGET_PATHS`]
 * `--working-dir`         working directory (default ".") [`$ARTIFACTS_WORKING_DIR`]
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- J9y5WXZqWk0UzhHI6jZbf54T9CdRvkvR6JlKeyIBMOs= -->
+<!-- kY/TLIPJscTe1t4GMevbP000StFfvnhSkuSKeSNlha0= -->
