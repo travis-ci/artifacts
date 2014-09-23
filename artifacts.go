@@ -10,27 +10,11 @@ import (
 	"github.com/travis-ci/artifacts/upload"
 )
 
-const (
-	uploadDescription = `
-Upload a set of local paths to an artifact repository.  The paths may be
-provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be :-delimited.
-
-Paths may be either files or directories.  Any path provided will be walked for
-all child entries.  Each entry will have its mime type detected based first on
-the file extension, then by sniffing up to the first 512 bytes via the net/http
-function "DetectContentType".
-`
-)
-
 var (
 	// VersionString contains the compiled-in version number
 	VersionString = "?"
 	// RevisionString contains the compiled-in git rev
 	RevisionString = "?"
-
-	log         = logrus.New()
-	uploadFlags = upload.DefaultOptions.Flags()
 )
 
 func main() {
@@ -60,8 +44,8 @@ func buildApp() *cli.App {
 			Name:        "upload",
 			ShortName:   "u",
 			Usage:       "upload some artifacts!",
-			Description: uploadDescription,
-			Flags:       uploadFlags,
+			Description: upload.CommandDescription,
+			Flags:       upload.DefaultOptions.Flags(),
 			Action:      runUpload,
 		},
 	}
@@ -70,7 +54,7 @@ func buildApp() *cli.App {
 }
 
 func runUpload(c *cli.Context) {
-	configureLog(log, c)
+	log := configureLog(c)
 
 	opts := upload.NewOptions()
 	opts.UpdateFromCLI(c)
@@ -84,7 +68,8 @@ func runUpload(c *cli.Context) {
 	}
 }
 
-func configureLog(log *logrus.Logger, c *cli.Context) {
+func configureLog(c *cli.Context) *logrus.Logger {
+	log := logrus.New()
 	log.Formatter = &logrus.TextFormatter{}
 
 	formatArg := c.GlobalString("log-format")
@@ -99,4 +84,6 @@ func configureLog(log *logrus.Logger, c *cli.Context) {
 		log.Level = logrus.DebugLevel
 		log.Debug("setting log level to debug")
 	}
+
+	return log
 }
