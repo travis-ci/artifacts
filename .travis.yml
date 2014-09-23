@@ -17,6 +17,6 @@ before_install:
 - goderp restore
 - go install -a -race std
 script:
-- make all crossbuild
+- make distclean all crossbuild
 - if [[ $TRAVIS_PULL_REQUEST == false ]] ; then ./deploy ; fi
 - travis_retry ./install

@@ -38,6 +38,10 @@ all: clean test USAGE.txt UPLOAD_USAGE.txt USAGE.md
 .PHONY: test
 test: build fmtpolice test-deps .test
 
+.PHONY: quicktest
+quicktest:
+	$(GO) test $(GOTEST_FLAGS) $(PACKAGE) $(SUBPACKAGES)
+
 .PHONY: .test
 .test: test-race coverage.html
 
@@ -56,7 +60,7 @@ coverage.coverprofile: $(COVERPROFILES)
 	$(GO) test -v -covermode=count -coverprofile=$@.tmp $(GOBUILD_LDFLAGS) $(PACKAGE)
 	echo 'mode: count' > $@
 	grep -h -v 'mode: count' $@.tmp >> $@
-	rm -f $@.tmp
+	$(RM) $@.tmp
 	grep -h -v 'mode: count' $^ >> $@
 	$(GO) tool cover -func=$@
 
@@ -107,16 +111,19 @@ deps: .gox-install .deps
 .gox-install:
 	$(GO) get -x github.com/mitchellh/gox > $@
 
+.PHONY: distclean
+distclean: clean
+	$(RM) -v .gox-* .deps
+	$(RM) -rv ./build
+
 .PHONY: clean
 clean:
-	rm -vf .gox-* .deps
-	rm -vf $${GOPATH%%:*}/bin/artifacts
-	rm -vf coverage.html *.coverprofile
+	$(RM) -v $${GOPATH%%:*}/bin/artifacts
+	$(RM) -v coverage.html $(COVERPROFILES)
 	$(GO) clean $(PACKAGE) $(SUBPACKAGES) || true
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
-		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs rm -rfv || true; \
+		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs $(RM) -fv || true; \
 	fi
-	rm -rvf ./build
 
 .PHONY: save
 save:
