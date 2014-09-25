@@ -70,16 +70,16 @@ func runUpload(c *cli.Context) {
 
 func configureLog(c *cli.Context) *logrus.Logger {
 	log := logrus.New()
-	log.Formatter = &logrus.TextFormatter{}
 
-	formatArg := c.GlobalString("log-format")
-
-	if formatArg == "json" {
+	switch c.GlobalString("log-format") {
+	case "json":
 		log.Formatter = &logrus.JSONFormatter{}
-	}
-	if formatArg == "multiline" {
+	case "multiline":
 		log.Formatter = &logging.MultiLineFormatter{}
+	default:
+		log.Formatter = &logrus.TextFormatter{}
 	}
+
 	if c.GlobalBool("debug") {
 		log.Level = logrus.DebugLevel
 		log.Debug("setting log level to debug")
