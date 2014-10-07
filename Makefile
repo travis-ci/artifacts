@@ -22,7 +22,7 @@ REPO_REV := $(shell git rev-parse --sq HEAD)
 
 GO ?= go
 GOX ?= gox
-GODERP ?= goderp
+DEPPY ?= deppy
 GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
 GOBUILD_FLAGS ?=
 GOTEST_FLAGS ?=
@@ -106,7 +106,7 @@ crossbuild: deps .gox-bootstrap
 deps: .gox-install .deps
 
 .deps:
-	$(GODERP) restore && touch $@
+	$(DEPPY) restore && touch $@
 
 .gox-install:
 	$(GO) get -x github.com/mitchellh/gox > $@
@@ -127,7 +127,7 @@ clean:
 
 .PHONY: save
 save:
-	$(GODERP) save $(PACKAGE) $(SUBPACKAGES)
+	$(DEPPY) save $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: fmtpolice
 fmtpolice:

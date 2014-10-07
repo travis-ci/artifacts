@@ -12,9 +12,9 @@ env:
   - ARTIFACTS_LOG_FORMAT=multiline
   - ARTIFACTS_DEBUG=1
 before_install:
-- go get github.com/meatballhat/goderp
+- go get github.com/meatballhat/deppy
 - go get code.google.com/p/go.tools/cmd/cover
-- goderp restore
+- deppy restore
 - go install -a -race std
 script:
 - make distclean all crossbuild
