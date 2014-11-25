@@ -38,6 +38,11 @@ func buildApp() *cli.App {
 			EnvVar: "ARTIFACTS_DEBUG",
 			Usage:  "set log level to debug",
 		},
+		cli.BoolFlag{
+			Name:   "quiet, q",
+			EnvVar: "ARTIFACTS_QUIET",
+			Usage:  "set log level to panic",
+		},
 	}
 	app.Commands = []cli.Command{
 		{
@@ -83,6 +88,10 @@ func configureLog(c *cli.Context) *logrus.Logger {
 	if c.GlobalBool("debug") {
 		log.Level = logrus.DebugLevel
 		log.Debug("setting log level to debug")
+	}
+
+	if c.GlobalBool("quiet") {
+		log.Level = logrus.PanicLevel
 	}
 
 	return log

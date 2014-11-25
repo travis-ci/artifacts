@@ -20,6 +20,7 @@ artifacts - manage your artifacts!
 ### GLOBAL OPTIONS
 * `--log-format, -f`     log output format (text, json, or multiline) [`$ARTIFACTS_LOG_FORMAT`]
 * `--debug, -D`        set log level to debug [`$ARTIFACTS_DEBUG`]
+* `--quiet, -q`        set log level to panic [`$ARTIFACTS_QUIET`]
 * `--help, -h`        show help
 * `--version, -v`    print the version
 
@@ -67,4 +68,4 @@ function "DetectContentType".
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- kY/TLIPJscTe1t4GMevbP000StFfvnhSkuSKeSNlha0= -->
+<!-- ZLM6i1mwbKWn7A9qMqzSPqu7GugqeRvxnPCBwEuCjuk= -->
