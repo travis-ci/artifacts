@@ -13,7 +13,7 @@ env:
   - ARTIFACTS_DEBUG=1
 before_install:
 - go get github.com/meatballhat/deppy
-- go get code.google.com/p/go.tools/cmd/cover
+- go get golang.org/x/tools/cmd/cover
 - deppy restore
 - go install -a -race std
 script:
