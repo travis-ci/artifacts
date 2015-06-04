@@ -3,7 +3,7 @@
 set -e
 
 SHA256SUMMER=sha256sum
-if ! sha256sum --version >/dev/null 2>&1 ; then
+if ! sha256sum --version &>/dev/null ; then
   SHA256SUMMER=gsha256sum
 fi
 
