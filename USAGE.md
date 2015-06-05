@@ -40,8 +40,10 @@ upload - upload some artifacts!
 
 ### DESCRIPTION
 Upload a set of local paths to an artifact repository.  The paths may be
-provided as either positional command-line arguments or as the `$ARTIFACTS_PATHS`
-environmental variable, which should be :-delimited.
+provided as positional command-line arguments or the `$ARTIFACTS_PATHS`
+environmental variable (which should be :-delimited).  If a hyphen ('-') is
+provided, standard input will be consumed and treated as newline and :-delimited
+path entries.
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
 the file extension, then by sniffing up to the first 512 bytes via the net/http
@@ -68,4 +70,4 @@ function "DetectContentType".
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- ZLM6i1mwbKWn7A9qMqzSPqu7GugqeRvxnPCBwEuCjuk= -->
+<!-- yD9SfW3Z0oWKHmUM3biKhy6dg2L/laiK+fA0ILnTedQ= -->

@@ -7,8 +7,10 @@ USAGE:
 DESCRIPTION:
    
 Upload a set of local paths to an artifact repository.  The paths may be
-provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be :-delimited.
+provided as positional command-line arguments or the $ARTIFACTS_PATHS
+environmental variable (which should be :-delimited).  If a hyphen ('-') is
+provided, standard input will be consumed and treated as newline and :-delimited
+path entries.
 
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on

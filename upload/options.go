@@ -1,7 +1,9 @@
 package upload
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"reflect"
 	"strconv"
@@ -19,8 +21,10 @@ const (
 	// "upload" command in the command line help system
 	CommandDescription = `
 Upload a set of local paths to an artifact repository.  The paths may be
-provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be :-delimited.
+provided as positional command-line arguments or the $ARTIFACTS_PATHS
+environmental variable (which should be :-delimited).  If a hyphen ('-') is
+provided, standard input will be consumed and treated as newline and :-delimited
+path entries.
 
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
@@ -307,6 +311,36 @@ func (opts *Options) UpdateFromCLI(c *cli.Context) {
 
 	for _, arg := range c.Args() {
 		opts.Paths = append(opts.Paths, arg)
+	}
+
+	loadPathsFromStdin := false
+	stdinPathIndices := []int{}
+
+	for i, path := range opts.Paths {
+		if path == "-" {
+			loadPathsFromStdin = true
+			stdinPathIndices = append(stdinPathIndices, i)
+		}
+	}
+
+	if loadPathsFromStdin {
+		for i := range stdinPathIndices {
+			opts.Paths = append(opts.Paths[:i], opts.Paths[i+1:]...)
+		}
+
+		fmt.Fprintf(os.Stderr, "artifacts: reading paths from stdin\n")
+
+		inStream := bufio.NewReader(os.Stdin)
+		for {
+			line, err := inStream.ReadString('\n')
+			if err == io.EOF {
+				break
+			}
+
+			for _, part := range strings.Split(":", line) {
+				opts.Paths = append(opts.Paths, strings.TrimSpace(part))
+			}
+		}
 	}
 }
 
