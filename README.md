@@ -51,7 +51,10 @@ access key, secret, and bucket, some additional variables will also work.
 0. `ARTIFACTS_BUCKET`
 0. `ARTIFACTS_S3_BUCKET`
 
-#### environment variables
+#### environment variables accepted for "region"
+
+0. `ARTIFACTS_REGION`
+0. `ARTIFACTS_S3_REGION`
 
 
 ### EXAMPLES
