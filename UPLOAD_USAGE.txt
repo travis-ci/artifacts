@@ -8,7 +8,7 @@ DESCRIPTION:
    
 Upload a set of local paths to an artifact repository.  The paths may be
 provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be :-delimited.
+environment variable, which should be :-delimited.
 
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
@@ -22,7 +22,7 @@ OPTIONS:
    --cache-control 		artifact cache-control header value (default "private") [$ARTIFACTS_CACHE_CONTROL]
    --permissions 		artifact access permissions (default "private") [$ARTIFACTS_PERMISSIONS]
    --secret, -s 		upload credentials secret *REQUIRED* (default "") [$ARTIFACTS_SECRET]
-   --s3-region 			region used when storing to S3 (default "us-east-1") [$ARTIFACTS_S3_REGION]
+   --s3-region 			region used when storing to S3 (default "us-east-1") [$ARTIFACTS_REGION]
    --repo-slug, -r 		repo owner/name slug (default "") [$ARTIFACTS_REPO_SLUG]
    --build-number 		build number (default "") [$ARTIFACTS_BUILD_NUMBER]
    --build-id 			build id (default "") [$ARTIFACTS_BUILD_ID]

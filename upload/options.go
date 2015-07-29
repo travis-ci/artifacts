@@ -20,7 +20,7 @@ const (
 	CommandDescription = `
 Upload a set of local paths to an artifact repository.  The paths may be
 provided as either positional command-line arguments or as the $ARTIFACTS_PATHS
-environmental variable, which should be :-delimited.
+environment variable, which should be :-delimited.
 
 Paths may be either files or directories.  Any path provided will be walked for
 all child entries.  Each entry will have its mime type detected based first on
@@ -89,7 +89,7 @@ var (
 			"CacheControl": "ARTIFACTS_CACHE_CONTROL",
 			"Perm":         "ARTIFACTS_PERMISSIONS",
 			"SecretKey":    "ARTIFACTS_SECRET,ARTIFACTS_AWS_SECRET_KEY,AWS_SECRET_ACCESS_KEY,AWS_SECRET_KEY",
-			"S3Region":     "ARTIFACTS_S3_REGION",
+			"S3Region":     "ARTIFACTS_REGION,ARTIFACTS_S3_REGION",
 
 			"RepoSlug":    "ARTIFACTS_REPO_SLUG,TRAVIS_REPO_SLUG",
 			"BuildNumber": "ARTIFACTS_BUILD_NUMBER,TRAVIS_BUILD_NUMBER",

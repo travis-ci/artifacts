@@ -29,27 +29,32 @@ will have access to the help system via `artifacts help` (also available
 
 ### S3 ENVIRONMENT COMPATIBILITY
 
-In addition to the environmental variables listed above for defining the
+In addition to the environment variables listed above for defining the
 access key, secret, and bucket, some additional variables will also work.
 
-#### environmental variables accepted for "key"
+#### environment variables accepted for "key"
 
 0. `ARTIFACTS_KEY`
 0. `ARTIFACTS_AWS_ACCESS_KEY`
 0. `AWS_ACCESS_KEY_ID`
 0. `AWS_ACCESS_KEY`
 
-#### environmental variables accepted for "secret"
+#### environment variables accepted for "secret"
 
 0. `ARTIFACTS_SECRET`
 0. `ARTIFACTS_AWS_SECRET_KEY`
 0. `AWS_SECRET_ACCESS_KEY`
 0. `AWS_SECRET_KEY`
 
-#### environmental variables accepted for "bucket"
+#### environment variables accepted for "bucket"
 
 0. `ARTIFACTS_BUCKET`
 0. `ARTIFACTS_S3_BUCKET`
+
+#### environment variables accepted for "region"
+
+0. `ARTIFACTS_REGION`
+0. `ARTIFACTS_S3_REGION`
 
 
 ### EXAMPLES
@@ -68,7 +73,7 @@ artifacts upload \
   log/ coverage/
 ```
 
-The same operation using environmental variables would look like this:
+The same operation using environment variables would look like this:
 
 ``` bash
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
@@ -92,7 +97,7 @@ artifacts upload \
   $(git ls-files -o)
 ```
 
-The same operation using environmental variables would look like this:
+The same operation using environment variables would look like this:
 
 ``` bash
 export ARTIFACTS_KEY="AKIT339AFIY655O3Q9DZ"
@@ -118,7 +123,7 @@ artifacts upload \
   $(git ls-files -o)
 ```
 
-The same operation using environmental variables would look like this:
+The same operation using environment variables would look like this:
 
 ``` bash
 export ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT"
