@@ -1,11 +1,11 @@
 language: go
 sudo: false
-go: 1.4.2
+go: 1.5.1
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
   - ARTIFACTS_CONCURRENCY=5
-  - ARTIFACTS_S3_BUCKET=meatballhat
+  - ARTIFACTS_S3_BUCKET=travis-ci-gmbh
   - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_COMMIT"
   - ARTIFACTS_PERMISSIONS=public-read
   - ARTIFACTS_CACHE_CONTROL='public, max-age=315360000'

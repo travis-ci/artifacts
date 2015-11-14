@@ -16,7 +16,7 @@ echo "    TRAVIS_PULL_REQUEST=\"$TRAVIS_PULL_REQUEST\""
 echo "    TRAVIS_TAG=\"$TRAVIS_TAG\""
 
 if [[ "x$TRAVIS_BRANCH" == "xmaster" ]] &&
-   [[ "x$TRAVIS_GO_VERSION" == "xgo1.3.1" ]] &&
+   [[ "x$TRAVIS_GO_VERSION" == "xgo1.5.1" ]] &&
    [[ "x$TRAVIS_PULL_REQUEST" == "xfalse" ]] &&
    [[ "x$TRAVIS_TAG" == "x" ]] ; then
   echo "    # Deploying as 'stable'"
