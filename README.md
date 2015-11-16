@@ -9,10 +9,10 @@ There are pre-built binaries of the latest stable build for 64-bit
 Linux, OSX, and Windows available here via the following links.  Please
 note that the tests run on 64-bit Linux.
 
-* [Linux](https://s3.amazonaws.com/meatballhat/artifacts/stable/build/linux/amd64/artifacts)
-* [OSX](https://s3.amazonaws.com/meatballhat/artifacts/stable/build/darwin/amd64/artifacts)
-* [Windows](https://s3.amazonaws.com/meatballhat/artifacts/stable/build/windows/amd64/artifacts.exe)
-* [SHA-256 checksums](https://s3.amazonaws.com/meatballhat/artifacts/stable/SHA256SUMS)
+* [Linux](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/linux/amd64/artifacts)
+* [OSX](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/darwin/amd64/artifacts)
+* [Windows](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/windows/amd64/artifacts.exe)
+* [SHA-256 checksums](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/SHA256SUMS)
 
 There is also an [install script](./install) for Linux and OSX that may
 be used like so:
