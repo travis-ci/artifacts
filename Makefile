@@ -18,12 +18,15 @@ VERSION_VAR := main.VersionString
 REPO_VERSION := $(shell git describe --always --dirty --tags)
 
 REV_VAR := main.RevisionString
-REPO_REV := $(shell git rev-parse --sq HEAD)
+REPO_REV := $(shell git rev-parse -q HEAD)
 
 GO ?= go
 GOX ?= gox
 DEPPY ?= deppy
-GOBUILD_LDFLAGS := -ldflags "-X $(VERSION_VAR) $(REPO_VERSION) -X $(REV_VAR) $(REPO_REV)"
+GOBUILD_LDFLAGS := -ldflags "\
+	-X '$(VERSION_VAR)=$(REPO_VERSION)' \
+	-X '$(REV_VAR)=$(REPO_REV)' \
+"
 GOBUILD_FLAGS ?=
 GOTEST_FLAGS ?=
 GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
@@ -88,9 +91,6 @@ UPLOAD_USAGE.txt: build
 USAGE.md: USAGE.txt UPLOAD_USAGE.txt $(shell git ls-files '*.go')
 	./markdownify-usage < USAGE.in.md > USAGE.md
 
-.gox-bootstrap:
-	$(GOX) -build-toolchain -osarch="$(GOX_OSARCH)" -verbose 2>&1 | tee $@
-
 .PHONY: build
 build: deps .build
 
@@ -99,7 +99,7 @@ build: deps .build
 	$(GO) install $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: crossbuild
-crossbuild: deps .gox-bootstrap
+crossbuild: deps
 	$(GOX) $(GOX_FLAGS) $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: deps
