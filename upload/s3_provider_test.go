@@ -73,7 +73,6 @@ func TestS3ProviderUpload(t *testing.T) {
 	s3p.overrideAuth = aws.Auth{
 		AccessKey: "whatever",
 		SecretKey: "whatever",
-		Token:     "whatever",
 	}
 
 	in := make(chan *artifact.Artifact)

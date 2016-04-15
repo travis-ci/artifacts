@@ -37,7 +37,7 @@ func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 }
 
 func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
-	auth, err := s3p.getAuth(opts.AccessKey, opts.SecretKey)
+	auth, err := s3p.getAuth(opts.AccessKey, opts.SecretKey, opts.ArtifactsAuthToken)
 
 	if err != nil {
 		s3p.log.WithFields(logrus.Fields{
@@ -150,14 +150,14 @@ func (s3p *s3Provider) getConn(auth aws.Auth) *s3.S3 {
 	return s3.New(auth, s3p.getRegion())
 }
 
-func (s3p *s3Provider) getAuth(accessKey, secretKey string) (aws.Auth, error) {
+func (s3p *s3Provider) getAuth(accessKey, secretKey, authToken string) (aws.Auth, error) {
 	if s3p.overrideAuth != nilAuth {
 		s3p.log.WithField("auth", s3p.overrideAuth).Debug("using override auth")
 		return s3p.overrideAuth, nil
 	}
 
 	s3p.log.Debug("creating new auth")
-	return aws.GetAuth(accessKey, secretKey)
+	return aws.GetAuth(accessKey, secretKey, authToken, time.Time{})
 }
 
 func (s3p *s3Provider) getRegion() aws.Region {
