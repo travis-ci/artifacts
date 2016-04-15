@@ -26,12 +26,12 @@
 			"Rev": "cb7b800be3f0238405be0e57d481740cfc4fb285"
 		},
 		{
-			"ImportPath": "github.com/mitchellh/goamz/aws",
-			"Rev": "cab49b43cfd7846155d5a8dfca5136b9e0c2c6d2"
+			"ImportPath": "github.com/goamz/goamz/aws",
+			"Rev": "02d5144a587b982e33b95f484a34164ce6923c99"
 		},
 		{
-			"ImportPath": "github.com/mitchellh/goamz/s3",
-			"Rev": "cab49b43cfd7846155d5a8dfca5136b9e0c2c6d2"
+			"ImportPath": "github.com/goamz/goamz/s3",
+			"Rev": "02d5144a587b982e33b95f484a34164ce6923c99"
 		}
 	]
 }
