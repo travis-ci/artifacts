@@ -27,11 +27,11 @@
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
-			"Rev": "cab49b43cfd7846155d5a8dfca5136b9e0c2c6d2"
+			"Rev": "caaaea8b30ee15616494ee68abd5d8ebbbef05cf"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/s3",
-			"Rev": "cab49b43cfd7846155d5a8dfca5136b9e0c2c6d2"
+			"Rev": "caaaea8b30ee15616494ee68abd5d8ebbbef05cf"
 		}
 	]
 }
