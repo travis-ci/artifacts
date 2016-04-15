@@ -1,7 +1,7 @@
 package artifact
 
 import (
-	"github.com/mitchellh/goamz/s3"
+	"github.com/goamz/goamz/s3"
 )
 
 // Options encapsulates stuff specific to artifacts.  Ugh.

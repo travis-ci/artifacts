@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mitchellh/goamz/s3"
+	"github.com/goamz/goamz/s3"
 )
 
 const (

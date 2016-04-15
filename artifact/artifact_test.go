@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mitchellh/goamz/s3"
+	"github.com/goamz/goamz/s3"
 )
 
 type testPath struct {

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/goamz/aws"
-	"github.com/mitchellh/goamz/s3"
-	"github.com/mitchellh/goamz/s3/s3test"
+	"github.com/goamz/goamz/aws"
+	"github.com/goamz/goamz/s3"
+	"github.com/goamz/goamz/s3/s3test"
 	"github.com/travis-ci/artifacts/artifact"
 )
 

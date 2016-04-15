@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/goamz/s3"
+	"github.com/goamz/goamz/s3"
 	"github.com/travis-ci/artifacts/artifact"
 )
 
