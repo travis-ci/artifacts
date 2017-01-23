@@ -11,6 +11,7 @@ COMMANDS:
    
 GLOBAL OPTIONS:
    --log-format, -f 	log output format (text, json, or multiline) [$ARTIFACTS_LOG_FORMAT]
+   --log-level, -l 	set log level (debug, info, warning, error, fatal, panic) [$ARTIFACTS_LOG_LEVEL]
    --debug, -D		set log level to debug [$ARTIFACTS_DEBUG]
    --quiet, -q		set log level to panic [$ARTIFACTS_QUIET]
    --help, -h		show help

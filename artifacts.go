@@ -33,6 +33,11 @@ func buildApp() *cli.App {
 			EnvVar: "ARTIFACTS_LOG_FORMAT",
 			Usage:  "log output format (text, json, or multiline)",
 		},
+		cli.StringFlag{
+			Name:   "log-level, l",
+			EnvVar: "ARTIFACTS_LOG_LEVEL",
+			Usage:  "set log level (debug, info, warning, error, fatal, panic)",
+		},
 		cli.BoolFlag{
 			Name:   "debug, D",
 			EnvVar: "ARTIFACTS_DEBUG",
@@ -83,6 +88,15 @@ func configureLog(c *cli.Context) *logrus.Logger {
 		log.Formatter = &logging.MultiLineFormatter{}
 	default:
 		log.Formatter = &logrus.TextFormatter{}
+	}
+
+	logLevel := c.GlobalString("log-level")
+	if logLevel != "" {
+		level, err := logrus.ParseLevel(logLevel)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Level = level
 	}
 
 	if c.GlobalBool("debug") {
