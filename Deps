@@ -1,15 +1,6 @@
 {
 	"ImportPath": "github.com/travis-ci/artifacts",
-	"GoVersion": "go1.3.1",
-	"Packages": [
-		"github.com/travis-ci/artifacts",
-		"github.com/travis-ci/artifacts/artifact",
-		"github.com/travis-ci/artifacts/client",
-		"github.com/travis-ci/artifacts/env",
-		"github.com/travis-ci/artifacts/logging",
-		"github.com/travis-ci/artifacts/path",
-		"github.com/travis-ci/artifacts/upload"
-	],
+	"GoVersion": "go1.7.5",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -18,12 +9,26 @@
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-22-g687db20",
+			"Comment": "v1.3.0",
 			"Rev": "687db20fc379d1686465a28e9959707cd1acc990"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
 			"Rev": "cb7b800be3f0238405be0e57d481740cfc4fb285"
+		},
+		{
+			"ImportPath": "github.com/go-ini/ini",
+			"Comment": "v1.27.2-2-gafbc45e",
+			"Rev": "afbc45e87f3ba324c532d12c71918ef52e0fb194"
+		},
+		{
+			"ImportPath": "github.com/minio/go-homedir",
+			"Rev": "a7ee80e4c344cab722502d3f074c5b7245d0bbe7"
+		},
+		{
+			"ImportPath": "github.com/minio/minio-go",
+			"Comment": "v2.0.2-98-g24176ea",
+			"Rev": "24176ea4dbd770e08311df606c49cf6fe6282230"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/goamz/aws",
@@ -32,6 +37,10 @@
 		{
 			"ImportPath": "github.com/mitchellh/goamz/s3",
 			"Rev": "caaaea8b30ee15616494ee68abd5d8ebbbef05cf"
+		},
+		{
+			"ImportPath": "github.com/vaughan0/go-ini",
+			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
 		}
 	]
 }

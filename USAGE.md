@@ -54,6 +54,7 @@ function "DetectContentType".
 * `--permissions`         artifact access permissions (default "private") [`$ARTIFACTS_PERMISSIONS`]
 * `--secret, -s`         upload credentials secret *REQUIRED* (default "") [`$ARTIFACTS_SECRET`]
 * `--s`3-region             region used when storing to S3 (default "us-east-1") [`$ARTIFACTS_REGION`]
+* `--endpoint`             object storage endpoint when storing to Minio, e.g, play.minio.io:9000 (default "") [`$ARTIFACTS_ENDPOINT`]
 * `--repo-slug, -r`         repo owner/name slug (default "") [`$ARTIFACTS_REPO_SLUG`]
 * `--build-number`         build number (default "") [`$ARTIFACTS_BUILD_NUMBER`]
 * `--build-id`             build id (default "") [`$ARTIFACTS_BUILD_ID`]
@@ -61,11 +62,11 @@ function "DetectContentType".
 * `--job-id`             job id (default "") [`$ARTIFACTS_JOB_ID`]
 * `--concurrency`         upload worker concurrency (default "5") [`$ARTIFACTS_CONCURRENCY`]
 * `--max-size`             max combined size of uploaded artifacts (default "1048576000") [`$ARTIFACTS_MAX_SIZE`]
-* `--upload-provider, -p`     artifact upload provider (artifacts, s3, null) (default "s3") [`$ARTIFACTS_UPLOAD_PROVIDER`]
+* `--upload-provider, -p`     artifact upload provider (artifacts, s3, minio, null) (default "s3") [`$ARTIFACTS_UPLOAD_PROVIDER`]
 * `--retries`             number of upload retries per artifact (default "2") [`$ARTIFACTS_RETRIES`]
 * `--target-paths, -t`         artifact target paths (':'-delimited) (default "[:]") [`$ARTIFACTS_TARGET_PATHS`]
 * `--working-dir`         working directory (default ".") [`$ARTIFACTS_WORKING_DIR`]
 * `--save-host, -H`         artifact save host (default "") [`$ARTIFACTS_SAVE_HOST`]
 * `--auth-token, -T`         artifact save auth token (default "") [`$ARTIFACTS_AUTH_TOKEN`]
 
-<!-- lNkKMancO23rBvP36leI4+N0z/QTbSzE+J6+uILFtn8= -->
+<!-- gipkBAO+VzdTu0Nt98FXlx97Klb3NDbO6DPRo/VJnb4= -->

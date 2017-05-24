@@ -55,6 +55,8 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 		provider = newArtifactsProvider(opts, log)
 	case "s3":
 		provider = newS3Provider(opts, log)
+	case "minio":
+		provider = newMinioProvider(opts, log)
 	case "null":
 		provider = newNullProvider(nil, log)
 	default:
