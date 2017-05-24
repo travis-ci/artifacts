@@ -40,6 +40,7 @@ var (
 			"Perm":         "permissions",
 			"SecretKey":    "secret, s",
 			"S3Region":     "s3-region",
+			"Endpoint":     "endpoint",
 
 			"RepoSlug":    "repo-slug, r",
 			"BuildNumber": "build-number",
@@ -65,6 +66,7 @@ var (
 			"Perm":         "artifact access permissions",
 			"SecretKey":    "upload credentials secret *REQUIRED*",
 			"S3Region":     "region used when storing to S3",
+			"Endpoint":     "object storage endpoint when storing to Minio, e.g, play.minio.io:9000",
 
 			"RepoSlug":    "repo owner/name slug",
 			"BuildNumber": "build number",
@@ -75,7 +77,7 @@ var (
 			"Concurrency": "upload worker concurrency",
 			"MaxSize":     "max combined size of uploaded artifacts",
 			"Paths":       "",
-			"Provider":    "artifact upload provider (artifacts, s3, null)",
+			"Provider":    "artifact upload provider (artifacts, s3, minio, null)",
 			"Retries":     "number of upload retries per artifact",
 			"TargetPaths": "artifact target paths (':'-delimited)",
 			"WorkingDir":  "working directory",
@@ -90,6 +92,7 @@ var (
 			"Perm":         "ARTIFACTS_PERMISSIONS",
 			"SecretKey":    "ARTIFACTS_SECRET,ARTIFACTS_AWS_SECRET_KEY,AWS_SECRET_ACCESS_KEY,AWS_SECRET_KEY",
 			"S3Region":     "ARTIFACTS_REGION,ARTIFACTS_S3_REGION",
+			"Endpoint":     "ARTIFACTS_ENDPOINT",
 
 			"RepoSlug":    "ARTIFACTS_REPO_SLUG,TRAVIS_REPO_SLUG",
 			"BuildNumber": "ARTIFACTS_BUILD_NUMBER,TRAVIS_BUILD_NUMBER",
@@ -115,6 +118,7 @@ var (
 			"Perm":         "private",
 			"SecretKey":    "",
 			"S3Region":     "us-east-1",
+			"Endpoint":     "",
 
 			"RepoSlug":    "",
 			"BuildNumber": "",
@@ -144,6 +148,7 @@ type Options struct {
 	Perm         string
 	SecretKey    string
 	S3Region     string
+	Endpoint     string
 
 	RepoSlug    string
 	BuildNumber string
@@ -312,8 +317,11 @@ func (opts *Options) UpdateFromCLI(c *cli.Context) {
 
 // Validate checks for validity!
 func (opts *Options) Validate() error {
-	if opts.Provider == "s3" {
+	switch opts.Provider {
+	case "s3":
 		return opts.validateS3()
+	case "minio":
+		return opts.validateMinio()
 	}
 
 	return nil
@@ -330,6 +338,26 @@ func (opts *Options) validateS3() error {
 
 	if opts.SecretKey == "" {
 		return fmt.Errorf("no secret key given")
+	}
+
+	return nil
+}
+
+func (opts *Options) validateMinio() error {
+	if opts.BucketName == "" {
+		return fmt.Errorf("no bucket name given")
+	}
+
+	if opts.AccessKey == "" {
+		return fmt.Errorf("no access key given")
+	}
+
+	if opts.SecretKey == "" {
+		return fmt.Errorf("no secret key given")
+	}
+
+	if opts.Endpoint == "" {
+		return fmt.Errorf("no endpoint given")
 	}
 
 	return nil
