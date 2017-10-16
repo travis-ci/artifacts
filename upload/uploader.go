@@ -25,8 +25,9 @@ type uploader struct {
 	RetryInterval time.Duration
 	Provider      uploadProvider
 
-	log     *logrus.Logger
-	curSize *maxSizeTracker
+	log       *logrus.Logger
+	curSize   *maxSizeTracker
+	startTime time.Time
 }
 
 type maxSizeTracker struct {
@@ -69,7 +70,8 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 		Paths:    path.NewSet(),
 		Provider: provider,
 
-		log: log,
+		log:       log,
+		startTime: time.Now(),
 	}
 
 	for _, s := range opts.Paths {
@@ -88,6 +90,7 @@ func newUploader(opts *Options, log *logrus.Logger) *uploader {
 
 func (u *uploader) Upload() error {
 	u.log.Debug("starting upload")
+	u.startTime = time.Now()
 	done := make(chan bool)
 	allDone := uint64(0)
 	inChan := u.files()
@@ -230,8 +233,9 @@ func (u *uploader) artifactFeeder(artifacts chan *artifact.Artifact) error {
 	}
 
 	u.log.WithFields(logrus.Fields{
-		"total_size": humanize.Bytes(u.curSize.Current),
-		"count":      i,
+		"total_size":   humanize.Bytes(u.curSize.Current),
+		"count":        i,
+		"time_elapsed": time.Since(u.startTime),
 	}).Debug("done feeding artifacts")
 
 	close(artifacts)
