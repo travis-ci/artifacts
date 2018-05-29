@@ -1,6 +1,6 @@
 language: go
 sudo: false
-go: 1.5.1
+go: 1.10.2
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
