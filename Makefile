@@ -1,4 +1,4 @@
-PACKAGE := github.com/travis-ci/artifacts
+PACKAGE := github.com/theplankmeister/artifacts
 SUBPACKAGES := \
 	$(PACKAGE)/artifact \
 	$(PACKAGE)/client \
