@@ -113,7 +113,7 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 
 	downloadHost := s3p.getRegion().S3BucketEndpoint
 	if downloadHost == "" {
-		downloadHost = fmt.Sprintf("https://s3.amazonaws.com/%s", b.Name)
+		downloadHost = fmt.Sprintf("https://%s.s3.amazonaws.com", b.Name)
 	}
 	s3p.log.WithFields(logrus.Fields{
 		"download_url": fmt.Sprintf("%s/%s", downloadHost, dest),
