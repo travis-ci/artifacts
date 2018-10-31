@@ -111,9 +111,8 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 		return err
 	}
 
-	downloadHost := fmt.Sprintf("%s/%s", s3p.getRegion().S3Endpoint, b.Name)
 	s3p.log.WithFields(logrus.Fields{
-		"download_url": fmt.Sprintf("%s/%s", downloadHost, dest),
+		"download_url": fmt.Sprintf("%s/%s/%s", s3p.getRegion().S3Endpoint, b.Name, dest),
 	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(size)))
 
 	s3p.log.WithFields(logrus.Fields{
