@@ -29,7 +29,7 @@ GOBUILD_LDFLAGS := -ldflags "\
 "
 GOBUILD_FLAGS ?=
 GOTEST_FLAGS ?=
-GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64
+GOX_OSARCH ?= linux/amd64 darwin/amd64 windows/amd64 linux/ppc64le
 GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
 TRAVIS_BUILD_DIR ?= .
