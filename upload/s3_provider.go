@@ -2,17 +2,16 @@ package upload
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/dustin/go-humanize"
-	"github.com/mitchellh/goamz/aws"
-	"github.com/mitchellh/goamz/s3"
 	"github.com/sirupsen/logrus"
 	"github.com/travis-ci/artifacts/artifact"
-)
-
-var (
-	nilAuth aws.Auth
 )
 
 type s3Provider struct {
@@ -21,8 +20,8 @@ type s3Provider struct {
 	opts *Options
 	log  *logrus.Logger
 
-	overrideConn *s3.S3
-	overrideAuth aws.Auth
+	sess           *session.Session
+	getSessionOnce sync.Once
 }
 
 func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
@@ -31,14 +30,11 @@ func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 
 		opts: opts,
 		log:  log,
-
-		overrideAuth: nilAuth,
 	}
 }
 
 func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifact, out chan *artifact.Artifact, done chan bool) {
-	auth, err := s3p.getAuth(opts.AccessKey, opts.SecretKey)
-
+	err := s3p.getSession(opts)
 	if err != nil {
 		s3p.log.WithFields(logrus.Fields{
 			"uploader": id,
@@ -48,19 +44,8 @@ func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifa
 		return
 	}
 
-	conn := s3p.getConn(auth)
-	bucket := conn.Bucket(opts.BucketName)
-
-	if bucket == nil {
-		s3p.log.WithFields(logrus.Fields{
-			"uploader": id,
-		}).Warn("uploader failed to get bucket")
-		done <- true
-		return
-	}
-
 	for a := range in {
-		err := s3p.uploadFile(opts, bucket, a)
+		err := s3p.uploadFile(opts, a)
 		if err != nil {
 			a.UploadResult.OK = false
 			a.UploadResult.Err = err
@@ -74,11 +59,11 @@ func (s3p *s3Provider) Upload(id string, opts *Options, in chan *artifact.Artifa
 	return
 }
 
-func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artifact) error {
+func (s3p *s3Provider) uploadFile(opts *Options, a *artifact.Artifact) error {
 	retries := uint64(0)
 
 	for {
-		err := s3p.rawUpload(opts, b, a)
+		err := s3p.rawUpload(opts, a)
 		if err == nil {
 			return nil
 		}
@@ -95,10 +80,9 @@ func (s3p *s3Provider) uploadFile(opts *Options, b *s3.Bucket, a *artifact.Artif
 			return err
 		}
 	}
-	return nil
 }
 
-func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifact) error {
+func (s3p *s3Provider) rawUpload(opts *Options, a *artifact.Artifact) error {
 	dest := a.FullDest()
 	reader, err := a.Reader()
 	if err != nil {
@@ -111,10 +95,8 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 		return err
 	}
 
-	downloadHost := s3p.getRegion().S3BucketEndpoint
-	if downloadHost == "" {
-		downloadHost = fmt.Sprintf("https://s3.amazonaws.com/%s", b.Name)
-	}
+	downloadHost := fmt.Sprintf("https://%s.s3-%s.amazonaws.com", opts.BucketName, opts.S3Region)
+
 	s3p.log.WithFields(logrus.Fields{
 		"download_url": fmt.Sprintf("%s/%s", downloadHost, dest),
 	}).Info(fmt.Sprintf("uploading: %s (size: %s)", a.Source, humanize.Bytes(size)))
@@ -124,16 +106,21 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 		"max_size":         humanize.Bytes(opts.MaxSize),
 		"source":           a.Source,
 		"dest":             dest,
-		"bucket":           b.Name,
+		"bucket":           opts.BucketName,
 		"content_type":     ctype,
 		"cache_control":    opts.CacheControl,
 	}).Debug("more artifact details")
 
-	err = b.PutReaderHeader(dest, reader, int64(size),
-		map[string][]string{
-			"Content-Type":  []string{ctype},
-			"Cache-Control": []string{opts.CacheControl},
-		}, a.Perm)
+	uploadInput := &s3manager.UploadInput{
+		ACL:          aws.String(opts.Perm),
+		Body:         reader,
+		Bucket:       aws.String(opts.BucketName),
+		CacheControl: aws.String(opts.CacheControl),
+		ContentType:  aws.String(ctype),
+		Key:          aws.String(dest),
+	}
+
+	_, err = s3manager.NewUploader(s3p.sess).Upload(uploadInput)
 	if err != nil {
 		return err
 	}
@@ -141,37 +128,17 @@ func (s3p *s3Provider) rawUpload(opts *Options, b *s3.Bucket, a *artifact.Artifa
 	return nil
 }
 
-func (s3p *s3Provider) getConn(auth aws.Auth) *s3.S3 {
-	if s3p.overrideConn != nil {
-		s3p.log.WithField("conn", s3p.overrideConn).Debug("using override connection")
-		return s3p.overrideConn
-	}
-
-	return s3.New(auth, s3p.getRegion())
-}
-
-func (s3p *s3Provider) getAuth(accessKey, secretKey string) (aws.Auth, error) {
-	if s3p.overrideAuth != nilAuth {
-		s3p.log.WithField("auth", s3p.overrideAuth).Debug("using override auth")
-		return s3p.overrideAuth, nil
-	}
-
-	s3p.log.Debug("creating new auth")
-	return aws.GetAuth(accessKey, secretKey)
-}
-
-func (s3p *s3Provider) getRegion() aws.Region {
-	region, ok := aws.Regions[s3p.opts.S3Region]
-
-	if !ok {
-		s3p.log.WithFields(logrus.Fields{
-			"region":  s3p.opts.S3Region,
-			"default": DefaultOptions.S3Region,
-		}).Warn(fmt.Sprintf("invalid region, defaulting to %s", DefaultOptions.S3Region))
-		region = aws.Regions[DefaultOptions.S3Region]
-	}
-
-	return region
+func (s3p *s3Provider) getSession(opts *Options) error {
+	var err error
+	s3p.getSessionOnce.Do(func() {
+		s3p.sess, err = session.NewSessionWithOptions(session.Options{
+			Config: aws.Config{
+				Region:      aws.String(opts.S3Region),
+				Credentials: credentials.NewStaticCredentials(opts.AccessKey, opts.SecretKey, ""),
+			},
+		})
+	})
+	return err
 }
 
 func (s3p *s3Provider) Name() string {
