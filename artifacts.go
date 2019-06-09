@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
+	"github.com/sirupsen/logrus"
 	"github.com/travis-ci/artifacts/logging"
 	"github.com/travis-ci/artifacts/upload"
 )

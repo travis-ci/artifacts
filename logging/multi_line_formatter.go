@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 // MultiLineFormatter is a logrus-compatible formatter for multi-line output

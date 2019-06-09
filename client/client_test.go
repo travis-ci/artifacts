@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func TestNew(t *testing.T) {

@@ -3,8 +3,8 @@ package upload
 import (
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/dustin/go-humanize"
+	"github.com/sirupsen/logrus"
 	"github.com/travis-ci/artifacts/artifact"
 	"github.com/travis-ci/artifacts/client"
 )
