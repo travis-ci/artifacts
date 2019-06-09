@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mitchellh/goamz/s3"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 type testPath struct {
@@ -78,7 +78,7 @@ func init() {
 
 func TestNewArtifact(t *testing.T) {
 	a := New("bucket", "/foo/bar", "linux/foo", &Options{
-		Perm:     s3.PublicRead,
+		Perm:     s3.BucketCannedACLPublicRead,
 		RepoSlug: "owner/foo",
 	})
 	if a == nil {
@@ -93,7 +93,7 @@ func TestNewArtifact(t *testing.T) {
 		t.Fatalf("destination not set correctly: %v", a.Dest)
 	}
 
-	if a.Perm != s3.PublicRead {
+	if a.Perm != s3.BucketCannedACLPublicRead {
 		t.Fatalf("s3 perm not set correctly: %v", a.Perm)
 	}
 
@@ -113,7 +113,7 @@ func TestNewArtifact(t *testing.T) {
 func TestArtifactContentType(t *testing.T) {
 	for _, p := range testArtifactPaths {
 		a := New("bucket", p.Path, "linux/foo", &Options{
-			Perm:     s3.PublicRead,
+			Perm:     s3.BucketCannedACLPublicRead,
 			RepoSlug: "owner/foo",
 		})
 		if a == nil {
@@ -134,7 +134,7 @@ func TestArtifactReader(t *testing.T) {
 		}
 
 		a := New("bucket", p.Path, "linux/foo", &Options{
-			Perm:     s3.PublicRead,
+			Perm:     s3.BucketCannedACLPublicRead,
 			RepoSlug: "owner/foo",
 		})
 		if a == nil {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/goamz/s3"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/travis-ci/artifacts/artifact"
 )
 
@@ -62,7 +62,7 @@ func TestArtifactsUpload(t *testing.T) {
 			}
 
 			a := artifact.New("bucket", p.Path, "linux/foo", &artifact.Options{
-				Perm:     s3.PublicRead,
+				Perm:     s3.BucketCannedACLPublicRead,
 				RepoSlug: "owner/foo",
 			})
 

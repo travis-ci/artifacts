@@ -9,8 +9,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/mitchellh/goamz/s3"
 )
 
 const (
@@ -28,7 +26,7 @@ type Artifact struct {
 	Source string
 	Dest   string
 	Prefix string
-	Perm   s3.ACL
+	Perm   string
 
 	UploadResult *Result
 }
