@@ -22,7 +22,6 @@ REPO_REV := $(shell git rev-parse -q HEAD)
 
 GO ?= go
 GOX ?= gox
-DEPPY ?= deppy
 GOBUILD_LDFLAGS := -ldflags "\
 	-X '$(VERSION_VAR)=$(REPO_VERSION)' \
 	-X '$(REV_VAR)=$(REPO_REV)' \
@@ -103,17 +102,14 @@ crossbuild: deps
 	$(GOX) $(GOX_FLAGS) $(GOBUILD_FLAGS) $(GOBUILD_LDFLAGS) $(PACKAGE)
 
 .PHONY: deps
-deps: .gox-install .deps
-
-.deps:
-	$(DEPPY) restore && touch $@
+deps: .gox-install
 
 .gox-install:
 	$(GO) get -x github.com/mitchellh/gox > $@
 
 .PHONY: distclean
 distclean: clean
-	$(RM) -v .gox-* .deps
+	$(RM) -v .gox-*
 	$(RM) -rv ./build
 
 .PHONY: clean
@@ -124,10 +120,6 @@ clean:
 	if [ -d $${GOPATH%%:*}/pkg ] ; then \
 		find $${GOPATH%%:*}/pkg -wholename '*travis-ci/artifacts*.a' | xargs $(RM) -fv || true; \
 	fi
-
-.PHONY: save
-save:
-	$(DEPPY) save $(PACKAGE) $(SUBPACKAGES)
 
 .PHONY: fmtpolice
 fmtpolice:
