@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -20,16 +21,33 @@ type s3Provider struct {
 	opts *Options
 	log  *logrus.Logger
 
+	s3manager      s3Manager
 	sess           *session.Session
 	getSessionOnce sync.Once
+}
+
+type s3Manager interface {
+	NewUploader(c client.ConfigProvider, options ...func(*s3manager.Uploader)) s3Uploader
+}
+
+type s3Uploader interface {
+	Upload(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+}
+
+// awsS3Manager is the default S3 manager that uses the actual AWS SDK
+type awsS3Manager struct{}
+
+func (m *awsS3Manager) NewUploader(c client.ConfigProvider, options ...func(*s3manager.Uploader)) s3Uploader {
+	return s3manager.NewUploader(c, options...)
 }
 
 func newS3Provider(opts *Options, log *logrus.Logger) *s3Provider {
 	return &s3Provider{
 		RetryInterval: defaultProviderRetryInterval,
 
-		opts: opts,
-		log:  log,
+		opts:      opts,
+		log:       log,
+		s3manager: new(awsS3Manager),
 	}
 }
 
@@ -120,7 +138,7 @@ func (s3p *s3Provider) rawUpload(opts *Options, a *artifact.Artifact) error {
 		Key:          aws.String(dest),
 	}
 
-	_, err = s3manager.NewUploader(s3p.sess).Upload(uploadInput)
+	_, err = s3p.s3manager.NewUploader(s3p.sess).Upload(uploadInput)
 	if err != nil {
 		return err
 	}
