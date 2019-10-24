@@ -1,9 +1,9 @@
 arch:
-- amd64
+#- amd64
 - arch64
 language: go
 sudo: false
-go: 1.12.4
+go: 1.13
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
@@ -21,5 +21,5 @@ before_install:
 - go install -a -race std
 script:
 - make distclean all crossbuild
-- if [[ $TRAVIS_SECURE_ENV_VARS == true && $TRAVIS_PULL_REQUEST == false ]] ; then ./deploy ; fi
+- ./deploy
 - travis_retry ./install
