@@ -1,5 +1,5 @@
 arch:
-#- amd64
+- amd64
 - arch64
 - ppc64le
 - s390x
@@ -7,9 +7,8 @@ language: go
 dist: bionic
 sudo: false
 go: 
-- 1.11
-- 1.12
-- 1.13
+- 1.12.12
+- 1.13.3
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
