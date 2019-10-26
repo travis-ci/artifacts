@@ -6,7 +6,10 @@ arch:
 language: go
 dist: bionic
 sudo: false
-go: 1.11
+go: 
+- 1.11
+- 1.12
+- 1.13
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
