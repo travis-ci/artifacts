@@ -1,6 +1,14 @@
+arch:
+- amd64
+- arch64
+- ppc64le
+- s390x
 language: go
+dist: bionic
 sudo: false
-go: 1.10.2
+go: 
+- 1.12.12
+- 1.13.3
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
@@ -18,5 +26,5 @@ before_install:
 - go install -a -race std
 script:
 - make distclean all crossbuild
-- if [[ $TRAVIS_SECURE_ENV_VARS == true && $TRAVIS_PULL_REQUEST == false ]] ; then ./deploy ; fi
+- ./deploy
 - travis_retry ./install
