@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 PACKAGE := github.com/travis-ci/artifacts
 SUBPACKAGES := \
 	$(PACKAGE)/artifact \
