@@ -1,7 +1,7 @@
 language: go
 sudo: false
 go: 1.13.5
-dist: freebsd
+
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
