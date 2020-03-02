@@ -1,4 +1,3 @@
-SHELL := /bin/bash
 PACKAGE := github.com/travis-ci/artifacts
 SUBPACKAGES := \
 	$(PACKAGE)/artifact \
@@ -33,7 +32,7 @@ GOTEST_FLAGS ?=
 GOX_OSARCH ?= freebsd/amd64 linux/amd64 darwin/amd64 windows/amd64 linux/ppc64le linux/aarch64
 GOX_FLAGS ?= -output="build/{{.OS}}/{{.Arch}}/{{.Dir}}" -osarch="$(GOX_OSARCH)"
 
-TRAVIS_BUILD_DIR ?= .
+export TRAVIS_BUILD_DIR
 
 .PHONY: all
 all: clean test USAGE.txt UPLOAD_USAGE.txt USAGE.md
