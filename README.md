@@ -10,6 +10,7 @@ Linux, OSX, and Windows available here via the following links.  Please
 note that the tests run on 64-bit Linux.
 
 * [Linux/amd64](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/linux/amd64/artifacts)
+* [Linux/ppc64le](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/linux/ppc64le/artifacts)
 * [OSX/amd64](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/darwin/amd64/artifacts)
 * [Windows/amd64](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/windows/amd64/artifacts.exe)
 * [FreeBSD/amd64](https://s3.amazonaws.com/travis-ci-gmbh/artifacts/stable/build/freebsd/amd64/artifacts)
