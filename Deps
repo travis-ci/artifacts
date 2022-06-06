@@ -13,8 +13,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.5.1",
-			"Rev": "736840a898fb560e3d93413410a4cb1371f42f71"
+			"Comment": "v0.11.0",
+			"Rev": "d26492970760ca5d33129d2d799e34be5c4782eb"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
