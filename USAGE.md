@@ -53,7 +53,7 @@ function "DetectContentType".
 * `--cache-control`         artifact cache-control header value (default "private") [`$ARTIFACTS_CACHE_CONTROL`]
 * `--permissions`         artifact access permissions (default "private") [`$ARTIFACTS_PERMISSIONS`]
 * `--secret, -s`         upload credentials secret *REQUIRED* (default "") [`$ARTIFACTS_SECRET`]
-* `--s`3-region             region used when storing to S3 (default "us-east-1") [`$ARTIFACTS_REGION`]
+* `--s3-region`             region used when storing to S3 (default "us-east-1") [`$ARTIFACTS_REGION`]
 * `--repo-slug, -r`         repo owner/name slug (default "") [`$ARTIFACTS_REPO_SLUG`]
 * `--build-number`         build number (default "") [`$ARTIFACTS_BUILD_NUMBER`]
 * `--build-id`             build id (default "") [`$ARTIFACTS_BUILD_ID`]
