@@ -1,6 +1,6 @@
 language: go
 sudo: false
-go: 1.18.2
+go: 1.18.10
 env:
   global:
   - PATH=$HOME/gopath/bin:$HOME/bin:$PATH
@@ -13,7 +13,7 @@ env:
   - ARTIFACTS_DEBUG=1
 before_install:
 - go get github.com/meatballhat/deppy
-- go get golang.org/x/tools/cmd/cover
+# - go get golang.org/x/tools/cmd/cover
 - deppy restore
 - go install -a -race std
 script:
